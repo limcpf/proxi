@@ -1,0 +1,7 @@
+{
+  "name": "proxi-monorepo",
+  "private": true,
+  "description": "Proxy me, Dear my agents",
+  "author": "limcpf",
+  "packageManager": "pnpm@10.33.0"
+}
