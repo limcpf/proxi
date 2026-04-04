@@ -1,7 +1,7 @@
 model = "gpt-5.4"
 model_reasoning_effort = "high"
 personality = "pragmatic"
-approval_policy = "always"
+approval_policy = "never"
 
 # 프로젝트 루트 탐색을 현재 저장소 기준으로 유지
 project_root_markers = [".git"]
