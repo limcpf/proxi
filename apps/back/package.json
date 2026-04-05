@@ -1,0 +1,7 @@
+{
+  "name": "@proxi/back",
+  "version": "0.0.1",
+  "main": "index.js",
+  "author": "limcpf",
+  "packageManager": "pnpm@10.33.0"
+}
