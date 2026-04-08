@@ -93,6 +93,13 @@
       "owner_scope": "docs/design-docs"
     },
     {
+      "path": "docs/design-docs/2026-04-08-tagged-codex-pr-review.md",
+      "kind": "design-doc",
+      "role": "태그형 Codex PR 리뷰 운영 결정",
+      "read_when": ["PR 리뷰 자동화 설계 확인", "Codex 리뷰 profile 정책 확인"],
+      "owner_scope": "docs/design-docs"
+    },
+    {
       "path": "docs/design-docs/core-beliefs.md",
       "kind": "design-doc",
       "role": "문서 운영 핵심 원칙",
@@ -132,6 +139,13 @@
       "kind": "exec-plan",
       "role": "Codex hook 가드레일 구현 기록",
       "read_when": ["과거 실행 기억 확인", "Hook 구현 참고"],
+      "owner_scope": "docs/exec-plans/completed"
+    },
+    {
+      "path": "docs/exec-plans/completed/2026-04-08-tagged-codex-pr-review.md",
+      "kind": "exec-plan",
+      "role": "태그형 Codex PR 리뷰 구현 기록",
+      "read_when": ["과거 실행 기억 확인", "PR 리뷰 자동화 구현 참고"],
       "owner_scope": "docs/exec-plans/completed"
     },
     {

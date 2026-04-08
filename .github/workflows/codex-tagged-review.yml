@@ -1,0 +1,172 @@
+name: Codex Tagged Review
+
+on:
+  issue_comment:
+    types:
+      - created
+
+jobs:
+  resolve_request:
+    if: github.event.issue.pull_request != null
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: read
+    outputs:
+      should_run: ${{ steps.resolve.outputs.should_run }}
+      profile: ${{ steps.resolve.outputs.profile }}
+      pr_number: ${{ steps.resolve.outputs.pr_number }}
+      base_ref: ${{ steps.resolve.outputs.base_ref }}
+      head_sha: ${{ steps.resolve.outputs.head_sha }}
+    steps:
+      - name: Resolve review command
+        id: resolve
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const body = (context.payload.comment.body || "").trim();
+            const match = body.match(/^@codex\s+review(?:\s+([a-z0-9-]+))?\s*$/i);
+            const profiles = [
+              "architecture",
+              "reliability",
+              "security",
+              "docs",
+              "performance",
+              "testing",
+            ];
+            const trustedAssociations = new Set([
+              "OWNER",
+              "MEMBER",
+              "COLLABORATOR",
+            ]);
+
+            core.setOutput("should_run", "false");
+            core.setOutput("pr_number", String(context.payload.issue.number));
+
+            if (!match) {
+              return;
+            }
+
+            if (!trustedAssociations.has(context.payload.comment.author_association)) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.issue.number,
+                body: [
+                  "Codex 리뷰는 저장소 collaborator만 요청할 수 있습니다.",
+                  "",
+                  "사용 가능한 형식: `@codex review <profile>`",
+                ].join("\n"),
+              });
+              return;
+            }
+
+            const profile = match[1]?.toLowerCase();
+            if (!profile || !profiles.includes(profile)) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.issue.number,
+                body: [
+                  "지원하는 Codex 리뷰 profile 이 없습니다.",
+                  "",
+                  "사용 가능한 형식: `@codex review <profile>`",
+                  "지원 profile: `architecture`, `reliability`, `security`, `docs`, `performance`, `testing`",
+                ].join("\n"),
+              });
+              return;
+            }
+
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.issue.number,
+            });
+
+            core.setOutput("should_run", "true");
+            core.setOutput("profile", profile);
+            core.setOutput("base_ref", pr.data.base.ref);
+            core.setOutput("head_sha", pr.data.head.sha);
+
+  codex_review:
+    needs: resolve_request
+    if: needs.resolve_request.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout PR merge ref
+        uses: actions/checkout@v5
+        with:
+          ref: refs/pull/${{ needs.resolve_request.outputs.pr_number }}/merge
+
+      - name: Pre-fetch base and head refs
+        env:
+          BASE_REF: ${{ needs.resolve_request.outputs.base_ref }}
+          PR_NUMBER: ${{ needs.resolve_request.outputs.pr_number }}
+        run: |
+          git fetch --no-tags origin \
+            "+refs/heads/${BASE_REF}:refs/remotes/origin/${BASE_REF}" \
+            "+refs/pull/${PR_NUMBER}/head:refs/remotes/pull/${PR_NUMBER}/head"
+
+      - name: Compose review prompt
+        env:
+          PROFILE: ${{ needs.resolve_request.outputs.profile }}
+          PR_NUMBER: ${{ needs.resolve_request.outputs.pr_number }}
+          BASE_REF: ${{ needs.resolve_request.outputs.base_ref }}
+          HEAD_SHA: ${{ needs.resolve_request.outputs.head_sha }}
+        run: |
+          cat <<EOF >/tmp/codex-review-context.md
+          # Review request metadata
+          - Review profile: \`${PROFILE}\`
+          - Pull request: #${PR_NUMBER}
+          - Base ref: \`${BASE_REF}\`
+          - Head sha: \`${HEAD_SHA}\`
+          - Compare against \`refs/remotes/origin/${BASE_REF}\` and \`refs/remotes/pull/${PR_NUMBER}/head\`.
+          - Review only this pull request's changes and the minimum nearby context needed to judge risk.
+
+          EOF
+          cat \
+            /tmp/codex-review-context.md \
+            .github/codex/prompts/review/base.md \
+            ".github/codex/prompts/review/${PROFILE}.md" \
+            >/tmp/codex-review-prompt.md
+
+      - name: Run Codex review
+        id: run_codex
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          prompt-file: /tmp/codex-review-prompt.md
+          output-file: codex-review.md
+          safety-strategy: drop-sudo
+          sandbox: read-only
+          model: gpt-5.4
+          effort: high
+
+      - name: Submit GitHub review
+        if: steps.run_codex.outputs.final-message != ''
+        uses: actions/github-script@v7
+        env:
+          CODEX_FINAL_MESSAGE: ${{ steps.run_codex.outputs.final-message }}
+          PROFILE: ${{ needs.resolve_request.outputs.profile }}
+          PR_NUMBER: ${{ needs.resolve_request.outputs.pr_number }}
+          HEAD_SHA: ${{ needs.resolve_request.outputs.head_sha }}
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            await github.rest.pulls.createReview({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: Number(process.env.PR_NUMBER),
+              commit_id: process.env.HEAD_SHA,
+              event: "COMMENT",
+              body: [
+                `## Codex ${process.env.PROFILE} review`,
+                "",
+                process.env.CODEX_FINAL_MESSAGE,
+              ].join("\n"),
+            });

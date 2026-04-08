@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
@@ -40,20 +41,23 @@ export function buildAdditionalContext(eventName, additionalContext, extra = {})
 }
 
 export function resolveRepoRoot(cwd) {
-  const result = spawnSync("git", ["rev-parse", "--show-toplevel"], {
-    cwd,
-    encoding: "utf8",
-  });
-
-  if (result.status !== 0) {
-    throw new Error(result.stderr.trim() || "git rev-parse failed");
-  }
-
-  return normalizeRepoPath(result.stdout.trim());
+  return normalizeRepoPath(runGitOrThrow(cwd, ["rev-parse", "--show-toplevel"]).trim());
 }
 
 export function normalizeRepoPath(filePath) {
   return filePath.replaceAll("\\", "/");
+}
+
+export function getRepoName(repoRoot) {
+  return path.basename(repoRoot);
+}
+
+export function getDefaultWorktreeRoot(repoRoot) {
+  return normalizeRepoPath(path.join("/tmp", `${getRepoName(repoRoot)}-wt`));
+}
+
+export function getCurrentBranch(repoRoot) {
+  return runGitOrThrow(repoRoot, ["branch", "--show-current"]).trim();
 }
 
 export function findNearestAgentsPath(cwd, repoRoot) {
@@ -76,9 +80,13 @@ export function findNearestAgentsPath(cwd, repoRoot) {
   return normalizeRepoPath(path.join(normalizedRoot, "AGENTS.md"));
 }
 
+export function listRepoChanges(repoRoot) {
+  return listChangedFiles(repoRoot);
+}
+
 export function listDocStructureFiles(repoRoot) {
   const changedFiles = new Set();
-  for (const filePath of listChangedFiles(repoRoot)) {
+  for (const filePath of listRepoChanges(repoRoot)) {
     if (isDocStructurePath(filePath)) {
       changedFiles.add(filePath);
     }
@@ -105,6 +113,11 @@ export async function readHookState(repoRoot, sessionId) {
       lastReminderTurnId: null,
       lastVerifyCommand: null,
       lastVerifySucceededAt: null,
+      bootstrapBranch: null,
+      bootstrapWorktreePath: null,
+      bootstrapPromptSlug: null,
+      bootstrapRequestedAt: null,
+      bootstrapCompleted: false,
     };
   }
 }
@@ -117,6 +130,95 @@ export async function writeHookState(repoRoot, sessionId, state) {
 
 export function isFullVerifyCommand(command) {
   return /(^|\s)corepack\s+pnpm\s+run\s+verify(\s|$)/.test(command);
+}
+
+export function slugifyPrompt(prompt, maxLength = 40) {
+  const originalPrompt = String(prompt).trim();
+  const normalized = prompt
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[^\x00-\x7F]/g, " ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .replace(/-{2,}/g, "-");
+
+  const truncated = normalized.slice(0, maxLength).replace(/-+$/g, "");
+  if (truncated !== "") {
+    return truncated;
+  }
+
+  if (originalPrompt === "") {
+    return "task";
+  }
+
+  return `task-${createHash("sha1").update(originalPrompt).digest("hex").slice(0, 8)}`;
+}
+
+export function formatDateStamp(date = new Date()) {
+  const year = String(date.getFullYear());
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}${month}${day}`;
+}
+
+export async function ensureTaskWorktree(repoRoot, prompt, options = {}) {
+  const baseBranch = options.baseBranch ?? "main";
+  const worktreeRoot = normalizeRepoPath(options.worktreeRoot ?? getDefaultWorktreeRoot(repoRoot));
+  const slug = slugifyPrompt(prompt);
+  const dateStamp = formatDateStamp();
+  const branchBase = `task/${slug}-${dateStamp}`;
+  const pathBase = normalizeRepoPath(path.join(worktreeRoot, `${slug}-${dateStamp}`));
+  const worktrees = listWorktrees(repoRoot);
+
+  if (!gitRefExists(repoRoot, `refs/heads/${baseBranch}`)) {
+    throw new Error(`기준 브랜치가 없습니다: ${baseBranch}`);
+  }
+
+  for (let attempt = 0; attempt < 100; attempt += 1) {
+    const suffix = attempt === 0 ? "" : `-${attempt + 1}`;
+    const branchName = `${branchBase}${suffix}`;
+    const worktreePath = `${pathBase}${suffix}`;
+    const existingWorktree = worktrees.find((entry) => entry.branch === branchName);
+
+    if (existingWorktree) {
+      return {
+        branchName,
+        worktreePath: existingWorktree.path,
+        created: false,
+        createdBranch: false,
+        reused: true,
+        slug,
+      };
+    }
+
+    if (existsSync(worktreePath)) {
+      continue;
+    }
+
+    await mkdir(path.dirname(worktreePath), { recursive: true });
+
+    const branchExists = gitRefExists(repoRoot, `refs/heads/${branchName}`);
+    if (branchExists) {
+      runGitOrThrow(repoRoot, ["worktree", "add", worktreePath, branchName]);
+    } else {
+      runGitOrThrow(repoRoot, ["worktree", "add", "-b", branchName, worktreePath, baseBranch]);
+    }
+
+    return {
+      branchName,
+      worktreePath: normalizeRepoPath(worktreePath),
+      created: true,
+      createdBranch: !branchExists,
+      reused: false,
+      slug,
+    };
+  }
+
+  throw new Error("사용 가능한 worktree 경로를 찾지 못했습니다.");
+}
+
+export function shellQuote(value) {
+  return `'${String(value).replaceAll("'", `'\"'\"'`)}'`;
 }
 
 export function extractCommandSucceeded(toolResponse) {
@@ -223,6 +325,46 @@ function isDocStructurePath(filePath) {
   return filePath.startsWith(".codex/hooks/");
 }
 
+function listWorktrees(repoRoot) {
+  const raw = runGit(repoRoot, ["worktree", "list", "--porcelain"]);
+  if (raw === "") {
+    return [];
+  }
+
+  const entries = [];
+  let current = null;
+  for (const line of raw.split("\n")) {
+    const trimmed = line.trim();
+    if (trimmed === "") {
+      if (current !== null) {
+        entries.push(current);
+      }
+      current = null;
+      continue;
+    }
+
+    if (line.startsWith("worktree ")) {
+      current = current ?? {};
+      current.path = normalizeRepoPath(line.slice("worktree ".length).trim());
+      continue;
+    }
+
+    if (line.startsWith("branch ")) {
+      current = current ?? {};
+      current.branch = line
+        .slice("branch ".length)
+        .trim()
+        .replace(/^refs\/heads\//, "");
+    }
+  }
+
+  if (current !== null) {
+    entries.push(current);
+  }
+
+  return entries;
+}
+
 function runGit(repoRoot, args) {
   const result = spawnSync("git", args, {
     cwd: repoRoot,
@@ -234,6 +376,28 @@ function runGit(repoRoot, args) {
   }
 
   return result.stdout;
+}
+
+function runGitOrThrow(repoRoot, args) {
+  const result = spawnSync("git", args, {
+    cwd: repoRoot,
+    encoding: "utf8",
+  });
+
+  if (result.status !== 0) {
+    throw new Error(result.stderr.trim() || `git ${args.join(" ")} failed`);
+  }
+
+  return result.stdout;
+}
+
+function gitRefExists(repoRoot, refName) {
+  const result = spawnSync("git", ["show-ref", "--verify", "--quiet", refName], {
+    cwd: repoRoot,
+    encoding: "utf8",
+  });
+
+  return result.status === 0;
 }
 
 function getHookStatePath(repoRoot, sessionId) {
