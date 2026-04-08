@@ -1,0 +1,17 @@
+model = "gpt-5.4"
+model_reasoning_effort = "high"
+personality = "pragmatic"
+
+# 프로젝트 루트 탐색을 현재 저장소 기준으로 유지
+project_root_markers = [".git"]
+
+[agents]
+max_threads = 6
+max_depth = 1
+
+[features]
+codex_hooks = true
+multi_agent = true
+
+[sandbox_workspace_write]
+network_access = true
