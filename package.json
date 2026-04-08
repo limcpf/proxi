@@ -3,5 +3,10 @@
   "private": true,
   "description": "Proxy me, Dear my agents",
   "author": "limcpf",
+  "scripts": {
+    "verify:docs": "node scripts/verify-doc-structure.mjs",
+    "verify:workspace": "corepack pnpm -r --if-present run lint && corepack pnpm -r --if-present run test && corepack pnpm -r --if-present run build",
+    "verify": "node scripts/verify-doc-structure.mjs && corepack pnpm -r --if-present run lint && corepack pnpm -r --if-present run test && corepack pnpm -r --if-present run build"
+  },
   "packageManager": "pnpm@10.33.0"
 }

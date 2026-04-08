@@ -9,6 +9,7 @@
 ## 작업 유형별 추가로 읽을 문서
 - 구조 변경, 경계 변경, 새 규칙 도입: [`/Users/lim/dev/proxi/docs/DESIGN.md`](./docs/DESIGN.md), [`/Users/lim/dev/proxi/docs/design-docs/index.md`](./docs/design-docs/index.md)
 - 장시간 작업, 중단 후 재개 가능해야 하는 작업: [`/Users/lim/dev/proxi/docs/PLANS.md`](./docs/PLANS.md)
+- 문서 구조 탐색, 문서 추가/이동, 인덱스 갱신: [`/Users/lim/dev/proxi/docs/README.md`](./docs/README.md), [`/Users/lim/dev/proxi/docs/generated/context-map.json`](./docs/generated/context-map.json)
 - API, DB, 로깅, 운영 안정성 변경: [`/Users/lim/dev/proxi/docs/RELIABILITY.md`](./docs/RELIABILITY.md)
 - 인증, 인가, 비밀정보, 외부 연동 변경: [`/Users/lim/dev/proxi/docs/SECURITY.md`](./docs/SECURITY.md)
 - 품질 수준 판단이나 후속 작업 정리: [`/Users/lim/dev/proxi/docs/QUALITY_SCORE.md`](./docs/QUALITY_SCORE.md), [`/Users/lim/dev/proxi/docs/exec-plans/tech-debt-tracker.md`](./docs/exec-plans/tech-debt-tracker.md)
@@ -37,4 +38,5 @@
 ## 완료 기준
 - 변경과 직접 관련된 검증을 수행하거나, 검증 수단이 없으면 그 사실을 명시한다.
 - 규칙이나 운영 방식이 바뀌면 관련 문서를 함께 갱신한다.
+- 문서 라우팅 대상 파일을 추가하거나 이동하면 관련 `index.md`/`README.md` 와 `docs/generated/context-map.json` 을 함께 갱신한다.
 - 장시간 작업이었다면 실행 계획 문서 상태를 현재 결과에 맞게 갱신한다.
