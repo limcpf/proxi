@@ -86,6 +86,13 @@
       "owner_scope": "docs/design-docs"
     },
     {
+      "path": "docs/design-docs/2026-04-08-codex-hook-guardrails.md",
+      "kind": "design-doc",
+      "role": "Codex hook 기반 시작과 종료 가드레일 결정",
+      "read_when": ["Hook 설계 확인", "세션 시작과 종료 정책 확인"],
+      "owner_scope": "docs/design-docs"
+    },
+    {
       "path": "docs/design-docs/core-beliefs.md",
       "kind": "design-doc",
       "role": "문서 운영 핵심 원칙",
@@ -118,6 +125,13 @@
       "kind": "exec-plan",
       "role": "문서 라우팅 강제 체계 구현 기록",
       "read_when": ["과거 실행 기억 확인", "문서 검증 구현 참고"],
+      "owner_scope": "docs/exec-plans/completed"
+    },
+    {
+      "path": "docs/exec-plans/completed/2026-04-08-codex-hook-guardrails.md",
+      "kind": "exec-plan",
+      "role": "Codex hook 가드레일 구현 기록",
+      "read_when": ["과거 실행 기억 확인", "Hook 구현 참고"],
       "owner_scope": "docs/exec-plans/completed"
     },
     {
