@@ -39,13 +39,28 @@ jobs:
     needs: verify
     runs-on: ubuntu-latest
     permissions:
-      issues: write
-      pull-requests: write
+      contents: read
     steps:
-      - name: Request Codex review on the PR
+      - name: Check commenter token
+        id: commenter_token
+        env:
+          COMMENTER_PAT: ${{ secrets.COMMENTER_PAT }}
+        run: |
+          if [ -n "$COMMENTER_PAT" ]; then
+            echo "available=true" >>"$GITHUB_OUTPUT"
+          else
+            echo "available=false" >>"$GITHUB_OUTPUT"
+          fi
+
+      - name: Skip when COMMENTER_PAT is missing
+        if: steps.commenter_token.outputs.available != 'true'
+        run: echo "::notice::COMMENTER_PAT 가 없어 Codex 자동 댓글을 건너뜁니다."
+
+      - name: Request Codex review comments
+        if: steps.commenter_token.outputs.available == 'true'
         uses: actions/github-script@v7
         with:
-          github-token: ${{ github.token }}
+          github-token: ${{ secrets.COMMENTER_PAT }}
           script: |
             const pr = context.payload.pull_request;
 
@@ -54,7 +69,39 @@ jobs:
               return;
             }
 
-            const marker = `<!-- codex-auto-review:${pr.head.sha} -->`;
+            const reviewRequests = [
+              {
+                profile: "architecture",
+                focus: [
+                  "구조 경계, 책임 분리, 결합도, 장기 유지보수 비용을 우선 봐주세요.",
+                ],
+              },
+              {
+                profile: "security",
+                focus: [
+                  "권한, 토큰, 신뢰 경계, 우회 가능성을 우선 봐주세요.",
+                ],
+              },
+              {
+                profile: "docs",
+                focus: [
+                  "문서와 실제 동작의 정합성, 라우팅, 누락된 기록을 봐주세요.",
+                ],
+              },
+              {
+                profile: "feature",
+                focus: [
+                  "사용자 흐름, 저장/조회 동작, 회귀 위험을 봐주세요.",
+                ],
+              },
+              {
+                profile: "qa",
+                focus: [
+                  "핵심 시나리오의 검증 공백과 누락된 상태를 봐주세요.",
+                ],
+              },
+            ];
+
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -62,23 +109,35 @@ jobs:
               per_page: 100,
             });
 
-            if (comments.some((comment) => comment.body?.includes(marker))) {
-              core.notice("같은 head SHA 에 대한 Codex 자동 리뷰 요청 코멘트가 이미 있습니다.");
-              return;
+            let createdCount = 0;
+
+            for (const request of reviewRequests) {
+              const marker = `<!-- codex-auto-review:${pr.head.sha}:${request.profile} -->`;
+              const alreadyRequested = comments.some((comment) => comment.body?.includes(marker));
+
+              if (alreadyRequested) {
+                core.notice(`${request.profile} 관점 자동 리뷰 요청 코멘트가 이미 있습니다.`);
+                continue;
+              }
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: [
+                  marker,
+                  `@codex ${request.profile} 관점으로 이 PR의 최신 변경만 리뷰해주세요.`,
+                  "",
+                  "- findings 를 먼저, 심각도 높은 순서로 정리하세요.",
+                  `- ${request.focus[0]}`,
+                  "- profile 범위를 벗어난 지적은 치명적 연관성이 있을 때만 포함하세요.",
+                  "- 근거가 있으면 파일 경로와 라인 번호를 적으세요.",
+                  "- 명시적 문제가 없으면 그 사실과 남은 리스크만 짧게 적으세요.",
+                  "- 리뷰 본문은 한국어로 작성하세요.",
+                ].join("\n"),
+              });
+
+              createdCount += 1;
             }
 
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: pr.number,
-              body: [
-                marker,
-                "@codex 이 PR의 최신 변경만 리뷰해주세요.",
-                "",
-                "- findings 를 먼저, 심각도 높은 순서로 정리하세요.",
-                "- 버그, 회귀, 위험한 가정, 누락된 검증을 우선하세요.",
-                "- 근거가 있으면 파일 경로와 라인 번호를 적으세요.",
-                "- 명시적 문제가 없으면 그 사실과 남은 리스크만 짧게 적으세요.",
-                "- 리뷰 본문은 한국어로 작성하세요.",
-              ].join("\n"),
-            });
+            core.notice(`Codex 자동 리뷰 요청 코멘트 ${createdCount}개를 생성했습니다.`);

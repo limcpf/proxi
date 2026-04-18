@@ -34,4 +34,5 @@
 
 ## 사후 변경
 - 2026-04-19 기준 저장소는 커스텀 `openai/codex-action` workflow 를 제거하고, GitHub 와 연결된 Codex OAuth 댓글 경로만 사용하도록 전환했다.
-- 같은 날 `Verify` 성공 후 PR 에 `@codex` 리뷰 요청 코멘트를 자동으로 남기는 후속 job 을 `Verify` workflow 안에 추가했다.
+- 같은 날 `Verify` 성공 후 PR 에 `@codex` 리뷰 요청 코멘트를 자동으로 남기는 후속 job 을 `GITHUB_TOKEN` 으로 구현하려 했지만, 댓글 작성 주체가 `github-actions[bot]` 로 남아 Codex 응답 경로와 맞지 않았다.
+- 이후 `COMMENTER_PAT` secret 을 사용해 Codex 와 연결된 같은 GitHub 계정으로 `architecture`, `security`, `docs`, `feature`, `qa` 5개 관점 코멘트를 자동으로 남기는 방식으로 조정했다.
