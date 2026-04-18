@@ -30,6 +30,20 @@
       "owner_scope": "apps/back"
     },
     {
+      "path": "apps/front/AGENTS.md",
+      "kind": "router",
+      "role": "프런트 작업 진입 라우터",
+      "read_when": ["apps/front 작업 시작", "프런트 변경"],
+      "owner_scope": "apps/front"
+    },
+    {
+      "path": "apps/front/ARCHITECTURE.md",
+      "kind": "reference",
+      "role": "프런트 기술 스택과 구현 기본값 기준",
+      "read_when": ["apps/front 작업 시작", "프런트 구조 확인", "프런트 기본값 판단"],
+      "owner_scope": "apps/front"
+    },
+    {
       "path": "docs/DESIGN.md",
       "kind": "policy",
       "role": "구조 변경과 설계 기록 작성 기준",
@@ -97,6 +111,20 @@
       "kind": "design-doc",
       "role": "태그형 Codex PR 리뷰 운영 결정",
       "read_when": ["PR 리뷰 자동화 설계 확인", "Codex 리뷰 profile 정책 확인"],
+      "owner_scope": "docs/design-docs"
+    },
+    {
+      "path": "docs/design-docs/2026-04-18-proxi-front-spa-stack.md",
+      "kind": "design-doc",
+      "role": "프런트 SPA 시작점과 기본 스택 결정",
+      "read_when": ["프런트 스택 근거 확인", "front 구조 추가", "front 규칙 확인"],
+      "owner_scope": "docs/design-docs"
+    },
+    {
+      "path": "docs/design-docs/2026-04-18-proxi-front-design-principles.md",
+      "kind": "design-doc",
+      "role": "프런트 시각 언어와 token 기준",
+      "read_when": ["프런트 디자인 기준 확인", "Tailwind 제약 확인", "component variant 기준 확인"],
       "owner_scope": "docs/design-docs"
     },
     {
@@ -181,6 +209,13 @@
       "kind": "index",
       "role": "제품 사양 인덱스",
       "read_when": ["제품 동작 기준 확인", "수용 기준 탐색"],
+      "owner_scope": "docs/product-specs"
+    },
+    {
+      "path": "docs/product-specs/2026-04-18-proxi-front-ui-ux-principles.md",
+      "kind": "reference",
+      "role": "프런트 UI UX 기본 동작 원칙",
+      "read_when": ["프런트 화면 목적 판단", "액션 위계 기준 확인", "점진적 공개 기준 확인"],
       "owner_scope": "docs/product-specs"
     },
     {

@@ -10,7 +10,7 @@
 ## 저장소 구조
 - 루트는 모노레포 진입점이며 공통 규칙과 공통 문서 시스템을 가진다.
 - 워크스페이스 범위는 `apps/*` 이다.
-- 현재 저장소에 존재하는 앱은 `apps/back` 이다.
+- 현재 저장소에 존재하는 앱은 `apps/back`, `apps/front` 이다.
 - `front`, `back`, `shared` 는 운영상 서로 다른 문맥으로 취급하며, 새 프로젝트가 추가되면 각 루트에 `AGENTS.md` 와 `ARCHITECTURE.md` 를 둔다.
 
 ## 문서 계층
@@ -22,6 +22,8 @@
 ## 현재 하위 프로젝트
 - `apps/back`
   - 세부 기술 스택과 운영 경계는 [`/Users/lim/dev/proxi/apps/back/ARCHITECTURE.md`](./apps/back/ARCHITECTURE.md) 참고
+- `apps/front`
+  - 세부 기술 스택과 구현 기본값은 [`/Users/lim/dev/proxi/apps/front/ARCHITECTURE.md`](./apps/front/ARCHITECTURE.md) 참고
 
 ## 운영 원칙
 - 저장소 밖에만 존재하는 규칙은 공식 규칙으로 간주하지 않는다.
