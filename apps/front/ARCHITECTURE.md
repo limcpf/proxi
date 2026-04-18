@@ -1,6 +1,7 @@
 # 프런트 기준 문서
 
 ## 함께 읽을 문서
+- 운영 절차와 재현성 점검: [`/Users/lim/dev/proxi/apps/front/README.md`](./README.md)
 - 스택 결정 근거: [`/Users/lim/dev/proxi/docs/design-docs/2026-04-18-proxi-front-spa-stack.md`](../../docs/design-docs/2026-04-18-proxi-front-spa-stack.md)
 - 디자인 원칙: [`/Users/lim/dev/proxi/docs/design-docs/2026-04-18-proxi-front-design-principles.md`](../../docs/design-docs/2026-04-18-proxi-front-design-principles.md)
 - UI UX 원칙: [`/Users/lim/dev/proxi/docs/product-specs/2026-04-18-proxi-front-ui-ux-principles.md`](../../docs/product-specs/2026-04-18-proxi-front-ui-ux-principles.md)
