@@ -31,3 +31,6 @@
 ## 남은 이슈
 - GitHub Actions 와 OpenAI 시크릿이 실제 저장소에 설정되어 있어야 end-to-end 로 동작한다.
 - profile 추가 시 workflow 안내 문구와 prompt 집합을 함께 갱신해야 한다.
+
+## 사후 변경
+- 2026-04-19 기준 저장소는 커스텀 `openai/codex-action` workflow 를 제거하고, GitHub 와 연결된 Codex OAuth 댓글 경로만 사용하도록 전환했다.

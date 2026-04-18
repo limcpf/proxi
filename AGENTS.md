@@ -32,11 +32,9 @@
 - 새 작업은 `main` 에서 직접 시작하지 않고, `main` 기준 작업 브랜치와 git worktree 를 만들어 물리적으로 분리한 뒤 진행한다.
 
 ## Review guidelines
-- PR 이 열리거나 업데이트되면 Codex 리뷰가 `security`, `docs`, `feature`, `qa` 관점으로 자동 실행된다.
-- 수동 재실행이나 추가 요청은 PR 코멘트 `@codex review <profile>` 로 수행한다.
-- 일괄 수동 실행은 PR 코멘트 `@codex review bundle` 로 요청한다.
-- 지원 profile 은 `architecture`, `reliability`, `security`, `docs`, `performance`, `testing`, `feature`, `qa` 이다.
-- 현재 요청된 profile 범위 안에서만 검토하고, 다른 관점의 지적은 치명적 연관성이 있을 때만 포함한다.
+- Codex 리뷰는 GitHub 와 연결된 OAuth 계정의 기본 댓글 경로를 사용한다.
+- 추가 요청은 PR 코멘트 `@codex <지침>` 형태로 남긴다.
+- 리뷰는 코멘트에 적은 지시 범위 안에서만 수행하고, 다른 관점의 지적은 치명적 연관성이 있을 때만 포함한다.
 - findings 를 먼저, 심각도 높은 순으로 정리한다.
 - 스타일 취향보다 버그, 회귀, 위험한 가정, 누락된 검증을 우선한다.
 - 근거가 있으면 파일 경로와 라인 번호를 적는다.
