@@ -36,6 +36,7 @@
 - `Verify` workflow 가 PR 에서 성공하면 `COMMENTER_PAT` secret 으로 5개 기본 리뷰 요청 코멘트를 자동으로 남긴다.
 - `COMMENTER_PAT` 는 Codex 와 연결된 같은 GitHub 계정의 토큰이어야 한다.
 - 기본 리뷰 번들은 `architecture`, `security`, `docs`, `feature`, `qa` 5개 코멘트로 고정한다.
+- 5개 기본 코멘트의 상세 프롬프트는 `docs/design-docs/2026-04-08-tagged-codex-pr-review.md` 기준을 따른다.
 - 추가 요청은 PR 코멘트 `@codex <관점과 지침>` 형태로 남긴다.
 - 필요하면 `reliability`, `performance`, `testing` 같은 추가 관점도 코멘트에 직접 적어 요청한다.
 - 리뷰는 코멘트에 적은 지시 범위 안에서만 수행하고, 다른 관점의 지적은 치명적 연관성이 있을 때만 포함한다.
