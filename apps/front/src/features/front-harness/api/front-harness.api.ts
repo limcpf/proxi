@@ -82,6 +82,8 @@ export async function saveFrontPlanDraft(
     goal: payload.goal,
     primaryAction: payload.primaryAction,
     urlState: payload.urlState,
+    apiBoundary: payload.apiBoundary,
+    notes: payload.notes,
     updatedAt: new Date().toISOString(),
   };
 

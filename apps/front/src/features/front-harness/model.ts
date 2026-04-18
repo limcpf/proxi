@@ -52,6 +52,8 @@ export interface FrontPlanDraftSummary {
   goal: string;
   primaryAction: string;
   urlState: string;
+  apiBoundary: string;
+  notes: string;
   updatedAt: string;
 }
 

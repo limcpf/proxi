@@ -170,6 +170,12 @@ export function FrontHarnessPage({
                     primary action: {baseline.lastSavedDraft.primaryAction}
                   </p>
                   <p>URL 상태: {baseline.lastSavedDraft.urlState}</p>
+                  <p>API 경계: {baseline.lastSavedDraft.apiBoundary}</p>
+                  {baseline.lastSavedDraft.notes ? (
+                    <p className="mt-2 whitespace-pre-wrap">
+                      메모: {baseline.lastSavedDraft.notes}
+                    </p>
+                  ) : null}
                   <p className="mt-2 text-xs">
                     저장 시각:{" "}
                     {new Intl.DateTimeFormat("ko-KR", {
