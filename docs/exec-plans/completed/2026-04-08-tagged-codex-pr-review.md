@@ -34,3 +34,4 @@
 
 ## 사후 변경
 - 2026-04-19 기준 저장소는 커스텀 `openai/codex-action` workflow 를 제거하고, GitHub 와 연결된 Codex OAuth 댓글 경로만 사용하도록 전환했다.
+- 같은 날 `Verify` 성공 후 PR 에 `@codex` 리뷰 요청 코멘트를 자동으로 남기는 경량 workflow 를 다시 추가했다.
