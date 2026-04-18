@@ -6,6 +6,6 @@
 | [`/Users/lim/dev/proxi/docs/design-docs/2026-04-05-agent-operating-system.md`](./2026-04-05-agent-operating-system.md) | accepted | 라우터형 `AGENTS.md` 와 `docs/` 기반 지식 저장소 도입 결정 | 루트, `apps/back`, `docs/` |
 | [`/Users/lim/dev/proxi/docs/design-docs/2026-04-08-doc-routing-manifest.md`](./2026-04-08-doc-routing-manifest.md) | accepted | `context-map.json` 과 `verify:docs` 기반 문서 라우팅 강제 체계 도입 | 루트, `docs/`, CI |
 | [`/Users/lim/dev/proxi/docs/design-docs/2026-04-08-codex-hook-guardrails.md`](./2026-04-08-codex-hook-guardrails.md) | accepted | repo-local Codex hook 으로 세션 시작, 문서 변경 리마인드, 종료 전 검증을 고정 | 루트, `.codex/`, `docs/` |
-| [`/Users/lim/dev/proxi/docs/design-docs/2026-04-08-tagged-codex-pr-review.md`](./2026-04-08-tagged-codex-pr-review.md) | accepted | `Verify` 성공 후 OAuth 기반 Codex 리뷰 요청 코멘트를 자동으로 남기는 workflow 운영 결정 | 루트, `.github/`, `docs/` |
+| [`/Users/lim/dev/proxi/docs/design-docs/2026-04-08-tagged-codex-pr-review.md`](./2026-04-08-tagged-codex-pr-review.md) | accepted | `Verify` 성공 후 OAuth 기반 Codex 리뷰 요청 코멘트를 자동으로 남기는 후속 job 운영 결정 | 루트, `.github/`, `docs/` |
 | [`/Users/lim/dev/proxi/docs/design-docs/2026-04-18-proxi-front-spa-stack.md`](./2026-04-18-proxi-front-spa-stack.md) | accepted | `apps/front` 를 `React SPA` 로 시작하고 기본 스택을 고정 | `apps/front`, `docs/design-docs`, `docs/product-specs` |
 | [`/Users/lim/dev/proxi/docs/design-docs/2026-04-18-proxi-front-design-principles.md`](./2026-04-18-proxi-front-design-principles.md) | accepted | 프런트 시각 언어와 token 중심 스타일링 기준 | `apps/front`, `docs/design-docs` |

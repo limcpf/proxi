@@ -33,7 +33,7 @@
 
 ## Review guidelines
 - Codex 리뷰는 GitHub 와 연결된 OAuth 계정의 기본 댓글 경로를 사용한다.
-- `Verify` workflow 가 PR 에서 성공하면 `Codex Tagged Review` workflow 가 기본 리뷰 요청 코멘트를 자동으로 남긴다.
+- `Verify` workflow 가 PR 에서 성공하면 후속 job 이 기본 리뷰 요청 코멘트를 자동으로 남긴다.
 - 추가 요청은 PR 코멘트 `@codex <지침>` 형태로 남긴다.
 - 리뷰는 코멘트에 적은 지시 범위 안에서만 수행하고, 다른 관점의 지적은 치명적 연관성이 있을 때만 포함한다.
 - findings 를 먼저, 심각도 높은 순으로 정리한다.

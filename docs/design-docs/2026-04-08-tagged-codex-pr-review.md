@@ -10,7 +10,7 @@
 
 ## 결정
 - GitHub 와 연결된 Codex OAuth 댓글 경로를 기본 리뷰 경로로 사용한다.
-- `Verify` workflow 가 `pull_request` 에서 성공하면 `Codex Tagged Review` workflow 가 같은 PR 에 `@codex ...` 리뷰 요청 코멘트를 자동으로 남긴다.
+- `Verify` workflow 가 `pull_request` 에서 성공하면 같은 workflow 안의 후속 job 이 해당 PR 에 `@codex ...` 리뷰 요청 코멘트를 자동으로 남긴다.
 - 자동 코멘트는 head SHA 기준 숨김 marker 를 남겨 같은 커밋에 중복 요청이 쌓이지 않게 한다.
 - 추가 요청은 PR 코멘트 `@codex <지침>` 형태로 남긴다.
 - 리뷰 원칙은 루트 `AGENTS.md` 의 `Review guidelines` 에 두고, 세부 지시는 자동 코멘트와 수동 코멘트에서 직접 전달한다.
@@ -25,6 +25,7 @@
 - 리뷰 요청 방식은 GitHub 의 기본 Codex OAuth 연동 동작에 맞춰 단순해진다.
 - 저장소 안에서 별도 prompt 세트나 API key secret 을 운영하지 않는다.
 - `Verify` 성공이 기본 리뷰 요청의 선행 조건이 된다.
+- `workflow_run` 의 default branch 제약을 피하기 위해 리뷰 요청 자동화는 독립 workflow 가 아니라 `Verify` 안의 후속 job 으로 구현한다.
 - 리뷰 관점은 고정 profile 이 아니라, 자동 코멘트와 수동 코멘트의 지시 문구에서 직접 정한다.
 
 ## 후속 작업
