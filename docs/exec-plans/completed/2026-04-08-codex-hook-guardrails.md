@@ -32,3 +32,7 @@
 ## 남은 이슈
 - `PreToolUse` 와 `PostToolUse` 는 현재 `Bash` 에만 반응하므로 비 Bash 편집은 `Stop` 에서 최종 보완한다.
 - `/tmp/<project>-wt/` 아래 오래된 worktree 정리 정책은 아직 수동 운영이다.
+
+## 사후 변경
+- 후속 수정으로 `PostToolUse` 의 `verify` 성공 기록 로직이 `tool_input.command` 뿐 아니라 `tool_input.cmd` 도 읽도록 보완했다.
+- 이 변경은 `corepack pnpm run verify` 를 실제로 성공시켰는데도 `verifiedFingerprint` 가 갱신되지 않아 `Stop` 훅이 오탐 경고를 내는 문제를 막기 위한 것이다.

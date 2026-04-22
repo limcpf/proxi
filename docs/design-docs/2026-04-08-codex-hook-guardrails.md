@@ -28,3 +28,8 @@
 ## 후속 작업
 - Hook 이벤트 범위가 넓어지면 `apply_patch` 같은 편집도 더 이른 단계에서 포착하도록 개선한다.
 - `/tmp/<project>-wt/` 아래 오래된 worktree 정리 정책과 prune 절차를 보강한다.
+
+## 사후 변경
+- `verify` 성공 여부 기록은 `PostToolUse` 에서 활성 실행 surface 의 명령 입력 키를 함께 읽어야 한다.
+- 초기 구현은 `tool_input.command` 만 읽어 `corepack pnpm run verify` 가 `cmd` 필드로 전달되는 실행 경로에서 `verifiedFingerprint` 가 갱신되지 않는 문제가 있었다.
+- 이후 후속 수정으로 `command` 와 `cmd` 를 모두 읽게 해, 실제 `verify` 성공 후 `Stop` 훅이 오탐 경고를 내지 않도록 보완했다.
