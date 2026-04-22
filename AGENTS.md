@@ -16,7 +16,7 @@
 
 ## 프로젝트 맵
 - 이 저장소는 `front`, `back`, `shared`를 분리된 문맥으로 다루는 모노레포 운영을 목표로 한다.
-- 현재 워크스페이스 설정은 `apps/*` 기준이며, 저장소에 실제로 존재하는 앱은 `apps/back`이다.
+- 현재 워크스페이스 설정은 `apps/*` 기준이며, 저장소에 실제로 존재하는 앱은 `apps/back`, `apps/front` 이다.
 - 프로젝트별 세부 규칙은 각 프로젝트 루트의 `AGENTS.md`와 `ARCHITECTURE.md`에 둔다.
 - 하나의 PR에서 여러 프로젝트를 동시에 수정해야 하면 문맥 혼선을 줄이기 위해 작업 단위를 분리한다.
 
@@ -32,9 +32,14 @@
 - 새 작업은 `main` 에서 직접 시작하지 않고, `main` 기준 작업 브랜치와 git worktree 를 만들어 물리적으로 분리한 뒤 진행한다.
 
 ## Review guidelines
-- PR 리뷰는 기본 자동 실행하지 않고, PR 코멘트 `@codex review <profile>` 로 요청한다.
-- 지원 profile 은 `architecture`, `reliability`, `security`, `docs`, `performance`, `testing` 이다.
-- 현재 요청된 profile 범위 안에서만 검토하고, 다른 관점의 지적은 치명적 연관성이 있을 때만 포함한다.
+- Codex 리뷰는 GitHub 와 연결된 OAuth 계정의 기본 댓글 경로를 사용한다.
+- `Verify` workflow 가 PR 에서 성공하면 `COMMENTER_PAT` secret 으로 5개 기본 리뷰 요청 코멘트를 자동으로 남긴다.
+- `COMMENTER_PAT` 는 Codex 와 연결된 같은 GitHub 계정의 토큰이어야 한다.
+- 기본 리뷰 번들은 `architecture`, `security`, `docs`, `feature`, `qa` 5개 코멘트로 고정한다.
+- 5개 기본 코멘트의 상세 프롬프트는 `docs/design-docs/2026-04-08-tagged-codex-pr-review.md` 기준을 따른다.
+- 추가 요청은 PR 코멘트 `@codex <관점과 지침>` 형태로 남긴다.
+- 필요하면 `reliability`, `performance`, `testing` 같은 추가 관점도 코멘트에 직접 적어 요청한다.
+- 리뷰는 코멘트에 적은 지시 범위 안에서만 수행하고, 다른 관점의 지적은 치명적 연관성이 있을 때만 포함한다.
 - findings 를 먼저, 심각도 높은 순으로 정리한다.
 - 스타일 취향보다 버그, 회귀, 위험한 가정, 누락된 검증을 우선한다.
 - 근거가 있으면 파일 경로와 라인 번호를 적는다.

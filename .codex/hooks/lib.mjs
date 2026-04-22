@@ -132,6 +132,23 @@ export function isFullVerifyCommand(command) {
   return /(^|\s)corepack\s+pnpm\s+run\s+verify(\s|$)/.test(command);
 }
 
+export function extractToolCommand(input) {
+  const toolInput = input?.tool_input;
+
+  if (toolInput === null || toolInput === undefined || typeof toolInput !== "object") {
+    return "";
+  }
+
+  for (const key of ["command", "cmd"]) {
+    const value = toolInput[key];
+    if (typeof value === "string") {
+      return value;
+    }
+  }
+
+  return "";
+}
+
 export function slugifyPrompt(prompt, maxLength = 40) {
   const originalPrompt = String(prompt).trim();
   const normalized = prompt

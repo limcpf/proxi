@@ -14,16 +14,180 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 24.14.1
-
-      - name: Enable Corepack
-        run: corepack enable
+          cache: pnpm
 
       - name: Show pnpm version
         run: pnpm --version
 
+      - name: Install dependencies
+        run: corepack pnpm install --frozen-lockfile
+
       - name: Run verify
-        run: pnpm run verify
+        run: corepack pnpm run verify
+
+  request_codex_review:
+    if: github.event_name == 'pull_request'
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check commenter token
+        id: commenter_token
+        env:
+          COMMENTER_PAT: ${{ secrets.COMMENTER_PAT }}
+        run: |
+          if [ -n "$COMMENTER_PAT" ]; then
+            echo "available=true" >>"$GITHUB_OUTPUT"
+          else
+            echo "available=false" >>"$GITHUB_OUTPUT"
+          fi
+
+      - name: Skip when COMMENTER_PAT is missing
+        if: steps.commenter_token.outputs.available != 'true'
+        run: echo "::notice::COMMENTER_PAT 가 없어 Codex 자동 댓글을 건너뜁니다."
+
+      - name: Request Codex review comments
+        if: steps.commenter_token.outputs.available == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.COMMENTER_PAT }}
+          script: |
+            const pr = context.payload.pull_request;
+
+            if (!pr || pr.state !== "open" || pr.draft) {
+              core.notice("열린 리뷰 대상 PR 이 아니어서 Codex 리뷰 요청을 건너뜁니다.");
+              return;
+            }
+
+            const reviewRequests = [
+              {
+                profile: "architecture",
+                priorities: [
+                  "구조 경계와 책임 분리가 흐려지지 않는지 봐주세요.",
+                  "불필요한 결합, 규칙 분산, 우회 경로가 생기지 않는지 봐주세요.",
+                  "단기 동작은 맞아도 장기 유지보수 비용이 급격히 커지는 변경을 찾아주세요.",
+                ],
+                lowerPriorities: [
+                  "순수 스타일 취향 차이",
+                  "기능 동작과 직접 연결되지 않는 미세 성능 조정",
+                  "구조 문제와 무관한 테스트 취향",
+                ],
+              },
+              {
+                profile: "security",
+                priorities: [
+                  "권한, 토큰, 시크릿, 신뢰 경계가 과도하거나 우회 가능하지 않은지 봐주세요.",
+                  "외부 입력이나 PR 변경이 자동화 경로를 악용할 수 없는지 봐주세요.",
+                  "권한 설정이 최소 권한 원칙을 벗어나지 않는지 봐주세요.",
+                ],
+                lowerPriorities: [
+                  "구조 취향 차이",
+                  "문서 표현 품질 자체",
+                  "보안 영향이 없는 일반 성능 문제",
+                ],
+              },
+              {
+                profile: "docs",
+                priorities: [
+                  "문서와 실제 동작이 어긋나지 않는지 봐주세요.",
+                  "AGENTS.md, README, index, design doc 사이의 라우팅과 설명이 일관적인지 봐주세요.",
+                  "새 규칙이나 운영 변경에 필요한 설계 기록과 실행 기록이 빠지지 않았는지 봐주세요.",
+                ],
+                lowerPriorities: [
+                  "의미를 바꾸지 않는 단순 오탈자",
+                  "문서와 무관한 코드 구조 취향",
+                  "문서 영향이 없는 미세 구현 이슈",
+                ],
+              },
+              {
+                profile: "feature",
+                priorities: [
+                  "사용자 흐름과 핵심 목적이 실제로 충족되는지 봐주세요.",
+                  "저장, 조회, 상태 전이가 기능 의도와 어긋나지 않는지 봐주세요.",
+                  "기능은 동작해도 회귀 위험이나 핵심 분기 누락이 남아 있지 않은지 봐주세요.",
+                ],
+                lowerPriorities: [
+                  "순수 구조 취향 차이",
+                  "기능과 직접 연결되지 않는 미세 성능 조정",
+                  "보안 전용 세부 기준",
+                ],
+              },
+              {
+                profile: "qa",
+                priorities: [
+                  "핵심 사용자 시나리오를 막는 검증 공백이 없는지 봐주세요.",
+                  "loading, empty, error, disabled 같은 상태가 빠지지 않았는지 봐주세요.",
+                  "verify, 테스트, 빌드가 실제 회귀를 잡아낼 만큼 연결되어 있는지 봐주세요.",
+                ],
+                lowerPriorities: [
+                  "구현 스타일 차이",
+                  "검증과 직접 연결되지 않는 구조 선호",
+                  "QA 영향이 없는 순수 문구 수정",
+                ],
+              },
+            ];
+
+            const { data: commenterUser } = await github.rest.users.getAuthenticated();
+            const trustedCommenterLogin = commenterUser.login;
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              per_page: 100,
+            });
+
+            let createdCount = 0;
+
+            for (const request of reviewRequests) {
+              const marker = `<!-- codex-auto-review:${pr.head.sha}:${request.profile} -->`;
+              const alreadyRequested = comments.some(
+                (comment) =>
+                  comment.user?.login === trustedCommenterLogin &&
+                  comment.body?.includes(marker),
+              );
+
+              if (alreadyRequested) {
+                core.notice(`${request.profile} 관점 자동 리뷰 요청 코멘트가 이미 있습니다.`);
+                continue;
+              }
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: [
+                  marker,
+                  `@codex ${request.profile} 관점으로 이 PR의 최신 변경만 리뷰해주세요.`,
+                  "",
+                  "이번 리뷰 범위는 이 PR의 최신 변경과 판단에 필요한 최소 주변 문맥으로 제한하세요.",
+                  "",
+                  "우선해서 볼 항목:",
+                  ...request.priorities.map((item) => `- ${item}`),
+                  "",
+                  "낮은 우선순위:",
+                  ...request.lowerPriorities.map((item) => `- ${item}`),
+                  "",
+                  "출력 형식:",
+                  "- findings 를 먼저, 심각도 높은 순서로 정리하세요.",
+                  "- profile 범위를 벗어난 지적은 치명적 연관성이 있을 때만 포함하세요.",
+                  "- 근거가 있으면 파일 경로와 라인 번호를 적으세요.",
+                  "- 명시적 문제가 없으면 그 사실과 남은 리스크만 짧게 적으세요.",
+                  "- 리뷰 본문은 한국어로 작성하세요.",
+                ].join("\n"),
+              });
+
+              createdCount += 1;
+            }
+
+            core.notice(`Codex 자동 리뷰 요청 코멘트 ${createdCount}개를 생성했습니다.`);

@@ -1,6 +1,7 @@
 # 제품 사양 인덱스
 
-아직 버전 관리되는 제품 사양 문서는 없다.
+## 목록
+- [`/Users/lim/dev/proxi/docs/product-specs/2026-04-18-proxi-front-ui-ux-principles.md`](./2026-04-18-proxi-front-ui-ux-principles.md): 프런트 화면 목적, 액션 위계, 점진적 공개 기준
 
 ## 작성 규칙
 - 사용자 흐름과 수용 기준을 먼저 적는다.

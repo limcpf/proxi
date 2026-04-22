@@ -1,0 +1,209 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+  font-family:
+    "Pretendard Variable",
+    "Pretendard",
+    "Noto Sans KR",
+    "Apple SD Gothic Neo",
+    sans-serif;
+  --app-bg: #f5f1e8;
+  --app-bg-soft: rgba(255, 255, 255, 0.6);
+  --app-panel: rgba(255, 255, 255, 0.9);
+  --app-panel-soft: rgba(252, 250, 245, 0.88);
+  --app-border: rgba(88, 100, 92, 0.16);
+  --app-border-strong: rgba(45, 62, 56, 0.24);
+  --app-text: #1f2b28;
+  --app-text-muted: #64706b;
+  --app-primary: #224941;
+  --app-primary-strong: #16362f;
+  --app-primary-soft: #dbe7e2;
+  --app-accent: #b56b2e;
+  --app-danger: #b84d42;
+  --app-success: #2d6b58;
+  --app-shadow: 0 22px 44px rgba(26, 33, 29, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(208, 221, 213, 0.48), transparent 32%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.46), transparent 30%),
+    var(--app-bg);
+  color: var(--app-text);
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(34, 73, 65, 0.2);
+}
+
+@layer base {
+  body {
+    @apply antialiased;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+@layer components {
+  .page-shell {
+    @apply mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-10 lg:py-10;
+  }
+
+  .hero-shell {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.86), rgba(246, 241, 233, 0.96));
+    border: 1px solid var(--app-border);
+    box-shadow: var(--app-shadow);
+    @apply rounded-3xl p-6 sm:p-8;
+  }
+
+  .surface-panel {
+    background: var(--app-panel);
+    border: 1px solid var(--app-border);
+    box-shadow: var(--app-shadow);
+    @apply rounded-2xl p-5 sm:p-6;
+  }
+
+  .surface-panel-soft {
+    background: var(--app-panel-soft);
+    border: 1px solid var(--app-border);
+    @apply rounded-2xl p-5 sm:p-6;
+  }
+
+  .kicker {
+    color: var(--app-accent);
+    @apply text-xs font-semibold uppercase tracking-[0.18em];
+  }
+
+  .hero-title {
+    @apply max-w-3xl text-3xl font-semibold leading-tight sm:text-4xl;
+  }
+
+  .hero-copy {
+    color: var(--app-text-muted);
+    @apply max-w-2xl text-sm leading-7 sm:text-base;
+  }
+
+  .section-heading {
+    @apply text-lg font-semibold leading-7;
+  }
+
+  .muted-copy {
+    color: var(--app-text-muted);
+    @apply text-sm leading-6;
+  }
+
+  .action-strip {
+    @apply flex flex-wrap items-center gap-3;
+  }
+
+  .field-grid {
+    @apply grid gap-4;
+  }
+
+  .list-grid {
+    @apply grid gap-3;
+  }
+
+  .status-note {
+    background: rgba(219, 231, 226, 0.58);
+    border: 1px solid rgba(34, 73, 65, 0.12);
+    color: var(--app-text-muted);
+    @apply rounded-2xl px-4 py-3 text-sm leading-6;
+  }
+
+  .ui-button {
+    @apply inline-flex items-center justify-center gap-2 font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:pointer-events-none disabled:opacity-60;
+  }
+
+  .ui-button-primary {
+    background: var(--app-primary);
+    color: white;
+    border: 1px solid transparent;
+  }
+
+  .ui-button-primary:hover {
+    background: var(--app-primary-strong);
+  }
+
+  .ui-button-secondary {
+    background: white;
+    color: var(--app-text);
+    border: 1px solid var(--app-border-strong);
+  }
+
+  .ui-button-secondary:hover {
+    background: var(--app-bg-soft);
+  }
+
+  .ui-button-ghost {
+    background: transparent;
+    color: var(--app-text-muted);
+    border: 1px solid transparent;
+  }
+
+  .ui-button-ghost:hover {
+    background: rgba(255, 255, 255, 0.72);
+    color: var(--app-text);
+  }
+
+  .ui-button:focus-visible,
+  .ui-input:focus,
+  .ui-textarea:focus {
+    outline-color: var(--app-primary);
+  }
+
+  .ui-input,
+  .ui-textarea {
+    border: 1px solid var(--app-border);
+    background: white;
+    color: var(--app-text);
+    box-shadow: 0 2px 8px rgba(26, 33, 29, 0.04);
+    outline: none;
+    transition: border-color 150ms ease;
+  }
+
+  .ui-input::placeholder,
+  .ui-textarea::placeholder {
+    color: var(--app-text-muted);
+  }
+
+  .ui-input:focus,
+  .ui-textarea:focus {
+    border-color: var(--app-primary);
+  }
+
+  .ui-badge-default {
+    background: var(--app-primary-soft);
+    color: var(--app-primary);
+  }
+
+  .ui-badge-success {
+    background: rgba(45, 107, 88, 0.12);
+    color: var(--app-success);
+  }
+
+  .ui-badge-muted {
+    background: rgba(100, 112, 107, 0.1);
+    color: var(--app-text-muted);
+  }
+}

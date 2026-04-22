@@ -1,5 +1,6 @@
 import {
   buildAdditionalContext,
+  extractToolCommand,
   extractCommandSucceeded,
   fingerprintFiles,
   isFullVerifyCommand,
@@ -17,7 +18,7 @@ const repoRoot = resolveRepoRoot(sessionCwd);
 const state = await readHookState(repoRoot, input.session_id ?? "default");
 const docFiles = listDocStructureFiles(repoRoot);
 const currentFingerprint = fingerprintFiles(docFiles);
-const command = String(input.tool_input?.command ?? "");
+const command = extractToolCommand(input);
 const verifySucceeded = isFullVerifyCommand(command) && extractCommandSucceeded(input.tool_response);
 
 if (verifySucceeded) {
