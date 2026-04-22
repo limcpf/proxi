@@ -137,6 +137,9 @@ jobs:
               },
             ];
 
+            const { data: commenterUser } = await github.rest.users.getAuthenticated();
+            const trustedCommenterLogin = commenterUser.login;
+
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -148,7 +151,11 @@ jobs:
 
             for (const request of reviewRequests) {
               const marker = `<!-- codex-auto-review:${pr.head.sha}:${request.profile} -->`;
-              const alreadyRequested = comments.some((comment) => comment.body?.includes(marker));
+              const alreadyRequested = comments.some(
+                (comment) =>
+                  comment.user?.login === trustedCommenterLogin &&
+                  comment.body?.includes(marker),
+              );
 
               if (alreadyRequested) {
                 core.notice(`${request.profile} 관점 자동 리뷰 요청 코멘트가 이미 있습니다.`);
