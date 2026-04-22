@@ -1,6 +1,13 @@
 import { z } from "zod";
 
 export type FrontHarnessView = "overview" | "plan";
+export const emptyFrontPlanDraft: FrontPlanDraftInput = {
+  goal: "",
+  primaryAction: "",
+  urlState: "",
+  apiBoundary: "",
+  notes: "",
+};
 
 const frontHarnessViewSchema = z.enum(["overview", "plan"]);
 

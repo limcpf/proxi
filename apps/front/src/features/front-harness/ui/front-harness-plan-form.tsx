@@ -1,4 +1,4 @@
-import { startTransition, useState } from "react";
+import { startTransition, useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Info, Sparkles } from "lucide-react";
@@ -11,27 +11,27 @@ import {
   frontHarnessKeys,
   saveFrontPlanDraft,
 } from "../api/front-harness.api";
-import { frontPlanDraftSchema, type FrontPlanDraftInput } from "../model";
+import {
+  emptyFrontPlanDraft,
+  frontPlanDraftSchema,
+  type FrontPlanDraftInput,
+} from "../model";
 
 interface FrontHarnessPlanFormProps {
+  draft: FrontPlanDraftInput;
   onComplete: () => void;
+  onDraftChange: (draft: FrontPlanDraftInput) => void;
 }
 
-const defaultValues: FrontPlanDraftInput = {
-  goal: "",
-  primaryAction: "",
-  urlState: "",
-  apiBoundary: "",
-  notes: "",
-};
-
 export function FrontHarnessPlanForm({
+  draft,
   onComplete,
+  onDraftChange,
 }: FrontHarnessPlanFormProps) {
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(() => draft.notes.length > 0);
   const queryClient = useQueryClient();
   const form = useForm<FrontPlanDraftInput>({
-    defaultValues,
+    defaultValues: draft,
     resolver: zodResolver(frontPlanDraftSchema),
   });
 
@@ -42,18 +42,56 @@ export function FrontHarnessPlanForm({
         queryKey: frontHarnessKeys.baseline(),
       });
       await queryClient.ensureQueryData(frontBaselineQueryOptions());
-      form.reset(defaultValues);
+      form.reset(emptyFrontPlanDraft);
+      onDraftChange(emptyFrontPlanDraft);
+      setShowAdvanced(false);
       startTransition(() => {
         onComplete();
       });
     },
   });
 
+  useEffect(() => {
+    const subscription = form.watch((values) => {
+      onDraftChange({
+        ...emptyFrontPlanDraft,
+        ...values,
+        notes: showAdvanced ? values.notes ?? "" : "",
+      });
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [form, onDraftChange, showAdvanced]);
+
   const {
     formState: { errors },
     handleSubmit,
     register,
   } = form;
+
+  const handleAdvancedToggle = () => {
+    if (showAdvanced) {
+      form.setValue("notes", "", {
+        shouldDirty: true,
+        shouldValidate: false,
+      });
+      form.clearErrors("notes");
+      setShowAdvanced(false);
+      return;
+    }
+
+    setShowAdvanced(true);
+  };
+
+  const handleValidSubmit = (values: FrontPlanDraftInput) => {
+    mutation.mutate({
+      ...emptyFrontPlanDraft,
+      ...values,
+      notes: showAdvanced ? values.notes ?? "" : "",
+    });
+  };
 
   return (
     <section className="surface-panel flex flex-col gap-6">
@@ -68,7 +106,7 @@ export function FrontHarnessPlanForm({
         </div>
       </div>
 
-      <form className="field-grid" onSubmit={handleSubmit((values) => mutation.mutate(values))}>
+      <form className="field-grid" onSubmit={handleSubmit(handleValidSubmit)}>
         <label className="field-grid gap-2" htmlFor="goal">
           <span className="text-sm font-medium">화면 목적</span>
           <Input
@@ -136,7 +174,7 @@ export function FrontHarnessPlanForm({
             <Button
               type="button"
               variant="ghost"
-              onClick={() => setShowAdvanced((prev) => !prev)}
+              onClick={handleAdvancedToggle}
             >
               {showAdvanced ? "메모 접기" : "고급 메모 열기"}
             </Button>

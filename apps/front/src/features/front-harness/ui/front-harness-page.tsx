@@ -1,10 +1,14 @@
-import { useDeferredValue } from "react";
+import { useDeferredValue, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { AlertCircle, ArrowRight, CircleSlash, Layers3 } from "lucide-react";
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import { frontBaselineQueryOptions } from "../api/front-harness.api";
-import type { FrontHarnessView } from "../model";
+import {
+  emptyFrontPlanDraft,
+  type FrontPlanDraftInput,
+  type FrontHarnessView,
+} from "../model";
 import { FrontHarnessOverview } from "./front-harness-overview";
 import { FrontHarnessPlanForm } from "./front-harness-plan-form";
 
@@ -20,6 +24,7 @@ export function FrontHarnessPage({
   const baselineQuery = useQuery(frontBaselineQueryOptions());
   const deferredBaseline = useDeferredValue(baselineQuery.data);
   const baseline = baselineQuery.data ?? deferredBaseline;
+  const [planDraft, setPlanDraft] = useState<FrontPlanDraftInput>(emptyFrontPlanDraft);
 
   return (
     <main className="page-shell">
@@ -125,7 +130,11 @@ export function FrontHarnessPage({
                 onStartPlan={() => onViewChange("plan")}
               />
             ) : (
-              <FrontHarnessPlanForm onComplete={() => onViewChange("overview")} />
+              <FrontHarnessPlanForm
+                draft={planDraft}
+                onComplete={() => onViewChange("overview")}
+                onDraftChange={setPlanDraft}
+              />
             )}
           </div>
 
