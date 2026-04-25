@@ -9,3 +9,4 @@
 | [`/Users/lim/dev/proxi/docs/design-docs/2026-04-08-tagged-codex-pr-review.md`](./2026-04-08-tagged-codex-pr-review.md) | accepted | `COMMENTER_PAT` 로 같은 GitHub 계정의 1개 종합 Codex 요청 댓글과 5개 고정 섹션 형식을 자동으로 남기는 운영 결정 | 루트, `.github/`, `docs/` |
 | [`/Users/lim/dev/proxi/docs/design-docs/2026-04-18-proxi-front-spa-stack.md`](./2026-04-18-proxi-front-spa-stack.md) | accepted | `apps/front` 를 `React SPA` 로 시작하고 기본 스택을 고정 | `apps/front`, `docs/design-docs`, `docs/product-specs` |
 | [`/Users/lim/dev/proxi/docs/design-docs/2026-04-18-proxi-front-design-principles.md`](./2026-04-18-proxi-front-design-principles.md) | accepted | 프런트 시각 언어와 token 중심 스타일링 기준 | `apps/front`, `docs/design-docs` |
+| [`/Users/lim/dev/proxi/docs/design-docs/2026-04-25-proxi-shared-harness.md`](./2026-04-25-proxi-shared-harness.md) | accepted | `apps/shared` 내부 패키지와 공통 계약 하네스 도입 결정 | `apps/shared`, `docs/design-docs` |

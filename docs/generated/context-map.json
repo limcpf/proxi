@@ -44,6 +44,20 @@
       "owner_scope": "apps/front"
     },
     {
+      "path": "apps/shared/AGENTS.md",
+      "kind": "router",
+      "role": "공유 패키지 작업 진입 라우터",
+      "read_when": ["apps/shared 작업 시작", "shared 변경", "공통 계약 타입 변경"],
+      "owner_scope": "apps/shared"
+    },
+    {
+      "path": "apps/shared/ARCHITECTURE.md",
+      "kind": "reference",
+      "role": "공유 패키지 경계와 구현 기본값 기준",
+      "read_when": ["apps/shared 작업 시작", "shared 구조 확인", "공통 계약 타입 변경"],
+      "owner_scope": "apps/shared"
+    },
+    {
       "path": "docs/DESIGN.md",
       "kind": "policy",
       "role": "구조 변경과 설계 기록 작성 기준",
@@ -125,6 +139,13 @@
       "kind": "design-doc",
       "role": "프런트 시각 언어와 token 기준",
       "read_when": ["프런트 디자인 기준 확인", "Tailwind 제약 확인", "component variant 기준 확인"],
+      "owner_scope": "docs/design-docs"
+    },
+    {
+      "path": "docs/design-docs/2026-04-25-proxi-shared-harness.md",
+      "kind": "design-doc",
+      "role": "공유 패키지와 공통 계약 하네스 도입 결정",
+      "read_when": ["shared 구조 추가", "공통 계약 타입 기준 확인", "shared 규칙 확인"],
       "owner_scope": "docs/design-docs"
     },
     {
