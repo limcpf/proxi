@@ -32,7 +32,7 @@
 - 프런트는 백엔드 내부 코드를 직접 import 하지 않고 HTTP API 계약으로만 통신한다.
 - 상태는 URL, 서버 상태, 폼 상태, 로컬 UI 상태로 나눠서 관리한다.
 - 전역 상태 라이브러리는 명확한 근거 없이는 기본값으로 추가하지 않는다.
-- 루트 `shared` 패키지는 현재 만들지 않는다.
+- 프런트 전용 타입과 로직은 근거 없이 `shared` 로 승격하지 않는다.
 
 ## 참고 문서
 - 기준 문서: [`/Users/lim/dev/proxi/apps/front/ARCHITECTURE.md`](./ARCHITECTURE.md)
