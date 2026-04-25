@@ -18,9 +18,10 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json && node scripts/verify-dist-import.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "verify:dist": "node scripts/verify-dist-import.mjs"
   },
   "dependencies": {
     "zod": "^4.3.6"
