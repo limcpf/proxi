@@ -109,8 +109,8 @@
     {
       "path": "docs/design-docs/2026-04-08-tagged-codex-pr-review.md",
       "kind": "design-doc",
-      "role": "태그형 Codex PR 리뷰 운영 결정",
-      "read_when": ["PR 리뷰 자동화 설계 확인", "Codex 리뷰 profile 정책 확인"],
+      "role": "Codex PR 종합 리뷰 자동 요청 운영 결정",
+      "read_when": ["PR 리뷰 자동화 설계 확인", "Codex 리뷰 섹션 형식 정책 확인"],
       "owner_scope": "docs/design-docs"
     },
     {
