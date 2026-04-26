@@ -149,6 +149,13 @@
       "owner_scope": "docs/design-docs"
     },
     {
+      "path": "docs/design-docs/2026-04-26-node-monorepo-harness.md",
+      "kind": "design-doc",
+      "role": "Node 모노레포 하네스 보강 결정",
+      "read_when": ["모노레포 검증 구조 확인", "Node pnpm workspace 기준 확인", "백엔드 하네스 변경"],
+      "owner_scope": "docs/design-docs"
+    },
+    {
       "path": "docs/design-docs/core-beliefs.md",
       "kind": "design-doc",
       "role": "문서 운영 핵심 원칙",

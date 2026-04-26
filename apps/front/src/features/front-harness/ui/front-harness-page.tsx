@@ -1,13 +1,13 @@
-import { useDeferredValue, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { AlertCircle, ArrowRight, CircleSlash, Layers3 } from "lucide-react";
+import { useDeferredValue, useState } from "react";
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import { frontBaselineQueryOptions } from "../api/front-harness.api";
 import {
   emptyFrontPlanDraft,
-  type FrontPlanDraftInput,
   type FrontHarnessView,
+  type FrontPlanDraftInput,
 } from "../model";
 import { FrontHarnessOverview } from "./front-harness-overview";
 import { FrontHarnessPlanForm } from "./front-harness-plan-form";
@@ -24,7 +24,8 @@ export function FrontHarnessPage({
   const baselineQuery = useQuery(frontBaselineQueryOptions());
   const deferredBaseline = useDeferredValue(baselineQuery.data);
   const baseline = baselineQuery.data ?? deferredBaseline;
-  const [planDraft, setPlanDraft] = useState<FrontPlanDraftInput>(emptyFrontPlanDraft);
+  const [planDraft, setPlanDraft] =
+    useState<FrontPlanDraftInput>(emptyFrontPlanDraft);
 
   return (
     <main className="page-shell">
@@ -61,7 +62,10 @@ export function FrontHarnessPage({
 
         <div className="grid gap-3 lg:grid-cols-3">
           <div className="surface-panel-soft flex items-start gap-3">
-            <Layers3 className="mt-1 size-4 text-[color:var(--app-primary)]" aria-hidden="true" />
+            <Layers3
+              className="mt-1 size-4 text-[color:var(--app-primary)]"
+              aria-hidden="true"
+            />
             <div className="space-y-1">
               <p className="text-sm font-medium">상태 책임 분리</p>
               <p className="muted-copy">
@@ -70,20 +74,28 @@ export function FrontHarnessPage({
             </div>
           </div>
           <div className="surface-panel-soft flex items-start gap-3">
-            <ArrowRight className="mt-1 size-4 text-[color:var(--app-accent)]" aria-hidden="true" />
+            <ArrowRight
+              className="mt-1 size-4 text-[color:var(--app-accent)]"
+              aria-hidden="true"
+            />
             <div className="space-y-1">
               <p className="text-sm font-medium">하나의 중심 목적</p>
               <p className="muted-copy">
-                한 페이지는 한 목적과 하나의 primary action 을 기준으로 설계합니다.
+                한 페이지는 한 목적과 하나의 primary action 을 기준으로
+                설계합니다.
               </p>
             </div>
           </div>
           <div className="surface-panel-soft flex items-start gap-3">
-            <CircleSlash className="mt-1 size-4 text-[color:var(--app-danger)]" aria-hidden="true" />
+            <CircleSlash
+              className="mt-1 size-4 text-[color:var(--app-danger)]"
+              aria-hidden="true"
+            />
             <div className="space-y-1">
               <p className="text-sm font-medium">지금 하지 않는 것</p>
               <p className="muted-copy">
-                `Next.js`, 루트 `shared`, 전역 상태 기본값은 지금 도입하지 않습니다.
+                `Next.js`, 루트 `shared`, 전역 상태 기본값은 지금 도입하지
+                않습니다.
               </p>
             </div>
           </div>
@@ -105,7 +117,9 @@ export function FrontHarnessPage({
               aria-hidden="true"
             />
             <div className="space-y-1">
-              <h2 className="section-heading">기준 스냅샷을 불러오지 못했습니다.</h2>
+              <h2 className="section-heading">
+                기준 스냅샷을 불러오지 못했습니다.
+              </h2>
               <p className="muted-copy">
                 하네스 데이터가 준비되지 않았습니다. 다시 불러와서 상태 경계를
                 확인하세요.
@@ -113,8 +127,13 @@ export function FrontHarnessPage({
             </div>
           </div>
           <div className="action-strip">
-            <Button onClick={() => baselineQuery.refetch()}>다시 불러오기</Button>
-            <Button variant="secondary" onClick={() => onViewChange("overview")}>
+            <Button onClick={() => baselineQuery.refetch()}>
+              다시 불러오기
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => onViewChange("overview")}
+            >
               개요 유지
             </Button>
           </div>
@@ -144,7 +163,8 @@ export function FrontHarnessPage({
                 <span className="kicker">ownership map</span>
                 <h2 className="section-heading">상태 책임</h2>
                 <p className="muted-copy">
-                  같은 상태를 여러 도구에 중복 보관하지 않는 것이 기본 원칙입니다.
+                  같은 상태를 여러 도구에 중복 보관하지 않는 것이 기본
+                  원칙입니다.
                 </p>
               </div>
 

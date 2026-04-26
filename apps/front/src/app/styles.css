@@ -3,10 +3,7 @@
 :root {
   color-scheme: light;
   font-family:
-    "Pretendard Variable",
-    "Pretendard",
-    "Noto Sans KR",
-    "Apple SD Gothic Neo",
+    "Pretendard Variable", "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo",
     sans-serif;
   --app-bg: #f5f1e8;
   --app-bg-soft: rgba(255, 255, 255, 0.6);
@@ -37,7 +34,11 @@ body {
   min-height: 100vh;
   margin: 0;
   background:
-    radial-gradient(circle at top left, rgba(208, 221, 213, 0.48), transparent 32%),
+    radial-gradient(
+      circle at top left,
+      rgba(208, 221, 213, 0.48),
+      transparent 32%
+    ),
     linear-gradient(180deg, rgba(255, 255, 255, 0.46), transparent 30%),
     var(--app-bg);
   color: var(--app-text);
@@ -70,7 +71,11 @@ textarea {
   }
 
   .hero-shell {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.86), rgba(246, 241, 233, 0.96));
+    background: linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.86),
+      rgba(246, 241, 233, 0.96)
+    );
     border: 1px solid var(--app-border);
     box-shadow: var(--app-shadow);
     @apply rounded-3xl p-6 sm:p-8;

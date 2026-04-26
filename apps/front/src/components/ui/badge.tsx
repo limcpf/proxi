@@ -13,11 +13,7 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   tone?: BadgeTone;
 }
 
-export function Badge({
-  className,
-  tone = "default",
-  ...props
-}: BadgeProps) {
+export function Badge({ className, tone = "default", ...props }: BadgeProps) {
   return (
     <span
       className={cn(

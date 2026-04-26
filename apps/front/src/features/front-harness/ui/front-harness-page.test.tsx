@@ -1,7 +1,7 @@
-import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useState } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { resetFrontHarnessApiState } from "../api/front-harness.api";
 import type { FrontHarnessView } from "../model";
@@ -71,16 +71,24 @@ describe("FrontHarnessPage", () => {
 
     renderPage("plan");
 
-    expect(await screen.findByText("새 화면을 만들기 전 체크")).toBeInTheDocument();
+    expect(
+      await screen.findByText("새 화면을 만들기 전 체크"),
+    ).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "초기 기준 저장" }));
 
     expect(
       await screen.findByText("화면 목적은 10자 이상으로 적어주세요."),
     ).toBeInTheDocument();
-    expect(screen.getByText("primary action 을 적어주세요.")).toBeInTheDocument();
-    expect(screen.getByText("URL 로 올릴 상태를 적어주세요.")).toBeInTheDocument();
-    expect(screen.getByText("query / mutation 경계를 적어주세요.")).toBeInTheDocument();
+    expect(
+      screen.getByText("primary action 을 적어주세요."),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("URL 로 올릴 상태를 적어주세요."),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("query / mutation 경계를 적어주세요."),
+    ).toBeInTheDocument();
   });
 
   it("저장한 API 경계와 메모를 마지막 저장 결과에 보존한다", async () => {
@@ -88,7 +96,9 @@ describe("FrontHarnessPage", () => {
 
     renderPage("plan");
 
-    expect(await screen.findByText("새 화면을 만들기 전 체크")).toBeInTheDocument();
+    expect(
+      await screen.findByText("새 화면을 만들기 전 체크"),
+    ).toBeInTheDocument();
 
     await user.type(
       screen.getByLabelText("화면 목적"),
@@ -123,7 +133,9 @@ describe("FrontHarnessPage", () => {
 
     renderInteractivePage("plan");
 
-    expect(await screen.findByText("새 화면을 만들기 전 체크")).toBeInTheDocument();
+    expect(
+      await screen.findByText("새 화면을 만들기 전 체크"),
+    ).toBeInTheDocument();
 
     await user.type(
       screen.getByLabelText("화면 목적"),
@@ -136,7 +148,10 @@ describe("FrontHarnessPage", () => {
       "상태 조회 query, 설정 저장 mutation",
     );
     await user.click(screen.getByRole("button", { name: "고급 메모 열기" }));
-    await user.type(screen.getByLabelText("보류 메모"), "이 메모는 탭 전환 뒤에도 남아야 한다.");
+    await user.type(
+      screen.getByLabelText("보류 메모"),
+      "이 메모는 탭 전환 뒤에도 남아야 한다.",
+    );
 
     await user.click(screen.getByRole("button", { name: "개요 보기" }));
     await user.click(screen.getByRole("button", { name: "기준 점검" }));
@@ -160,7 +175,9 @@ describe("FrontHarnessPage", () => {
 
     renderPage("plan");
 
-    expect(await screen.findByText("새 화면을 만들기 전 체크")).toBeInTheDocument();
+    expect(
+      await screen.findByText("새 화면을 만들기 전 체크"),
+    ).toBeInTheDocument();
 
     await user.type(
       screen.getByLabelText("화면 목적"),

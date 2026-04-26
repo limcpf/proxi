@@ -1,7 +1,33 @@
 {
   "name": "@proxi/back",
   "version": "0.0.1",
-  "main": "index.js",
+  "private": true,
+  "type": "module",
+  "main": "./dist/main.js",
   "author": "limcpf",
-  "packageManager": "pnpm@10.33.0"
+  "scripts": {
+    "dev": "tsx watch src/main.ts",
+    "prebuild": "corepack pnpm --filter @proxi/shared build",
+    "build": "tsc -p tsconfig.build.json",
+    "pretypecheck": "corepack pnpm --filter @proxi/shared build",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "pretest": "corepack pnpm --filter @proxi/shared build",
+    "test": "vitest run",
+    "lint": "biome check ."
+  },
+  "dependencies": {
+    "@nestjs/common": "11.1.18",
+    "@nestjs/core": "11.1.18",
+    "@nestjs/platform-express": "11.1.18",
+    "@proxi/shared": "workspace:*",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "11.1.18",
+    "@types/node": "^24.10.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.4"
+  }
 }

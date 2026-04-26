@@ -16,7 +16,5 @@ const missingExports = requiredExports.filter(
 );
 
 if (missingExports.length > 0) {
-  throw new Error(
-    `Missing shared dist exports: ${missingExports.join(", ")}`,
-  );
+  throw new Error(`Missing shared dist exports: ${missingExports.join(", ")}`);
 }

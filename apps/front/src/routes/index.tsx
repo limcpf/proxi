@@ -1,7 +1,7 @@
 import { createRoute, useNavigate } from "@tanstack/react-router";
-import { FrontHarnessPage } from "../features/front-harness/ui/front-harness-page";
 import type { FrontHarnessView } from "../features/front-harness/model";
 import { parseFrontHarnessSearch } from "../features/front-harness/model";
+import { FrontHarnessPage } from "../features/front-harness/ui/front-harness-page";
 import { rootRoute } from "./root";
 
 export const indexRoute = createRoute({
@@ -21,5 +21,7 @@ function IndexRouteComponent() {
     });
   };
 
-  return <FrontHarnessPage onViewChange={handleViewChange} view={search.view} />;
+  return (
+    <FrontHarnessPage onViewChange={handleViewChange} view={search.view} />
+  );
 }

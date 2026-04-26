@@ -1,7 +1,7 @@
-import { startTransition, useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Info, Sparkles } from "lucide-react";
+import { startTransition, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
@@ -13,8 +13,8 @@ import {
 } from "../api/front-harness.api";
 import {
   emptyFrontPlanDraft,
-  frontPlanDraftSchema,
   type FrontPlanDraftInput,
+  frontPlanDraftSchema,
 } from "../model";
 
 interface FrontHarnessPlanFormProps {
@@ -28,7 +28,9 @@ export function FrontHarnessPlanForm({
   onComplete,
   onDraftChange,
 }: FrontHarnessPlanFormProps) {
-  const [showAdvanced, setShowAdvanced] = useState(() => draft.notes.length > 0);
+  const [showAdvanced, setShowAdvanced] = useState(
+    () => draft.notes.length > 0,
+  );
   const queryClient = useQueryClient();
   const form = useForm<FrontPlanDraftInput>({
     defaultValues: draft,
@@ -56,7 +58,7 @@ export function FrontHarnessPlanForm({
       onDraftChange({
         ...emptyFrontPlanDraft,
         ...values,
-        notes: showAdvanced ? values.notes ?? "" : "",
+        notes: showAdvanced ? (values.notes ?? "") : "",
       });
     });
 
@@ -89,7 +91,7 @@ export function FrontHarnessPlanForm({
     mutation.mutate({
       ...emptyFrontPlanDraft,
       ...values,
-      notes: showAdvanced ? values.notes ?? "" : "",
+      notes: showAdvanced ? (values.notes ?? "") : "",
     });
   };
 
@@ -166,9 +168,13 @@ export function FrontHarnessPlanForm({
         <div className="surface-panel-soft flex flex-col gap-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-3">
-              <Info className="mt-1 size-4 text-[color:var(--app-accent)]" aria-hidden="true" />
+              <Info
+                className="mt-1 size-4 text-[color:var(--app-accent)]"
+                aria-hidden="true"
+              />
               <p className="muted-copy">
-                고급 메모는 자주 바뀌는 예외나 보류 사유를 적는 용도로만 사용합니다.
+                고급 메모는 자주 바뀌는 예외나 보류 사유를 적는 용도로만
+                사용합니다.
               </p>
             </div>
             <Button

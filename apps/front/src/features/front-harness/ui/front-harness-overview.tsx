@@ -1,6 +1,6 @@
 import { ArrowRight, CheckCircle2 } from "lucide-react";
-import { Button } from "../../../components/ui/button";
 import { Badge } from "../../../components/ui/badge";
+import { Button } from "../../../components/ui/button";
 import type { FrontBaselineSnapshot } from "../model";
 
 interface FrontHarnessOverviewProps {
@@ -47,7 +47,9 @@ export function FrontHarnessOverview({
       <div className="surface-panel-soft flex flex-col gap-4">
         <div className="flex items-center gap-2">
           <Badge tone="success">현재 기준</Badge>
-          <p className="text-sm font-medium">보류 항목은 문서로만 고정하고 코드에는 넣지 않는다.</p>
+          <p className="text-sm font-medium">
+            보류 항목은 문서로만 고정하고 코드에는 넣지 않는다.
+          </p>
         </div>
         <div className="list-grid">
           {baseline.deferredItems.map((item) => (
