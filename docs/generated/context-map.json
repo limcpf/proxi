@@ -247,6 +247,13 @@
       "owner_scope": "docs/product-specs"
     },
     {
+      "path": "docs/product-specs/2026-04-27-writing-domain-requirements-checklist.md",
+      "kind": "reference",
+      "role": "글 도메인 요구사항 수립 체크리스트",
+      "read_when": ["글 도메인 요구사항 수립", "글 작성 수정 삭제 기능 정의", "글 도메인 수용 기준 작성"],
+      "owner_scope": "docs/product-specs"
+    },
+    {
       "path": "docs/references/README.md",
       "kind": "index",
       "role": "로컬 참조 자료 인덱스",
