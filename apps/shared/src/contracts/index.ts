@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+export * from "./echo.js";
+
 export const sharedContractVersion = "0.1.0" as const;
 
 export const proxiEntityIdSchema = z
