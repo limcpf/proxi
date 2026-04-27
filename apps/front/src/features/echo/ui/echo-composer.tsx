@@ -1,0 +1,143 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createEchoRequestSchema } from "@proxi/shared";
+import { useEffect, useId } from "react";
+import { useForm } from "react-hook-form";
+import { Button } from "../../../components/ui/button";
+import { Textarea } from "../../../components/ui/textarea";
+import { clearDraft, readDraft, writeDraft } from "../lib/draft-storage";
+
+type EchoComposerMode = "create" | "reply" | "edit";
+
+interface EchoComposerProps {
+  draftKey: string;
+  disabled?: boolean;
+  initialBody?: string;
+  mode: EchoComposerMode;
+  onCancel?: () => void;
+  onSubmit: (body: string) => Promise<unknown>;
+}
+
+interface EchoComposerFormValues {
+  body: string;
+}
+
+const echoComposerSchema = createEchoRequestSchema.pick({
+  body: true,
+});
+
+const modeLabels: Record<
+  EchoComposerMode,
+  {
+    button: string;
+    label: string;
+    placeholder: string;
+  }
+> = {
+  create: {
+    button: "Echo 남기기",
+    label: "새 Echo 본문",
+    placeholder: "지금 떠오른 생각을 Echo 로 남겨보세요.",
+  },
+  edit: {
+    button: "수정 저장",
+    label: "Echo 수정 본문",
+    placeholder: "Echo 본문을 다듬어 주세요.",
+  },
+  reply: {
+    button: "댓글 남기기",
+    label: "댓글 본문",
+    placeholder: "이 Echo 에 이어지는 메아리를 남겨보세요.",
+  },
+};
+
+export function EchoComposer({
+  disabled = false,
+  draftKey,
+  initialBody,
+  mode,
+  onCancel,
+  onSubmit,
+}: EchoComposerProps) {
+  const savedDraft = readDraft(draftKey);
+  const form = useForm<EchoComposerFormValues>({
+    resolver: zodResolver(echoComposerSchema),
+    defaultValues: {
+      body: savedDraft || initialBody || "",
+    },
+  });
+  const labels = modeLabels[mode];
+  const isSubmitting = form.formState.isSubmitting;
+  const body = form.watch("body");
+  const bodyFieldId = useId();
+
+  useEffect(() => {
+    form.reset({
+      body: readDraft(draftKey) || initialBody || "",
+    });
+  }, [draftKey, form, initialBody]);
+
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      writeDraft(draftKey, value.body ?? "");
+    });
+
+    return () => subscription.unsubscribe();
+  }, [draftKey, form]);
+
+  useEffect(() => {
+    if (body.trim().length === 0) {
+      return;
+    }
+
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [body]);
+
+  const handleSubmit = form.handleSubmit(async (values) => {
+    await onSubmit(values.body);
+    clearDraft(draftKey);
+    form.reset({ body: "" });
+  });
+
+  return (
+    <form className="field-grid" onSubmit={handleSubmit}>
+      <label className="grid gap-2" htmlFor={bodyFieldId}>
+        <span className="text-sm font-semibold">{labels.label}</span>
+        <Textarea
+          aria-invalid={form.formState.errors.body !== undefined}
+          disabled={disabled || isSubmitting}
+          id={bodyFieldId}
+          placeholder={labels.placeholder}
+          {...form.register("body")}
+        />
+      </label>
+      {form.formState.errors.body ? (
+        <p className="muted-copy text-[var(--app-danger)]">
+          {form.formState.errors.body.message}
+        </p>
+      ) : null}
+      <div className="action-strip">
+        <Button disabled={disabled || isSubmitting} type="submit">
+          {isSubmitting
+            ? "저장 중이에요. 잠깐만 기다려 주세요."
+            : labels.button}
+        </Button>
+        {onCancel ? (
+          <Button
+            disabled={isSubmitting}
+            onClick={onCancel}
+            type="button"
+            variant="ghost"
+          >
+            취소
+          </Button>
+        ) : null}
+      </div>
+    </form>
+  );
+}

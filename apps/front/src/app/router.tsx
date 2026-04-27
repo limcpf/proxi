@@ -1,8 +1,14 @@
 import { createRouter } from "@tanstack/react-router";
+import { echoDetailRoute } from "../routes/echo-detail";
+import { echoesRoute } from "../routes/echoes";
 import { indexRoute } from "../routes/index";
 import { rootRoute } from "../routes/root";
 
-const routeTree = rootRoute.addChildren([indexRoute]);
+const routeTree = rootRoute.addChildren([
+  indexRoute,
+  echoesRoute,
+  echoDetailRoute,
+]);
 
 export const router = createRouter({
   routeTree,

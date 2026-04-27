@@ -211,4 +211,48 @@ textarea {
     background: rgba(100, 112, 107, 0.1);
     color: var(--app-text-muted);
   }
+
+  .echo-page {
+    @apply max-w-4xl;
+  }
+
+  .echo-card {
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid var(--app-border);
+    @apply grid gap-3 rounded-2xl p-4;
+  }
+
+  .echo-markdown {
+    color: var(--app-text);
+    @apply grid gap-3 text-base leading-8;
+  }
+
+  .echo-inline-code {
+    background: rgba(34, 73, 65, 0.09);
+    color: var(--app-primary);
+    @apply rounded-lg px-1.5 py-0.5 text-sm;
+  }
+
+  .echo-reference {
+    color: var(--app-accent);
+    @apply font-semibold;
+  }
+
+  .echo-load-more {
+    border: 1px dashed var(--app-border-strong);
+    color: var(--app-text-muted);
+    @apply rounded-2xl px-4 py-3 text-sm font-medium transition-colors hover:bg-white disabled:opacity-60;
+  }
+
+  .echo-modal-backdrop {
+    background: rgba(31, 43, 40, 0.24);
+    @apply fixed inset-0 z-50 grid place-items-center px-4;
+  }
+
+  .echo-modal {
+    background: var(--app-panel);
+    border: 1px solid var(--app-border);
+    box-shadow: var(--app-shadow);
+    @apply grid w-full max-w-md gap-4 rounded-3xl p-6;
+  }
 }
