@@ -1,0 +1,27 @@
+import type { EchoAuthorType, PersistedEchoStatus } from "@proxi/shared";
+
+export const ownerActor = {
+  id: "actor_owner",
+  type: "owner",
+  displayName: "Owner",
+} as const;
+
+export interface EchoEntity {
+  id: string;
+  body: string;
+  status: PersistedEchoStatus;
+  authorActorId: string;
+  authorType: EchoAuthorType;
+  authorDisplayName: string;
+  parentEchoId?: string;
+  rootEchoId?: string;
+  depth: number;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt?: Date;
+  deletedByActorId?: string;
+}
+
+export interface EchoWithReplyCount extends EchoEntity {
+  replyCount: number;
+}
