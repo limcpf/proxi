@@ -4,6 +4,7 @@ import { useEffect, useId, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "../../../components/ui/button";
 import { Textarea } from "../../../components/ui/textarea";
+import { cn } from "../../../lib/cn";
 import { clearDraft, readDraft, writeDraft } from "../lib/draft-storage";
 
 type EchoComposerMode = "create" | "reply" | "edit";
@@ -108,12 +109,12 @@ export function EchoComposer({
   });
 
   return (
-    <form className="field-grid" onSubmit={handleSubmit}>
-      <label className="grid gap-2" htmlFor={bodyFieldId}>
+    <form className="echo-composer field-grid" onSubmit={handleSubmit}>
+      <label className="composer-field grid gap-2" htmlFor={bodyFieldId}>
         <span className="field-label">{labels.label}</span>
         <Textarea
           aria-invalid={form.formState.errors.body !== undefined}
-          className="min-h-24"
+          className={cn(mode === "create" ? "min-h-20 py-2.5" : "min-h-24")}
           disabled={disabled || isSubmitting}
           id={bodyFieldId}
           placeholder={labels.placeholder}
@@ -126,10 +127,13 @@ export function EchoComposer({
         </p>
       ) : null}
       {mode === "edit" ? null : (
-        <label className="grid gap-2" htmlFor={fileFieldId}>
+        <label className="composer-field grid gap-2" htmlFor={fileFieldId}>
           <span className="field-label">첨부 파일</span>
           <input
-            className="ui-input w-full px-4 text-sm"
+            className={cn(
+              "ui-input w-full text-sm",
+              mode === "create" ? "composer-file-input px-3" : "px-4",
+            )}
             disabled={disabled || isSubmitting}
             id={fileFieldId}
             multiple
@@ -145,7 +149,7 @@ export function EchoComposer({
           ) : null}
         </label>
       )}
-      <div className="action-strip">
+      <div className="composer-actions action-strip">
         <Button disabled={disabled || isSubmitting} type="submit">
           {isSubmitting
             ? "저장 중이에요. 잠깐만 기다려 주세요."

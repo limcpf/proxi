@@ -84,7 +84,7 @@ export function EchoFeedPage({
         <div className="compose-panel">
           <div className="compose-heading">
             <div className="compose-title-group">
-              <p className="kicker">Compose</p>
+              <p className="kicker leading-4">Compose</p>
               <h2 className="card-heading">무슨 생각을 남길까요?</h2>
               <span className="caption-copy">
                 가볍게 쓰고 나중에 다시 보세요.

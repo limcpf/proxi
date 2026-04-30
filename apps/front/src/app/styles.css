@@ -127,15 +127,27 @@ textarea {
     background: var(--echo-surface);
     border: 1px solid var(--echo-border);
     box-shadow: var(--echo-shadow-panel);
-    @apply grid gap-4 rounded-xl p-4;
+    @apply grid gap-4 rounded-xl px-5 py-4;
   }
 
   .compose-heading {
-    @apply flex flex-wrap items-start justify-between gap-2 border-b border-[var(--echo-border)] pb-3;
+    @apply flex flex-wrap items-start justify-between gap-2;
   }
 
   .compose-title-group {
-    @apply grid gap-1;
+    @apply grid gap-1.5;
+  }
+
+  .compose-panel .echo-composer {
+    @apply gap-3.5;
+  }
+
+  .compose-panel .composer-field {
+    @apply gap-1.5;
+  }
+
+  .compose-panel .composer-actions {
+    @apply pt-0.5;
   }
 
   .feed-panel {
@@ -331,6 +343,11 @@ textarea {
     height: auto;
     padding-bottom: 12px;
     padding-top: 12px;
+  }
+
+  .ui-input.composer-file-input {
+    padding-bottom: 6px;
+    padding-top: 6px;
   }
 
   .ui-badge-default {
