@@ -93,11 +93,16 @@
 ## 레이아웃
 - page max width 는 720-880px 이다. 현재 기본값은 820px 이다.
 - spacing 은 8px grid 를 따른다.
-- Header 와 content 사이: 24-32px
-- Hero intro 와 compose: 16px
-- Compose 와 feed: 24px
-- Feed card 사이: 16px
-- Section 내부 padding: 16-20px
+- spacing 은 의미 단위별로 차등 적용한다. 같은 gap 을 모든 영역에 반복하지 않는다.
+- 큰 전환 간격: 독립적인 surface 사이 48-64px
+- 중간 컴포넌트 간격: related block 사이 16-24px
+- 작은 텍스트 간격: label, helper, metadata 사이 8-12px
+- Header 와 content 사이: 20-24px
+- Hero intro 와 compose: 20px 내외
+- Compose 와 feed: 16-20px. 작성과 읽기는 같은 흐름이므로 과하게 띄우지 않는다.
+- Feed title 과 search 는 하나의 control group 으로 묶고 12px 내외로 둔다.
+- Feed card 사이: 12px
+- Section 내부 padding: 16px 중심
 - 모바일은 16px side padding 을 유지한다.
 
 ## 컴포넌트 규칙
@@ -108,6 +113,7 @@
 - border: `1px solid --echo-border`
 - shadow: subtle panel shadow 만 허용
 - heading 과 form 사이에는 1px divider 로 구조를 분리한다.
+- title 과 helper text 는 가까이 묶고, 입력/첨부/액션 사이만 중간 간격을 둔다.
 - textarea 는 16px body scale 로 읽기 쉽게 둔다.
 - focus 시 border 를 primary 로 바꾸고 4px soft focus ring 을 준다.
 
@@ -126,6 +132,7 @@
 - hover 에서는 border/shadow 만 조금 강화한다.
 - metadata 는 author, time, status 순으로 한 줄에 묶는다.
 - 본문이 카드의 중심이다. 링크와 보조 action 은 낮은 대비로 둔다.
+- 카드 padding 은 14-16px 범위로 유지해 과한 빈 공간을 만들지 않는다.
 
 ### Input, Textarea
 - full border input 을 사용한다.

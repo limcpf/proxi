@@ -106,7 +106,7 @@ export function EchoDetailPage({ echoId }: EchoDetailPageProps) {
       : "메아리가 길을 잃었어요. 잠시 뒤 다시 불러와 주세요.";
 
   return (
-    <main className="page-shell echo-page">
+    <main className="page-shell echo-page detail-page">
       <section className="surface-panel">
         <div className="action-strip">
           <Button asChild size="sm" variant="ghost">

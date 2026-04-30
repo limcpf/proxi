@@ -113,6 +113,7 @@ export function EchoComposer({
         <span className="field-label">{labels.label}</span>
         <Textarea
           aria-invalid={form.formState.errors.body !== undefined}
+          className="min-h-24"
           disabled={disabled || isSubmitting}
           id={bodyFieldId}
           placeholder={labels.placeholder}

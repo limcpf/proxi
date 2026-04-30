@@ -62,7 +62,7 @@ export function EchoArchivePage({
             <a href="/echoes">피드로 돌아가기</a>
           </Button>
         </div>
-        <div className="grid gap-4">
+        <div className="grid gap-2">
           <p className="kicker">Archive</p>
           <h1 className="hero-title">아카이브된 Echo 를 다시 살펴보기</h1>
           <p className="hero-copy">
@@ -73,48 +73,50 @@ export function EchoArchivePage({
       </section>
 
       <section className="feed-panel">
-        <div className="section-toolbar">
-          <div>
-            <p className="kicker">Archived Echoes</p>
-            <h2 className="section-heading">아카이브 목록</h2>
+        <div className="feed-controls">
+          <div className="section-toolbar">
+            <div>
+              <p className="kicker">Archived Echoes</p>
+              <h2 className="section-heading">아카이브 목록</h2>
+            </div>
+            <span className="muted-copy">{items.length}개 표시 중</span>
           </div>
-          <span className="muted-copy">{items.length}개 표시 중</span>
-        </div>
 
-        <form
-          className="action-strip"
-          onSubmit={(event) => {
-            event.preventDefault();
-            onSearchChange?.(searchDraft);
-          }}
-        >
-          <label className="sr-only" htmlFor="echo-archive-search">
-            아카이브 검색
-          </label>
-          <Input
-            className="min-w-0 flex-1"
-            id="echo-archive-search"
-            onChange={(event) => setSearchDraft(event.currentTarget.value)}
-            placeholder="아카이브 본문 검색"
-            value={searchDraft}
-          />
-          <Button size="sm" type="submit" variant="secondary">
-            검색
-          </Button>
-          {searchTerm ? (
-            <Button
-              onClick={() => {
-                setSearchDraft("");
-                onSearchChange?.("");
-              }}
-              size="sm"
-              type="button"
-              variant="ghost"
-            >
-              초기화
+          <form
+            className="action-strip"
+            onSubmit={(event) => {
+              event.preventDefault();
+              onSearchChange?.(searchDraft);
+            }}
+          >
+            <label className="sr-only" htmlFor="echo-archive-search">
+              아카이브 검색
+            </label>
+            <Input
+              className="min-w-0 flex-1"
+              id="echo-archive-search"
+              onChange={(event) => setSearchDraft(event.currentTarget.value)}
+              placeholder="아카이브 본문 검색"
+              value={searchDraft}
+            />
+            <Button size="sm" type="submit" variant="secondary">
+              검색
             </Button>
-          ) : null}
-        </form>
+            {searchTerm ? (
+              <Button
+                onClick={() => {
+                  setSearchDraft("");
+                  onSearchChange?.("");
+                }}
+                size="sm"
+                type="button"
+                variant="ghost"
+              >
+                초기화
+              </Button>
+            ) : null}
+          </form>
+        </div>
 
         {archiveQuery.isPending ? (
           <p className="status-note">메아리를 불러오는 중이에요.</p>
@@ -132,7 +134,7 @@ export function EchoArchivePage({
 
         <div className="list-grid">
           {items.map((echo) => (
-            <div className="grid gap-3" key={echo.id}>
+            <div className="grid gap-2" key={echo.id}>
               <EchoCard echo={echo} />
               <Button
                 disabled={restoreMutation.isPending}

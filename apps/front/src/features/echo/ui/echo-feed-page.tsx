@@ -70,7 +70,7 @@ export function EchoFeedPage({
   return (
     <main className="page-shell echo-page">
       <section className="hero-shell">
-        <div className="grid gap-3">
+        <div className="grid gap-2">
           <p className="kicker">Echo</p>
           <h1 className="hero-title">짧게 쓰고, 다시 이어받는 공간</h1>
           <p className="hero-copy">
@@ -83,13 +83,13 @@ export function EchoFeedPage({
       <section className="compose-section">
         <div className="compose-panel">
           <div className="compose-heading">
-            <div>
+            <div className="compose-title-group">
               <p className="kicker">Compose</p>
               <h2 className="card-heading">무슨 생각을 남길까요?</h2>
+              <span className="caption-copy">
+                가볍게 쓰고 나중에 다시 보세요.
+              </span>
             </div>
-            <span className="caption-copy">
-              가볍게 쓰고 나중에 다시 보세요.
-            </span>
           </div>
           <EchoComposer
             disabled={createMutation.isPending}
@@ -106,53 +106,55 @@ export function EchoFeedPage({
       </section>
 
       <section className="feed-panel">
-        <div className="section-toolbar">
-          <div>
-            <p className="kicker">Feed</p>
-            <h2 className="section-heading">최근 Echo</h2>
+        <div className="feed-controls">
+          <div className="section-toolbar">
+            <div>
+              <p className="kicker">Feed</p>
+              <h2 className="section-heading">최근 Echo</h2>
+            </div>
+            <div className="action-strip">
+              <Button asChild size="sm" variant="ghost">
+                <a href="/echoes/archive">아카이브 보기</a>
+              </Button>
+              <span className="muted-copy">{items.length}개 표시 중</span>
+            </div>
           </div>
-          <div className="action-strip">
-            <Button asChild size="sm" variant="ghost">
-              <a href="/echoes/archive">아카이브 보기</a>
-            </Button>
-            <span className="muted-copy">{items.length}개 표시 중</span>
-          </div>
-        </div>
 
-        <form
-          className="action-strip"
-          onSubmit={(event) => {
-            event.preventDefault();
-            onSearchChange?.(searchDraft);
-          }}
-        >
-          <label className="sr-only" htmlFor="echo-search">
-            Echo 검색
-          </label>
-          <Input
-            className="min-w-0 flex-1"
-            id="echo-search"
-            onChange={(event) => setSearchDraft(event.currentTarget.value)}
-            placeholder="본문 검색"
-            value={searchDraft}
-          />
-          <Button size="sm" type="submit" variant="secondary">
-            검색
-          </Button>
-          {searchTerm ? (
-            <Button
-              onClick={() => {
-                setSearchDraft("");
-                onSearchChange?.("");
-              }}
-              size="sm"
-              type="button"
-              variant="ghost"
-            >
-              초기화
+          <form
+            className="action-strip"
+            onSubmit={(event) => {
+              event.preventDefault();
+              onSearchChange?.(searchDraft);
+            }}
+          >
+            <label className="sr-only" htmlFor="echo-search">
+              Echo 검색
+            </label>
+            <Input
+              className="min-w-0 flex-1"
+              id="echo-search"
+              onChange={(event) => setSearchDraft(event.currentTarget.value)}
+              placeholder="본문 검색"
+              value={searchDraft}
+            />
+            <Button size="sm" type="submit" variant="secondary">
+              검색
             </Button>
-          ) : null}
-        </form>
+            {searchTerm ? (
+              <Button
+                onClick={() => {
+                  setSearchDraft("");
+                  onSearchChange?.("");
+                }}
+                size="sm"
+                type="button"
+                variant="ghost"
+              >
+                초기화
+              </Button>
+            ) : null}
+          </form>
+        </div>
 
         {listQuery.isPending ? (
           <p className="status-note">메아리를 불러오는 중이에요.</p>
