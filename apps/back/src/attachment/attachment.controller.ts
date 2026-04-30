@@ -1,0 +1,37 @@
+import {
+  Body,
+  Controller,
+  Get,
+  Header,
+  Param,
+  Post,
+  StreamableFile,
+} from "@nestjs/common";
+import type { EchoAttachment } from "@proxi/shared";
+import type { AttachmentService } from "./attachment.service.js";
+
+@Controller("attachments")
+export class AttachmentController {
+  constructor(private readonly attachments: AttachmentService) {}
+
+  @Post()
+  async uploadAttachment(@Body() body: unknown): Promise<EchoAttachment> {
+    return this.attachments.upload(body);
+  }
+
+  @Get(":attachmentId/download")
+  @Header("Cache-Control", "private, max-age=60")
+  async downloadAttachment(@Param("attachmentId") attachmentId: string) {
+    const download = await this.attachments.openDownload(attachmentId);
+
+    return new StreamableFile(download.stream, {
+      disposition: createContentDisposition(download.fileName),
+      length: download.sizeBytes,
+      type: download.mimeType,
+    });
+  }
+}
+
+function createContentDisposition(fileName: string) {
+  return `attachment; filename*=UTF-8''${encodeURIComponent(fileName)}`;
+}

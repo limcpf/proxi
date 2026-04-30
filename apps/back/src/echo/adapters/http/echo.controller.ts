@@ -32,6 +32,15 @@ export class EchoController {
     return this.mapErrors(() => this.echoApplication.listRootEchoes(query));
   }
 
+  @Get("archive")
+  async listArchivedEchoes(
+    @Query() query: unknown,
+  ): Promise<ListEchoesResponse> {
+    return this.mapErrors(() =>
+      this.echoApplication.listArchivedRootEchoes(query),
+    );
+  }
+
   @Get(":echoId")
   async getEcho(@Param("echoId") echoId: string): Promise<EchoDetail> {
     return this.mapErrors(() => this.echoApplication.getDetail(echoId));
@@ -49,6 +58,11 @@ export class EchoController {
   @HttpCode(204)
   async archiveEcho(@Param("echoId") echoId: string): Promise<void> {
     return this.mapErrors(() => this.echoApplication.archive(echoId));
+  }
+
+  @Post(":echoId/restore")
+  async restoreEcho(@Param("echoId") echoId: string): Promise<EchoDetail> {
+    return this.mapErrors(() => this.echoApplication.restore(echoId));
   }
 
   @Post(":echoId/replies")

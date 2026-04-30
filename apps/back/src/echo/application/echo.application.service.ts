@@ -32,6 +32,9 @@ export class EchoApplicationService {
 
   async createRoot(input: unknown): Promise<EchoDetail> {
     const request = parseRequest(createEchoRequestSchema, input);
+    const attachmentIds = await this.validateAttachmentIds(
+      request.attachmentIds,
+    );
 
     if (request.parentEchoId !== undefined) {
       throw badRequest(
@@ -41,17 +44,20 @@ export class EchoApplicationService {
     }
 
     const now = new Date();
-    const created = await this.repository.create({
-      id: createEchoId(),
-      body: request.body,
-      status: "published",
-      authorActorId: ownerActor.id,
-      authorType: ownerActor.type,
-      authorDisplayName: ownerActor.displayName,
-      depth: 0,
-      createdAt: now,
-      updatedAt: now,
-    });
+    const created = await this.repository.create(
+      {
+        id: createEchoId(),
+        body: request.body,
+        status: "published",
+        authorActorId: ownerActor.id,
+        authorType: ownerActor.type,
+        authorDisplayName: ownerActor.displayName,
+        depth: 0,
+        createdAt: now,
+        updatedAt: now,
+      },
+      attachmentIds,
+    );
 
     console.info("echo.created", { echoId: created.id });
 
@@ -59,10 +65,22 @@ export class EchoApplicationService {
   }
 
   async listRootEchoes(input: unknown): Promise<ListEchoesResponse> {
+    return this.listRootEchoesByStatus("published", input);
+  }
+
+  async listArchivedRootEchoes(input: unknown): Promise<ListEchoesResponse> {
+    return this.listRootEchoesByStatus("archived", input);
+  }
+
+  private async listRootEchoesByStatus(
+    status: "published" | "archived",
+    input: unknown,
+  ): Promise<ListEchoesResponse> {
     const request = parseRequest(listEchoesRequestSchema, input ?? {});
     const items = await this.repository.listRootEchoes({
       cursor: request.cursor,
-      status: request.status,
+      search: request.q,
+      status,
       limit: listLimit + 1,
     });
     const visibleItems = items.slice(0, listLimit);
@@ -125,12 +143,39 @@ export class EchoApplicationService {
     console.info("echo.archived", { echoId: archived.id });
   }
 
+  async restore(echoId: unknown): Promise<EchoDetail> {
+    const id = parseRequest(echoIdSchema, echoId);
+    const echo = await this.findRequired(id);
+
+    assertOwnerCanMutate(echo.authorActorId);
+
+    if (echo.status === "published") {
+      const replies = await this.repository.listReplies(
+        echo.rootEchoId ?? echo.id,
+      );
+
+      return toEchoDetail(echo, replies);
+    }
+
+    const restored = await this.repository.restore(id, new Date());
+    const replies = await this.repository.listReplies(
+      restored.rootEchoId ?? restored.id,
+    );
+
+    console.info("echo.restored", { echoId: restored.id });
+
+    return toEchoDetail(restored, replies);
+  }
+
   async createReply(
     parentEchoId: unknown,
     input: unknown,
   ): Promise<EchoDetail> {
     const parentId = parseRequest(echoIdSchema, parentEchoId);
     const request = parseRequest(createEchoRequestSchema, input);
+    const attachmentIds = await this.validateAttachmentIds(
+      request.attachmentIds,
+    );
     const parent = await this.findRequired(parentId);
 
     assertPublished(parent.status, "아카이브된 Echo 에는 댓글을 달 수 없어요.");
@@ -143,19 +188,22 @@ export class EchoApplicationService {
     }
 
     const now = new Date();
-    const created = await this.repository.create({
-      id: createEchoId(),
-      body: request.body,
-      status: "published",
-      authorActorId: ownerActor.id,
-      authorType: ownerActor.type,
-      authorDisplayName: ownerActor.displayName,
-      parentEchoId: parent.id,
-      rootEchoId: parent.rootEchoId ?? parent.id,
-      depth: 1,
-      createdAt: now,
-      updatedAt: now,
-    });
+    const created = await this.repository.create(
+      {
+        id: createEchoId(),
+        body: request.body,
+        status: "published",
+        authorActorId: ownerActor.id,
+        authorType: ownerActor.type,
+        authorDisplayName: ownerActor.displayName,
+        parentEchoId: parent.id,
+        rootEchoId: parent.rootEchoId ?? parent.id,
+        depth: 1,
+        createdAt: now,
+        updatedAt: now,
+      },
+      attachmentIds,
+    );
 
     console.info("echo.created", {
       echoId: created.id,
@@ -173,6 +221,21 @@ export class EchoApplicationService {
     }
 
     return echo;
+  }
+
+  private async validateAttachmentIds(attachmentIds: string[]) {
+    const uniqueAttachmentIds = Array.from(new Set(attachmentIds));
+    const attachableCount =
+      await this.repository.countAttachableAttachments(uniqueAttachmentIds);
+
+    if (attachableCount !== uniqueAttachmentIds.length) {
+      throw badRequest(
+        "echo_attachment_unavailable",
+        "첨부할 수 없는 파일이 포함되어 있어요.",
+      );
+    }
+
+    return uniqueAttachmentIds;
   }
 }
 

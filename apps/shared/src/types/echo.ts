@@ -4,6 +4,7 @@ import type {
   agentIdSchema,
   attachmentIdSchema,
   createEchoRequestSchema,
+  echoAttachmentSchema,
   echoAuthorSchema,
   echoAuthorTypeSchema,
   echoDetailSchema,
@@ -15,6 +16,7 @@ import type {
   listEchoesResponseSchema,
   persistedEchoStatusSchema,
   updateEchoRequestSchema,
+  uploadAttachmentRequestSchema,
 } from "../contracts/index";
 
 export type EchoId = z.infer<typeof echoIdSchema>;
@@ -35,9 +37,15 @@ export type EchoValidationError = z.infer<typeof echoValidationErrorSchema>;
 
 export type EchoAuthor = z.infer<typeof echoAuthorSchema>;
 
+export type EchoAttachment = z.infer<typeof echoAttachmentSchema>;
+
 export type CreateEchoRequest = z.input<typeof createEchoRequestSchema>;
 
 export type UpdateEchoRequest = z.input<typeof updateEchoRequestSchema>;
+
+export type UploadAttachmentRequest = z.input<
+  typeof uploadAttachmentRequestSchema
+>;
 
 export type EchoSummary = z.infer<typeof echoSummarySchema>;
 

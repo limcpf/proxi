@@ -8,12 +8,16 @@
   "scripts": {
     "dev": "tsx watch src/main.ts",
     "prisma:generate": "prisma generate --schema prisma/schema.prisma",
+    "prisma:migrate:dev": "prisma migrate dev --schema prisma/schema.prisma",
+    "prisma:migrate:deploy": "prisma migrate deploy --schema prisma/schema.prisma",
     "prebuild": "corepack pnpm run prisma:generate && corepack pnpm --filter @proxi/shared build",
     "build": "tsc -p tsconfig.build.json",
     "pretypecheck": "corepack pnpm run prisma:generate && corepack pnpm --filter @proxi/shared build",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "pretest": "corepack pnpm run prisma:generate && corepack pnpm --filter @proxi/shared build",
     "test": "vitest run",
+    "pretest:integration": "corepack pnpm run prisma:generate && corepack pnpm --filter @proxi/shared build",
+    "test:integration": "PROXI_INTEGRATION_TESTS=1 vitest run src/**/*.integration.test.ts",
     "lint": "biome check ."
   },
   "dependencies": {

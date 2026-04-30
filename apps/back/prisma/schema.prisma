@@ -34,6 +34,7 @@ model Echo {
   parent   Echo?         @relation("EchoReplies", fields: [parentEchoId], references: [id])
   replies  Echo[]        @relation("EchoReplies")
   mentions EchoMention[]
+  attachments Attachment[]
 
   @@index([status, createdAt])
   @@index([parentEchoId, createdAt])
@@ -53,4 +54,20 @@ model EchoMention {
 
   @@index([echoId])
   @@index([agentId])
+}
+
+model Attachment {
+  id               String   @id
+  originalFileName String
+  mimeType         String
+  sizeBytes        Int
+  checksum         String
+  relativePath     String
+  echoId           String?
+  createdAt        DateTime @default(now())
+
+  echo Echo? @relation(fields: [echoId], references: [id], onDelete: SetNull)
+
+  @@index([echoId])
+  @@index([checksum])
 }

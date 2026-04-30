@@ -6,11 +6,16 @@ export const ECHO_REPOSITORY = Symbol("ECHO_REPOSITORY");
 export interface ListRootEchoesQuery {
   cursor?: string;
   status: PersistedEchoStatus;
+  search?: string;
   limit: number;
 }
 
 export interface EchoRepository {
-  create(echo: EchoEntity): Promise<EchoWithReplyCount>;
+  countAttachableAttachments(attachmentIds: string[]): Promise<number>;
+  create(
+    echo: EchoEntity,
+    attachmentIds?: string[],
+  ): Promise<EchoWithReplyCount>;
   findById(echoId: string): Promise<EchoWithReplyCount | undefined>;
   listRootEchoes(query: ListRootEchoesQuery): Promise<EchoWithReplyCount[]>;
   listReplies(rootEchoId: string): Promise<EchoWithReplyCount[]>;
@@ -24,4 +29,5 @@ export interface EchoRepository {
     deletedAt: Date,
     deletedByActorId: string,
   ): Promise<EchoWithReplyCount>;
+  restore(echoId: string, restoredAt: Date): Promise<EchoWithReplyCount>;
 }

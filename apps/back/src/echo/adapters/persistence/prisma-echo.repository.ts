@@ -1,5 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import type {
+  Prisma,
+  Attachment as PrismaAttachment,
   EchoAuthorType as PrismaEchoAuthorType,
   EchoStatus as PrismaEchoStatus,
 } from "@prisma/client";
@@ -27,29 +29,79 @@ type PrismaEchoRow = {
   updatedAt: Date;
   deletedAt: Date | null;
   deletedByActorId: string | null;
+  attachments: PrismaAttachment[];
 };
+
+const echoInclude = {
+  attachments: {
+    orderBy: {
+      createdAt: "asc",
+    },
+  },
+} satisfies Prisma.EchoInclude;
 
 @Injectable()
 export class PrismaEchoRepository implements EchoRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(echo: EchoEntity): Promise<EchoWithReplyCount> {
-    const created = await this.prisma.echo.create({
-      data: {
-        id: echo.id,
-        body: echo.body,
-        status: echo.status,
-        authorActorId: echo.authorActorId,
-        authorType: echo.authorType,
-        authorDisplayName: echo.authorDisplayName,
-        parentEchoId: echo.parentEchoId,
-        rootEchoId: echo.rootEchoId,
-        depth: echo.depth,
-        createdAt: echo.createdAt,
-        updatedAt: echo.updatedAt,
-        deletedAt: echo.deletedAt,
-        deletedByActorId: echo.deletedByActorId,
+  async countAttachableAttachments(attachmentIds: string[]): Promise<number> {
+    if (attachmentIds.length === 0) {
+      return 0;
+    }
+
+    return this.prisma.attachment.count({
+      where: {
+        id: {
+          in: attachmentIds,
+        },
+        echoId: null,
       },
+    });
+  }
+
+  async create(
+    echo: EchoEntity,
+    attachmentIds: string[] = [],
+  ): Promise<EchoWithReplyCount> {
+    const created = await this.prisma.$transaction(async (transaction) => {
+      await transaction.echo.create({
+        data: {
+          id: echo.id,
+          body: echo.body,
+          status: echo.status,
+          authorActorId: echo.authorActorId,
+          authorType: echo.authorType,
+          authorDisplayName: echo.authorDisplayName,
+          parentEchoId: echo.parentEchoId,
+          rootEchoId: echo.rootEchoId,
+          depth: echo.depth,
+          createdAt: echo.createdAt,
+          updatedAt: echo.updatedAt,
+          deletedAt: echo.deletedAt,
+          deletedByActorId: echo.deletedByActorId,
+        },
+      });
+
+      if (attachmentIds.length > 0) {
+        await transaction.attachment.updateMany({
+          where: {
+            id: {
+              in: attachmentIds,
+            },
+            echoId: null,
+          },
+          data: {
+            echoId: echo.id,
+          },
+        });
+      }
+
+      return transaction.echo.findUniqueOrThrow({
+        where: {
+          id: echo.id,
+        },
+        include: echoInclude,
+      });
     });
 
     return this.withReplyCount(created);
@@ -60,6 +112,7 @@ export class PrismaEchoRepository implements EchoRepository {
       where: {
         id: echoId,
       },
+      include: echoInclude,
     });
 
     return echo === null ? undefined : this.withReplyCount(echo);
@@ -68,12 +121,21 @@ export class PrismaEchoRepository implements EchoRepository {
   async listRootEchoes(
     query: ListRootEchoesQuery,
   ): Promise<EchoWithReplyCount[]> {
+    const where: Prisma.EchoWhereInput = {
+      parentEchoId: null,
+      depth: 0,
+      status: query.status,
+    };
+
+    if (query.search !== undefined) {
+      where.body = {
+        contains: query.search,
+        mode: "insensitive",
+      };
+    }
+
     const rows = await this.prisma.echo.findMany({
-      where: {
-        parentEchoId: null,
-        depth: 0,
-        status: query.status,
-      },
+      where,
       orderBy: [
         {
           createdAt: "desc",
@@ -91,6 +153,7 @@ export class PrismaEchoRepository implements EchoRepository {
             skip: 1,
           }),
       take: query.limit,
+      include: echoInclude,
     });
 
     return Promise.all(rows.map((row) => this.withReplyCount(row)));
@@ -110,6 +173,7 @@ export class PrismaEchoRepository implements EchoRepository {
           id: "asc",
         },
       ],
+      include: echoInclude,
     });
 
     return Promise.all(rows.map((row) => this.withReplyCount(row)));
@@ -128,6 +192,7 @@ export class PrismaEchoRepository implements EchoRepository {
         body,
         updatedAt,
       },
+      include: echoInclude,
     });
 
     return this.withReplyCount(updated);
@@ -148,9 +213,27 @@ export class PrismaEchoRepository implements EchoRepository {
         deletedByActorId,
         updatedAt: deletedAt,
       },
+      include: echoInclude,
     });
 
     return this.withReplyCount(archived);
+  }
+
+  async restore(echoId: string, restoredAt: Date): Promise<EchoWithReplyCount> {
+    const restored = await this.prisma.echo.update({
+      where: {
+        id: echoId,
+      },
+      data: {
+        status: "published",
+        deletedAt: null,
+        deletedByActorId: null,
+        updatedAt: restoredAt,
+      },
+      include: echoInclude,
+    });
+
+    return this.withReplyCount(restored);
   }
 
   private async withReplyCount(
@@ -178,6 +261,15 @@ export class PrismaEchoRepository implements EchoRepository {
       deletedAt: row.deletedAt ?? undefined,
       deletedByActorId: row.deletedByActorId ?? undefined,
       replyCount,
+      attachments: row.attachments.map((attachment) => ({
+        id: attachment.id,
+        originalFileName: attachment.originalFileName,
+        mimeType: attachment.mimeType,
+        sizeBytes: attachment.sizeBytes,
+        checksum: attachment.checksum,
+        relativePath: attachment.relativePath,
+        createdAt: attachment.createdAt,
+      })),
     };
   }
 }

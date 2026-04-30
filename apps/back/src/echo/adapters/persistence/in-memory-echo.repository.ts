@@ -1,4 +1,5 @@
 import type {
+  EchoAttachmentEntity,
   EchoEntity,
   EchoWithReplyCount,
 } from "../../domain/echo.entity.js";
@@ -9,9 +10,29 @@ import type {
 
 export class InMemoryEchoRepository implements EchoRepository {
   private readonly echoes = new Map<string, EchoEntity>();
+  private readonly attachments = new Map<
+    string,
+    EchoAttachmentEntity & { echoId?: string }
+  >();
 
-  async create(echo: EchoEntity): Promise<EchoWithReplyCount> {
+  addAttachmentForTest(attachment: EchoAttachmentEntity) {
+    this.attachments.set(attachment.id, { ...attachment });
+  }
+
+  async countAttachableAttachments(attachmentIds: string[]): Promise<number> {
+    return attachmentIds.filter((attachmentId) => {
+      const attachment = this.attachments.get(attachmentId);
+
+      return attachment !== undefined && attachment.echoId === undefined;
+    }).length;
+  }
+
+  async create(
+    echo: EchoEntity,
+    attachmentIds: string[] = [],
+  ): Promise<EchoWithReplyCount> {
     this.echoes.set(echo.id, { ...echo });
+    this.attachAttachments(echo.id, attachmentIds);
 
     return this.withReplyCount(echo);
   }
@@ -30,7 +51,8 @@ export class InMemoryEchoRepository implements EchoRepository {
         (echo) =>
           echo.depth === 0 &&
           echo.parentEchoId === undefined &&
-          echo.status === query.status,
+          echo.status === query.status &&
+          matchesSearch(echo, query.search),
       )
       .sort(compareNewestFirst);
 
@@ -39,10 +61,9 @@ export class InMemoryEchoRepository implements EchoRepository {
         ? 0
         : Math.max(sorted.findIndex((echo) => echo.id === query.cursor) + 1, 0);
 
-    return sorted.slice(startIndex, startIndex + query.limit).map((echo) => ({
-      ...echo,
-      replyCount: this.countReplies(echo.id),
-    }));
+    return sorted
+      .slice(startIndex, startIndex + query.limit)
+      .map((echo) => this.withReplyCount(echo));
   }
 
   async listReplies(rootEchoId: string): Promise<EchoWithReplyCount[]> {
@@ -53,10 +74,7 @@ export class InMemoryEchoRepository implements EchoRepository {
       .sort(
         (left, right) => left.createdAt.getTime() - right.createdAt.getTime(),
       )
-      .map((echo) => ({
-        ...echo,
-        replyCount: this.countReplies(echo.id),
-      }));
+      .map((echo) => this.withReplyCount(echo));
   }
 
   async updateBody(
@@ -95,6 +113,21 @@ export class InMemoryEchoRepository implements EchoRepository {
     return this.withReplyCount(archived);
   }
 
+  async restore(echoId: string, restoredAt: Date): Promise<EchoWithReplyCount> {
+    const echo = this.requireEcho(echoId);
+    const restored = {
+      ...echo,
+      status: "published" as const,
+      deletedAt: undefined,
+      deletedByActorId: undefined,
+      updatedAt: restoredAt,
+    };
+
+    this.echoes.set(echoId, restored);
+
+    return this.withReplyCount(restored);
+  }
+
   private requireEcho(echoId: string) {
     const echo = this.echoes.get(echoId);
 
@@ -109,6 +142,7 @@ export class InMemoryEchoRepository implements EchoRepository {
     return {
       ...echo,
       replyCount: this.countReplies(echo.id),
+      attachments: this.listAttachments(echo.id),
     };
   }
 
@@ -117,10 +151,37 @@ export class InMemoryEchoRepository implements EchoRepository {
       (echo) => echo.parentEchoId === echoId && echo.status === "published",
     ).length;
   }
+
+  private listAttachments(echoId: string) {
+    return Array.from(this.attachments.values())
+      .filter((attachment) => attachment.echoId === echoId)
+      .map(({ echoId: _echoId, ...attachment }) => attachment);
+  }
+
+  private attachAttachments(echoId: string, attachmentIds: string[]) {
+    for (const attachmentId of attachmentIds) {
+      const attachment = this.attachments.get(attachmentId);
+
+      if (attachment !== undefined && attachment.echoId === undefined) {
+        this.attachments.set(attachmentId, {
+          ...attachment,
+          echoId,
+        });
+      }
+    }
+  }
 }
 
 function compareNewestFirst(left: EchoEntity, right: EchoEntity) {
   const dateDiff = right.createdAt.getTime() - left.createdAt.getTime();
 
   return dateDiff === 0 ? right.id.localeCompare(left.id) : dateDiff;
+}
+
+function matchesSearch(echo: EchoEntity, search: string | undefined) {
+  if (search === undefined) {
+    return true;
+  }
+
+  return echo.body.toLowerCase().includes(search.toLowerCase());
 }

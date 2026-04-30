@@ -1,11 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
   createEchoRequestSchema,
+  echoAttachmentSchema,
   echoDetailSchema,
   echoIdSchema,
   echoStatusSchema,
   listEchoesResponseSchema,
   updateEchoRequestSchema,
+  uploadAttachmentRequestSchema,
 } from "./index";
 
 const now = "2026-04-28T00:00:00.000Z";
@@ -35,6 +37,7 @@ describe("Echo contracts", () => {
     expect(() => createEchoRequestSchema.parse({ body: "   " })).toThrow();
     expect(createEchoRequestSchema.parse({ body: " 첫 Echo " })).toEqual({
       body: "첫 Echo",
+      attachmentIds: [],
       mentionedAgentIds: [],
       referencedEchoIds: [],
     });
@@ -74,7 +77,36 @@ describe("Echo contracts", () => {
     });
 
     expect(detail.id).toBe("echo_root");
+    expect(detail.attachments).toEqual([]);
     expect(detail.replies).toHaveLength(1);
+  });
+
+  it("Attachment 업로드 요청과 응답 필드를 검증한다", () => {
+    expect(
+      uploadAttachmentRequestSchema.parse({
+        fileName: "memo.txt",
+        mimeType: "text/plain",
+        sizeBytes: 5,
+        contentBase64: "aGVsbG8=",
+      }),
+    ).toEqual({
+      fileName: "memo.txt",
+      mimeType: "text/plain",
+      sizeBytes: 5,
+      contentBase64: "aGVsbG8=",
+    });
+
+    expect(
+      echoAttachmentSchema.parse({
+        id: "attachment_one",
+        originalFileName: "memo.txt",
+        mimeType: "text/plain",
+        sizeBytes: 5,
+        checksum: "abc",
+        downloadUrl: "/attachments/attachment_one/download",
+        createdAt: now,
+      }).downloadUrl,
+    ).toBe("/attachments/attachment_one/download");
   });
 
   it("응답 필드 이름 변경을 계약 테스트로 방지한다", () => {

@@ -41,6 +41,20 @@ export const attachmentIdSchema = z
   })
   .brand<"AttachmentId">();
 
+export const attachmentMaxSizeBytes = 10 * 1024 * 1024;
+
+export const allowedAttachmentMimeTypes = [
+  "image/png",
+  "image/jpeg",
+  "image/gif",
+  "image/webp",
+  "application/pdf",
+  "text/plain",
+  "text/markdown",
+] as const;
+
+export const attachmentMimeTypeSchema = z.enum(allowedAttachmentMimeTypes);
+
 export const echoStatusSchema = z.enum(["draft", "published", "archived"]);
 
 export const persistedEchoStatusSchema = z.enum(["published", "archived"]);
@@ -59,15 +73,19 @@ export const echoValidationErrorSchema = z.object({
     .min(1, "error message must not be empty.")
     .max(240, "error message must be 240 characters or fewer."),
   details: z.unknown().optional(),
+  requestId: z.string().trim().min(1).max(128).optional(),
 });
 
 const echoBodySchema = z.string().trim().min(1, "Echo 본문을 입력해 주세요.");
+
+const attachmentIdsSchema = z.array(attachmentIdSchema).default([]);
 
 export const createEchoRequestSchema = z.object({
   body: echoBodySchema,
   parentEchoId: echoIdSchema.optional(),
   mentionedAgentIds: z.array(agentIdSchema).default([]),
   referencedEchoIds: z.array(echoIdSchema).default([]),
+  attachmentIds: attachmentIdsSchema,
 });
 
 export const updateEchoRequestSchema = z.object({
@@ -76,10 +94,39 @@ export const updateEchoRequestSchema = z.object({
   referencedEchoIds: z.array(echoIdSchema).default([]),
 });
 
+export const uploadAttachmentRequestSchema = z.object({
+  fileName: z
+    .string()
+    .trim()
+    .min(1, "파일 이름을 확인해 주세요.")
+    .max(240, "파일 이름은 240자 이하여야 해요."),
+  mimeType: attachmentMimeTypeSchema,
+  sizeBytes: z
+    .number()
+    .int()
+    .positive("빈 파일은 업로드할 수 없어요.")
+    .max(attachmentMaxSizeBytes, "10MB 이하 파일만 업로드할 수 있어요."),
+  contentBase64: z
+    .string()
+    .trim()
+    .min(1, "파일 내용이 비어 있어요.")
+    .regex(/^[A-Za-z0-9+/]+={0,2}$/, "파일 내용을 base64 로 보내 주세요."),
+});
+
 export const echoAuthorSchema = z.object({
   id: actorIdSchema,
   type: echoAuthorTypeSchema,
   displayName: z.string().trim().min(1).max(80),
+});
+
+export const echoAttachmentSchema = z.object({
+  id: attachmentIdSchema,
+  originalFileName: z.string().trim().min(1).max(240),
+  mimeType: attachmentMimeTypeSchema,
+  sizeBytes: z.number().int().positive().max(attachmentMaxSizeBytes),
+  checksum: z.string().trim().min(1).max(128),
+  downloadUrl: z.string().trim().min(1),
+  createdAt: z.string().datetime({ offset: true }),
 });
 
 const echoSummaryShape = {
@@ -87,6 +134,7 @@ const echoSummaryShape = {
   body: z.string(),
   status: echoStatusSchema,
   author: echoAuthorSchema,
+  attachments: z.array(echoAttachmentSchema).default([]),
   parentEchoId: echoIdSchema.optional(),
   rootEchoId: echoIdSchema.optional(),
   replyCount: z.number().int().nonnegative(),
@@ -104,6 +152,7 @@ export const echoDetailSchema = echoSummarySchema.extend({
 export const listEchoesRequestSchema = z.object({
   cursor: z.string().trim().min(1).optional(),
   status: persistedEchoStatusSchema.default("published"),
+  q: z.string().trim().min(1).max(200).optional(),
 });
 
 export const listEchoesResponseSchema = z.object({

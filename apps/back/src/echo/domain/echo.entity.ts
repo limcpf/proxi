@@ -22,6 +22,17 @@ export interface EchoEntity {
   deletedByActorId?: string;
 }
 
+export interface EchoAttachmentEntity {
+  id: string;
+  originalFileName: string;
+  mimeType: string;
+  sizeBytes: number;
+  checksum: string;
+  relativePath: string;
+  createdAt: Date;
+}
+
 export interface EchoWithReplyCount extends EchoEntity {
   replyCount: number;
+  attachments: EchoAttachmentEntity[];
 }
