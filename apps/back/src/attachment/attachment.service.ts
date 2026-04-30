@@ -5,6 +5,7 @@ import path from "node:path";
 import {
   BadRequestException,
   ForbiddenException,
+  Inject,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
@@ -13,7 +14,7 @@ import {
   echoAttachmentSchema,
   uploadAttachmentRequestSchema,
 } from "@proxi/shared";
-import type { PrismaService } from "../prisma/prisma.service.js";
+import { PrismaService } from "../prisma/prisma.service.js";
 
 const defaultUploadRoot = ".local/uploads";
 const extensionByMimeType: Record<string, string> = {
@@ -33,7 +34,7 @@ export class AttachmentService {
     process.env.PROXI_UPLOAD_ROOT ?? defaultUploadRoot,
   );
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
 
   async upload(input: unknown): Promise<EchoAttachment> {
     const request = this.parseUploadRequest(input);

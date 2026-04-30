@@ -1,11 +1,11 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import type {
   Prisma,
   Attachment as PrismaAttachment,
   EchoAuthorType as PrismaEchoAuthorType,
   EchoStatus as PrismaEchoStatus,
 } from "@prisma/client";
-import type { PrismaService } from "../../../prisma/prisma.service.js";
+import { PrismaService } from "../../../prisma/prisma.service.js";
 import type {
   EchoEntity,
   EchoWithReplyCount,
@@ -42,7 +42,7 @@ const echoInclude = {
 
 @Injectable()
 export class PrismaEchoRepository implements EchoRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
 
   async countAttachableAttachments(attachmentIds: string[]): Promise<number> {
     if (attachmentIds.length === 0) {
