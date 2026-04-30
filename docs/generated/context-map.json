@@ -86,6 +86,13 @@
       "owner_scope": "docs"
     },
     {
+      "path": "docs/DEVELOPMENT.md",
+      "kind": "reference",
+      "role": "로컬 개발 환경과 검증 절차 기준",
+      "read_when": ["개발 환경 구성", "로컬 DB 실행", "migration 적용", "E2E 실행"],
+      "owner_scope": "docs"
+    },
+    {
       "path": "docs/RELIABILITY.md",
       "kind": "policy",
       "role": "API DB 로깅 운영 안정성 기준",
@@ -177,10 +184,10 @@
       "owner_scope": "docs/exec-plans/active"
     },
     {
-      "path": "docs/exec-plans/active/2026-04-28-echo-domain-slices.md",
+      "path": "docs/exec-plans/active/2026-04-30-echo-followup-environment.md",
       "kind": "exec-plan",
-      "role": "Echo 도메인 Slice 1-5 개발 실행 계획",
-      "read_when": ["Echo 도메인 개발", "Echo slice 진행", "Echo 구현 재개", "Echo 작업 상태 확인"],
+      "role": "Echo 후속 slice 와 개발 환경 보강 실행 계획",
+      "read_when": ["Echo 후속 slice 진행", "attachment 구현", "archive 구현", "검색 구현", "개발 환경 보강"],
       "owner_scope": "docs/exec-plans/active"
     },
     {
@@ -209,6 +216,13 @@
       "kind": "exec-plan",
       "role": "태그형 Codex PR 리뷰 구현 기록",
       "read_when": ["과거 실행 기억 확인", "PR 리뷰 자동화 구현 참고"],
+      "owner_scope": "docs/exec-plans/completed"
+    },
+    {
+      "path": "docs/exec-plans/completed/2026-04-28-echo-domain-slices.md",
+      "kind": "exec-plan",
+      "role": "Echo 도메인 Slice 1-5 개발 실행 기록",
+      "read_when": ["Echo 도메인 과거 구현 확인", "Echo slice 1-5 결과 확인"],
       "owner_scope": "docs/exec-plans/completed"
     },
     {
@@ -265,6 +279,13 @@
       "kind": "reference",
       "role": "Echo 도메인 요구사항과 계약 기준",
       "read_when": ["Echo 도메인 개발", "Echo 요구사항 확인", "Echo API 계약 작성", "Echo 수용 기준 작성", "글 도메인 구현"],
+      "owner_scope": "docs/product-specs"
+    },
+    {
+      "path": "docs/product-specs/2026-04-30-echo-followup-slices.md",
+      "kind": "reference",
+      "role": "Echo 후속 slice 요구사항",
+      "read_when": ["Echo attachment 요구사항", "Echo archive 요구사항", "Echo 검색 요구사항", "후속 slice 수용 기준 작성"],
       "owner_scope": "docs/product-specs"
     },
     {

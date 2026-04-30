@@ -4,6 +4,7 @@
 - [`/Users/lim/dev/proxi/docs/product-specs/2026-04-18-proxi-front-ui-ux-principles.md`](./2026-04-18-proxi-front-ui-ux-principles.md): 프런트 화면 목적, 액션 위계, 점진적 공개 기준
 - [`/Users/lim/dev/proxi/docs/product-specs/2026-04-27-writing-domain-requirements-checklist.md`](./2026-04-27-writing-domain-requirements-checklist.md): 글 도메인 요구사항 수립을 위한 목표와 체크리스트
 - [`/Users/lim/dev/proxi/docs/product-specs/2026-04-28-echo-domain-requirements.md`](./2026-04-28-echo-domain-requirements.md): Echo 도메인 요구사항, 계약 초안, 수용 기준, 개발 slice 기준
+- [`/Users/lim/dev/proxi/docs/product-specs/2026-04-30-echo-followup-slices.md`](./2026-04-30-echo-followup-slices.md): Echo attachment, archive, search 후속 slice 요구사항
 
 ## 작성 규칙
 - 사용자 흐름과 수용 기준을 먼저 적는다.

@@ -2,6 +2,7 @@
 
 ## 상태
 - 상태: completed
+- 완료일: 2026-04-28
 - 기준 제품 문서: [`docs/product-specs/2026-04-28-echo-domain-requirements.md`](../../product-specs/2026-04-28-echo-domain-requirements.md)
 - 시작일: 2026-04-28
 - DnD: Slice 1부터 Slice 5까지 모두 완료하고 `corepack pnpm run verify` 를 통과한다.

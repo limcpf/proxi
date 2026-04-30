@@ -8,6 +8,8 @@
 - 재시도 가능 작업은 중복 실행 시 부작용이 없는지 먼저 판단한다.
 - DB 구조 변경은 롤백 또는 우회 전략을 함께 기록한다.
 - 장애 분석에 필요한 로그, 메트릭, 트레이스 중 무엇이 추가되거나 유지되는지 명시한다.
+- API 오류 응답은 `code`, `message`, `details`, `requestId` shape 을 유지한다.
+- 로컬 migration 은 `prisma migrate dev`, 운영/CI migration 은 `prisma migrate deploy` 로 분리한다.
 
 ## 백엔드 관측 가능성 기준
 - 현재 백엔드 관측 가능성 스택은 `NestJS -> Grafana Alloy -> Prometheus/Loki/Tempo -> Grafana` 이다.
@@ -17,3 +19,4 @@
 ## 검증 규칙
 - 자동 테스트가 없으면 수동 검증 절차라도 남긴다.
 - 검증 수단이 전혀 없으면 그 공백을 기술 부채로 등록한다.
+- 실제 PostgreSQL integration test 와 Playwright E2E 는 로컬 준비가 필요하므로 별도 명령으로 유지하고, CI 준비 후 필수 검증으로 승격한다.

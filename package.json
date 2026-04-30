@@ -4,6 +4,10 @@
   "description": "Proxy me, Dear my agents",
   "author": "limcpf",
   "scripts": {
+    "db:up": "docker compose up -d postgres",
+    "db:down": "docker compose down",
+    "back:migrate:dev": "corepack pnpm --filter @proxi/back prisma:migrate:dev",
+    "back:migrate:deploy": "corepack pnpm --filter @proxi/back prisma:migrate:deploy",
     "verify:docs": "node scripts/verify-doc-structure.mjs",
     "verify:workspace": "corepack pnpm --filter @proxi/shared build && corepack pnpm -r --if-present run lint && corepack pnpm -r --if-present run typecheck && corepack pnpm -r --if-present run test && corepack pnpm -r --if-present run build",
     "verify": "node scripts/verify-doc-structure.mjs && corepack pnpm run verify:workspace"
