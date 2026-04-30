@@ -112,8 +112,8 @@
 - radius: 12px
 - border: `1px solid --echo-border`
 - shadow: subtle panel shadow 만 허용
-- heading 과 form 사이에는 1px divider 로 구조를 분리한다.
-- title 과 helper text 는 가까이 묶고, 입력/첨부/액션 사이만 중간 간격을 둔다.
+- 별도 heading, helper text, divider 를 기본으로 두지 않는다.
+- 작성 필드를 카드의 첫 요소로 두고, 입력/첨부/액션 사이만 중간 간격을 둔다.
 - textarea 는 16px body scale 로 읽기 쉽게 둔다.
 - focus 시 border 를 primary 로 바꾸고 4px soft focus ring 을 준다.
 

@@ -82,15 +82,6 @@ export function EchoFeedPage({
 
       <section className="compose-section">
         <div className="compose-panel">
-          <div className="compose-heading">
-            <div className="compose-title-group">
-              <p className="kicker leading-4">Compose</p>
-              <h2 className="card-heading leading-6">무슨 생각을 남길까요?</h2>
-              <span className="caption-copy leading-4">
-                가볍게 쓰고 나중에 다시 보세요.
-              </span>
-            </div>
-          </div>
           <EchoComposer
             disabled={createMutation.isPending}
             draftKey={newEchoDraftKey}
