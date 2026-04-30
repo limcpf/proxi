@@ -16,10 +16,19 @@ Docker Compose 를 공식 로컬 기본값으로 사용한다.
 docker compose up -d postgres
 ```
 
+PostgreSQL 18 Docker 이미지는 기본 데이터 디렉터리가 `/var/lib/postgresql/18/docker` 이므로 compose 볼륨은 부모 경로인 `/var/lib/postgresql` 에 마운트한다.
+
 기본 연결 문자열은 아래와 같다.
 
 ```txt
 postgresql://proxi:proxi@localhost:5432/proxi
+```
+
+이전 compose 설정으로 빈 개발 DB 볼륨을 이미 만들었다면 아래 명령으로 볼륨을 지우고 다시 띄운다. 보존해야 할 로컬 데이터가 있으면 먼저 백업한다.
+
+```sh
+docker compose down -v
+docker compose up -d postgres
 ```
 
 ## Migration 적용
