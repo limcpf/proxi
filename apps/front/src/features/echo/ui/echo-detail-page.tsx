@@ -148,7 +148,7 @@ export function EchoDetailPage({ echoId }: EchoDetailPageProps) {
               onClick={() => setIsEditing(true)}
               size="sm"
               type="button"
-              variant="tertiary"
+              variant="secondary"
             >
               수정
             </Button>

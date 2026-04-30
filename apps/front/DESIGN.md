@@ -3,7 +3,7 @@
 이 문서는 Echo 화면을 새로 만들거나 수정할 때 우선 적용할 시각, 컴포넌트, 레이아웃 규칙이다.
 
 ## 기준과 우선순위
-- 방향성은 `minimal`, `calm`, `professional`, `slightly soft` 한 SaaS 제품 UI 다.
+- 방향성은 IBM식 layout discipline 과 Threads식 content-first social tone 을 결합한 SaaS 제품 UI 다.
 - Echo 는 개인 micro-posting 도구이며, 짧은 생각을 쓰고 피드에서 다시 보는 흐름이 중심이다.
 - 새 기능을 추가하지 않고, 화면 위계와 사용성만 개선한다.
 - 스택, 상태 책임, API 경계는 [`/Users/lim/dev/proxi/apps/front/ARCHITECTURE.md`](./ARCHITECTURE.md)를 우선한다.
@@ -13,18 +13,20 @@
 ## 화면 제작 절차
 1. 화면의 중심 목적을 한 문장으로 적는다.
 2. primary action 을 하나만 정한다.
-3. Header, intro, compose area, content list 의 분리를 먼저 잡는다.
+3. Header, Hero/Intro, Compose, Feed 의 세그먼트를 먼저 분리한다.
 4. URL 상태, server state, form state, local UI state 를 분리한다.
 5. loading, empty, error, disabled 상태를 먼저 설계한다.
 6. 아래 token, type scale, spacing, component 규칙 안에서 스타일을 만든다.
 7. 새 색상, radius, shadow, spacing 을 추가하기 전 기존 token 으로 표현 가능한지 확인한다.
 
 ## 시각 방향
-- 화면은 중앙 정렬된 700-900px 폭을 기본으로 한다.
+- 화면은 중앙 정렬된 720-880px 폭을 기본으로 한다.
+- IBM처럼 alignment, spacing, section boundary 를 엄격하게 유지한다.
+- Threads처럼 content-first, soft card, muted metadata 를 사용한다.
 - 장식적 side border, 강한 배경, 과한 hero 높이는 쓰지 않는다.
-- Compose box 를 화면의 primary focus 로 둔다.
-- Feed 는 card 기반 목록으로 분리하되 과한 shadow 를 피한다.
-- 전체 톤은 조용하고 전문적이어야 하며, prototype 느낌의 강한 파랑과 날카로운 모서리는 피한다.
+- Compose box 를 화면의 primary interaction surface 로 둔다.
+- Feed 는 card 기반 세로 흐름으로 두고 과한 shadow 를 피한다.
+- prototype 느낌의 강한 파랑과 날카로운 모서리는 피한다.
 
 ## 언어와 문구
 - 화면 문구의 기본 언어는 한국어다.
@@ -45,10 +47,10 @@
   --echo-text-subtle: #7b8496;
   --echo-border: #dfe5ee;
   --echo-border-strong: #c8d2e0;
-  --echo-primary: #3d5bd7;
-  --echo-primary-hover: #2f49b8;
-  --echo-primary-active: #243b96;
-  --echo-primary-soft: #eef2ff;
+  --echo-primary: #355d7c;
+  --echo-primary-hover: #294962;
+  --echo-primary-active: #1f384c;
+  --echo-primary-soft: #edf4f8;
   --echo-danger: #d14343;
   --echo-success: #1f8a5b;
 }
@@ -89,7 +91,7 @@
 - font weight 는 400, 500, 600 중심으로 제한한다.
 
 ## 레이아웃
-- page max width 는 700-900px 이다. 현재 기본값은 820px 이다.
+- page max width 는 720-880px 이다. 현재 기본값은 820px 이다.
 - spacing 은 8px grid 를 따른다.
 - Header 와 content 사이: 24-32px
 - Hero intro 와 compose: 16px
@@ -102,9 +104,10 @@
 
 ### Compose Box
 - background: `--echo-surface`
-- radius: 16px 또는 12px
+- radius: 12px
 - border: `1px solid --echo-border`
 - shadow: subtle panel shadow 만 허용
+- heading 과 form 사이에는 1px divider 로 구조를 분리한다.
 - textarea 는 16px body scale 로 읽기 쉽게 둔다.
 - focus 시 border 를 primary 로 바꾸고 4px soft focus ring 을 준다.
 
@@ -117,11 +120,12 @@
 
 ### Feed Card
 - background: `--echo-surface`
-- radius: 16px
+- radius: 12px
 - border: `1px solid --echo-border`
 - shadow 는 아주 약하게 둔다.
 - hover 에서는 border/shadow 만 조금 강화한다.
 - metadata 는 author, time, status 순으로 한 줄에 묶는다.
+- 본문이 카드의 중심이다. 링크와 보조 action 은 낮은 대비로 둔다.
 
 ### Input, Textarea
 - full border input 을 사용한다.
@@ -148,9 +152,10 @@
 
 ```txt
 Echo 는 개인 micro-posting SaaS 제품이다.
-화면은 700-900px 중앙 정렬, calm neutral background, white card surface 를 사용한다.
+화면은 720-880px 중앙 정렬, calm neutral background, white card surface 를 사용한다.
+IBM식 정렬과 section segmentation 을 유지하고, Threads식 content-first feed tone 을 적용한다.
 Compose box 를 primary focus 로 두고, Feed 는 16px 간격의 card list 로 만든다.
-Primary color 는 부드러운 indigo-blue 계열 하나만 사용한다.
-버튼은 10px radius, 입력과 카드는 12-16px radius 를 사용한다.
+Primary color 는 muted slate-blue 계열 하나만 key action 에 사용한다.
+버튼은 10px radius, 입력과 카드는 12px radius 를 사용한다.
 본문은 16px/28px 로 읽기 쉽게 유지하고, UI copy 는 한국어를 기본으로 한다.
 ```

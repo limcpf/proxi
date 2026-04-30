@@ -10,9 +10,7 @@ export function EchoCard({ echo }: EchoCardProps) {
   return (
     <article className="echo-card">
       <div className="echo-card-header">
-        <span className="text-sm font-semibold tracking-[0.16px]">
-          {echo.authorLabel}
-        </span>
+        <span className="echo-card-author">{echo.authorLabel}</span>
         <span className="caption-copy">{echo.createdAtLabel}</span>
         {echo.updatedLabel ? (
           <span className="caption-copy">{echo.updatedLabel}</span>
@@ -33,8 +31,8 @@ export function EchoCard({ echo }: EchoCardProps) {
           ))}
         </div>
       ) : null}
-      <div className="action-strip">
-        <Button asChild size="sm" variant="tertiary">
+      <div className="echo-card-actions">
+        <Button asChild size="sm" variant="secondary">
           <a href={`/echoes/${echo.id}`}>상세 보기</a>
         </Button>
         <span className="muted-copy">{echo.replyCountLabel}</span>

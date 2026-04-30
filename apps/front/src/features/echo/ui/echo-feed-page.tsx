@@ -70,7 +70,7 @@ export function EchoFeedPage({
   return (
     <main className="page-shell echo-page">
       <section className="hero-shell">
-        <div className="grid gap-4">
+        <div className="grid gap-3">
           <p className="kicker">Echo</p>
           <h1 className="hero-title">짧게 쓰고, 다시 이어받는 공간</h1>
           <p className="hero-copy">
@@ -78,10 +78,18 @@ export function EchoFeedPage({
             정리합니다.
           </p>
         </div>
-        <div className="surface-panel-soft">
-          <div>
-            <p className="kicker">Compose</p>
-            <h2 className="card-heading">무슨 생각을 남길까요?</h2>
+      </section>
+
+      <section className="compose-section">
+        <div className="compose-panel">
+          <div className="compose-heading">
+            <div>
+              <p className="kicker">Compose</p>
+              <h2 className="card-heading">무슨 생각을 남길까요?</h2>
+            </div>
+            <span className="caption-copy">
+              가볍게 쓰고 나중에 다시 보세요.
+            </span>
           </div>
           <EchoComposer
             disabled={createMutation.isPending}
@@ -97,7 +105,7 @@ export function EchoFeedPage({
         ) : null}
       </section>
 
-      <section className="surface-panel">
+      <section className="feed-panel">
         <div className="section-toolbar">
           <div>
             <p className="kicker">Feed</p>
@@ -128,7 +136,7 @@ export function EchoFeedPage({
             placeholder="본문 검색"
             value={searchDraft}
           />
-          <Button size="sm" type="submit" variant="tertiary">
+          <Button size="sm" type="submit" variant="secondary">
             검색
           </Button>
           {searchTerm ? (
@@ -171,7 +179,7 @@ export function EchoFeedPage({
             disabled={listQuery.isFetchingNextPage}
             onClick={() => void listQuery.fetchNextPage()}
             type="button"
-            variant="tertiary"
+            variant="secondary"
           >
             {listQuery.isFetchingNextPage
               ? "메아리를 더 불러오는 중이에요."

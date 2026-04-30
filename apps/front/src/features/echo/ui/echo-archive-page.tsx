@@ -72,7 +72,7 @@ export function EchoArchivePage({
         </div>
       </section>
 
-      <section className="surface-panel">
+      <section className="feed-panel">
         <div className="section-toolbar">
           <div>
             <p className="kicker">Archived Echoes</p>
@@ -98,7 +98,7 @@ export function EchoArchivePage({
             placeholder="아카이브 본문 검색"
             value={searchDraft}
           />
-          <Button size="sm" type="submit" variant="tertiary">
+          <Button size="sm" type="submit" variant="secondary">
             검색
           </Button>
           {searchTerm ? (
@@ -139,7 +139,7 @@ export function EchoArchivePage({
                 onClick={() => restoreMutation.mutate(echo.id)}
                 size="sm"
                 type="button"
-                variant="tertiary"
+                variant="secondary"
               >
                 복구
               </Button>
@@ -158,7 +158,7 @@ export function EchoArchivePage({
             disabled={archiveQuery.isFetchingNextPage}
             onClick={() => void archiveQuery.fetchNextPage()}
             type="button"
-            variant="tertiary"
+            variant="secondary"
           >
             {archiveQuery.isFetchingNextPage
               ? "메아리를 더 불러오는 중이에요."

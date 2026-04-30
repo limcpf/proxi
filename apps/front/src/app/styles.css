@@ -13,14 +13,14 @@
   --echo-text-subtle: #7b8496;
   --echo-border: #dfe5ee;
   --echo-border-strong: #c8d2e0;
-  --echo-primary: #3d5bd7;
-  --echo-primary-hover: #2f49b8;
-  --echo-primary-active: #243b96;
-  --echo-primary-soft: #eef2ff;
+  --echo-primary: #355d7c;
+  --echo-primary-hover: #294962;
+  --echo-primary-active: #1f384c;
+  --echo-primary-soft: #edf4f8;
   --echo-danger: #d14343;
   --echo-danger-hover: #b63737;
   --echo-success: #1f8a5b;
-  --echo-focus: rgba(61, 91, 215, 0.28);
+  --echo-focus: rgba(53, 93, 124, 0.24);
   --echo-shadow-card: 0 1px 2px rgba(15, 23, 42, 0.06);
   --echo-shadow-panel: 0 12px 32px rgba(15, 23, 42, 0.08);
 }
@@ -105,22 +105,37 @@ textarea {
   }
 
   .page-shell {
-    @apply mx-auto grid min-h-[calc(100vh-56px)] w-full max-w-[860px] gap-6 px-4 py-6 sm:px-6 sm:py-8;
+    @apply mx-auto grid min-h-[calc(100vh-56px)] w-full max-w-[860px] gap-8 px-4 py-6 sm:px-6 sm:py-8;
   }
 
   .hero-shell {
-    @apply grid gap-4 pt-2;
+    @apply grid gap-3 pt-2;
   }
 
   .surface-panel {
-    @apply grid gap-4;
+    background: var(--echo-surface);
+    border: 1px solid var(--echo-border);
+    box-shadow: var(--echo-shadow-card);
+    @apply grid gap-4 rounded-xl p-4 sm:p-5;
   }
 
-  .surface-panel-soft {
+  .compose-section {
+    @apply grid gap-3;
+  }
+
+  .compose-panel {
     background: var(--echo-surface);
     border: 1px solid var(--echo-border);
     box-shadow: var(--echo-shadow-panel);
-    @apply grid gap-4 rounded-2xl p-4 sm:p-5;
+    @apply grid gap-5 rounded-xl p-4 sm:p-5;
+  }
+
+  .compose-heading {
+    @apply flex flex-wrap items-start justify-between gap-3 border-b border-[var(--echo-border)] pb-4;
+  }
+
+  .feed-panel {
+    @apply grid gap-4;
   }
 
   .kicker {
@@ -130,7 +145,7 @@ textarea {
 
   .hero-title {
     color: var(--echo-text);
-    @apply max-w-2xl text-[2rem] font-semibold leading-10 tracking-[-0.02em];
+    @apply max-w-2xl text-[2rem] font-semibold leading-10 tracking-[-0.025em];
   }
 
   .hero-copy {
@@ -163,7 +178,7 @@ textarea {
   }
 
   .section-toolbar {
-    @apply flex flex-wrap items-end justify-between gap-3;
+    @apply flex flex-wrap items-end justify-between gap-3 border-b border-[var(--echo-border)] pb-4;
   }
 
   .field-grid {
@@ -181,7 +196,7 @@ textarea {
 
   .status-note {
     background: var(--echo-primary-soft);
-    border: 1px solid rgba(61, 91, 215, 0.14);
+    border: 1px solid rgba(53, 93, 124, 0.18);
     color: var(--echo-text-muted);
     @apply rounded-xl px-4 py-3 text-sm leading-5;
   }
@@ -194,7 +209,7 @@ textarea {
 
   .ui-button {
     border-radius: 10px;
-    @apply inline-flex items-center justify-center gap-2 border font-semibold transition-all duration-150 focus-visible:outline focus-visible:outline-4 disabled:pointer-events-none disabled:opacity-55;
+    @apply inline-flex items-center justify-center gap-2 border font-semibold transition-all duration-200 focus-visible:outline focus-visible:outline-4 disabled:pointer-events-none disabled:opacity-55;
   }
 
   .ui-button-primary {
@@ -224,17 +239,22 @@ textarea {
   .ui-button-secondary:hover {
     background: var(--echo-surface-soft);
     border-color: var(--echo-border-strong);
+    transform: translateY(-1px);
+  }
+
+  .ui-button-secondary:active {
+    transform: translateY(0);
   }
 
   .ui-button-tertiary {
-    background: var(--echo-primary-soft);
+    background: var(--echo-surface-soft);
     border-color: transparent;
-    color: var(--echo-primary);
+    color: var(--echo-text-muted);
   }
 
   .ui-button-tertiary:hover {
-    background: #e2e8ff;
-    color: var(--echo-primary-hover);
+    background: #e8edf4;
+    color: var(--echo-text);
   }
 
   .ui-button-ghost {
@@ -273,9 +293,9 @@ textarea {
     color: var(--echo-text);
     outline: none;
     transition:
-      border-color 150ms ease,
-      box-shadow 150ms ease,
-      background-color 150ms ease;
+      border-color 180ms ease,
+      box-shadow 180ms ease,
+      background-color 180ms ease;
   }
 
   .ui-input::placeholder,
@@ -328,7 +348,7 @@ textarea {
     background: var(--echo-surface);
     border: 1px solid var(--echo-border);
     box-shadow: var(--echo-shadow-card);
-    @apply grid gap-3 rounded-2xl p-4 transition-all duration-150;
+    @apply grid gap-3 rounded-xl p-4 transition-all duration-200;
   }
 
   .echo-card:hover {
@@ -341,9 +361,18 @@ textarea {
     @apply flex flex-wrap items-center gap-2;
   }
 
+  .echo-card-author {
+    color: var(--echo-text);
+    @apply text-sm font-semibold leading-5;
+  }
+
   .echo-card-body {
     color: var(--echo-text);
     @apply text-base leading-7;
+  }
+
+  .echo-card-actions {
+    @apply flex flex-wrap items-center gap-2 pt-1;
   }
 
   .echo-markdown {
@@ -420,6 +449,6 @@ textarea {
   .attachment-chip {
     background: var(--echo-primary-soft);
     color: var(--echo-primary);
-    @apply rounded-full px-3 py-1 text-sm font-medium transition-colors hover:bg-[#e2e8ff] hover:text-[var(--echo-primary-hover)];
+    @apply rounded-full px-3 py-1 text-sm font-medium transition-colors hover:bg-[var(--echo-surface-soft)] hover:text-[var(--echo-primary-hover)];
   }
 }
