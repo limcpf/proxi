@@ -120,9 +120,7 @@ export function EchoDetailPage({ echoId }: EchoDetailPageProps) {
         <article className="grid gap-4">
           <div>
             <p className="kicker">{echo.authorLabel}</p>
-            <h1 className="hero-title text-[2.625rem] leading-[50px]">
-              Echo 상세
-            </h1>
+            <h1 className="section-heading">Echo 상세</h1>
             <p className="caption-copy">
               {echo.createdAtLabel}
               {echo.updatedLabel ? ` · ${echo.updatedLabel}` : ""}

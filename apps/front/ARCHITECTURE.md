@@ -20,7 +20,7 @@
 - form/validation: `react-hook-form + zod`
 - styling/ui: `Tailwind CSS + shadcn/ui + Radix UI`
 - testing: `Vitest + Testing Library + Playwright`
-- design direction: `IBM Carbon-inspired`, `enterprise precision`, `flat layered surfaces`
+- design direction: `minimal calm SaaS`, `soft card surfaces`, `focused compose flow`
 - copy direction: `Korean-first UI copy`
 - UI UX direction: `one page, one purpose`, `one primary action`, `progressive disclosure`
 
@@ -119,9 +119,9 @@
 - UI UX 원칙 문서의 정보 밀도, 버튼 수, primary action 규칙을 따른다.
 
 기본 방향:
-- IBM Carbon-inspired enterprise UI
-- white/gray/blue 중심의 flat visual system
-- 8px grid 와 0px radius 중심의 rectangular UI
+- minimal calm SaaS UI
+- neutral background 와 white card 중심의 soft visual system
+- 8px grid 와 10-16px radius 중심의 readable UI
 - one-primary-action per page
 
 ## 컴포넌트 원칙

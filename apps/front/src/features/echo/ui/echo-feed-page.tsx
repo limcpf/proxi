@@ -72,16 +72,16 @@ export function EchoFeedPage({
       <section className="hero-shell">
         <div className="grid gap-4">
           <p className="kicker">Echo</p>
-          <h1 className="hero-title">생각을 짧게 울리고, 다시 이어받는 공간</h1>
+          <h1 className="hero-title">짧게 쓰고, 다시 이어받는 공간</h1>
           <p className="hero-copy">
-            첫 버전의 Echo 는 개인 피드형 글입니다. 작성한 Echo 는 곧바로 피드에
-            쌓이고, 상세에서 댓글과 수정 흐름으로 이어집니다.
+            떠오른 생각을 빠르게 남기고, 필요할 때 아카이브와 댓글로 흐름을
+            정리합니다.
           </p>
         </div>
         <div className="surface-panel-soft">
           <div>
             <p className="kicker">Compose</p>
-            <h2 className="card-heading">새 Echo 작성</h2>
+            <h2 className="card-heading">무슨 생각을 남길까요?</h2>
           </div>
           <EchoComposer
             disabled={createMutation.isPending}

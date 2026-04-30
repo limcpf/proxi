@@ -15,18 +15,20 @@ function AppFrame() {
   return (
     <div className="app-frame">
       <header className="app-masthead">
-        <a className="app-brand" href="/echoes">
-          <span aria-hidden="true" className="app-brand-mark" />
-          <span>Proxi Echo</span>
-        </a>
-        <nav aria-label="주요 화면" className="app-nav">
-          <a className="app-nav-link" href="/echoes">
-            피드
+        <div className="app-masthead-inner">
+          <a className="app-brand" href="/echoes">
+            <span aria-hidden="true" className="app-brand-mark" />
+            <span>Proxi Echo</span>
           </a>
-          <a className="app-nav-link" href="/echoes/archive">
-            아카이브
-          </a>
-        </nav>
+          <nav aria-label="주요 화면" className="app-nav">
+            <a className="app-nav-link" href="/echoes">
+              피드
+            </a>
+            <a className="app-nav-link" href="/echoes/archive">
+              아카이브
+            </a>
+          </nav>
+        </div>
       </header>
       <Outlet />
     </div>

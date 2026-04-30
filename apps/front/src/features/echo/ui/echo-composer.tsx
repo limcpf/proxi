@@ -120,7 +120,7 @@ export function EchoComposer({
         />
       </label>
       {form.formState.errors.body ? (
-        <p className="caption-copy text-[var(--cds-support-error)]">
+        <p className="caption-copy text-[var(--echo-danger)]">
           {form.formState.errors.body.message}
         </p>
       ) : null}

@@ -8,7 +8,7 @@ export const Input = forwardRef<
   return (
     <input
       ref={ref}
-      className={cn("ui-input h-10 w-full px-4 text-sm", className)}
+      className={cn("ui-input h-10 w-full px-3 text-sm", className)}
       {...props}
     />
   );
