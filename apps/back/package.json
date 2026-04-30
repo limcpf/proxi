@@ -6,6 +6,7 @@
   "main": "./dist/main.js",
   "author": "limcpf",
   "scripts": {
+    "predev": "corepack pnpm run prisma:generate && corepack pnpm --filter @proxi/shared build",
     "dev": "tsx watch src/main.ts",
     "prisma:generate": "prisma generate --schema prisma/schema.prisma",
     "prisma:migrate:dev": "prisma migrate dev --schema prisma/schema.prisma",
