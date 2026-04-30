@@ -4,6 +4,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { listArchivedEchoes, restoreEcho } from "../api/echo.api";
 import { echoQueryKeys, toEchoFeedItemViewModel } from "../model";
@@ -55,13 +56,13 @@ export function EchoArchivePage({
 
   return (
     <main className="page-shell echo-page">
-      <section className="hero-shell grid gap-5">
+      <section className="hero-shell">
         <div className="action-strip">
-          <a className="muted-copy" href="/echoes">
-            피드로 돌아가기
-          </a>
+          <Button asChild size="sm" variant="ghost">
+            <a href="/echoes">피드로 돌아가기</a>
+          </Button>
         </div>
-        <div className="grid gap-3">
+        <div className="grid gap-4">
           <p className="kicker">Archive</p>
           <h1 className="hero-title">아카이브된 Echo 를 다시 살펴보기</h1>
           <p className="hero-copy">
@@ -71,8 +72,8 @@ export function EchoArchivePage({
         </div>
       </section>
 
-      <section className="surface-panel grid gap-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      <section className="surface-panel">
+        <div className="section-toolbar">
           <div>
             <p className="kicker">Archived Echoes</p>
             <h2 className="section-heading">아카이브 목록</h2>
@@ -91,25 +92,27 @@ export function EchoArchivePage({
             아카이브 검색
           </label>
           <Input
+            className="min-w-0 flex-1"
             id="echo-archive-search"
             onChange={(event) => setSearchDraft(event.currentTarget.value)}
             placeholder="아카이브 본문 검색"
             value={searchDraft}
           />
-          <button className="echo-load-more" type="submit">
+          <Button size="sm" type="submit" variant="tertiary">
             검색
-          </button>
+          </Button>
           {searchTerm ? (
-            <button
-              className="echo-load-more"
+            <Button
               onClick={() => {
                 setSearchDraft("");
                 onSearchChange?.("");
               }}
+              size="sm"
               type="button"
+              variant="ghost"
             >
               초기화
-            </button>
+            </Button>
           ) : null}
         </form>
 
@@ -131,14 +134,15 @@ export function EchoArchivePage({
           {items.map((echo) => (
             <div className="grid gap-3" key={echo.id}>
               <EchoCard echo={echo} />
-              <button
-                className="echo-load-more"
+              <Button
                 disabled={restoreMutation.isPending}
                 onClick={() => restoreMutation.mutate(echo.id)}
+                size="sm"
                 type="button"
+                variant="tertiary"
               >
                 복구
-              </button>
+              </Button>
             </div>
           ))}
         </div>
@@ -150,16 +154,16 @@ export function EchoArchivePage({
         ) : null}
 
         {archiveQuery.hasNextPage ? (
-          <button
-            className="echo-load-more"
+          <Button
             disabled={archiveQuery.isFetchingNextPage}
             onClick={() => void archiveQuery.fetchNextPage()}
             type="button"
+            variant="tertiary"
           >
             {archiveQuery.isFetchingNextPage
               ? "메아리를 더 불러오는 중이에요."
               : "더 불러오기"}
-          </button>
+          </Button>
         ) : null}
       </section>
     </main>

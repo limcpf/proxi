@@ -1,6 +1,6 @@
 # proxi front
 
-현재 `apps/front` 는 `proxi` 프런트 기준을 고정하기 위한 front harness 이다. 실제 제품 화면을 본격적으로 붙이기 전에 스택, 상태 책임, 검증 진입점을 먼저 맞추는 용도로 유지한다.
+현재 `apps/front` 는 Echo 제품 UI 를 제공한다. 루트 `/` 는 Echo 피드인 `/echoes` 로 이동하며, 브라우저 개발 기준은 프런트 origin `http://localhost:5173` 하나로 둔다.
 
 ## 개발 시작
 - 의존성 설치: `corepack pnpm install`
@@ -41,6 +41,7 @@
 
 ## 참고 문서
 - 기준 문서: [`/Users/lim/dev/proxi/apps/front/ARCHITECTURE.md`](./ARCHITECTURE.md)
+- 화면 디자인 시스템: [`/Users/lim/dev/proxi/apps/front/DESIGN.md`](./DESIGN.md)
 - 스택 결정 근거: [`/Users/lim/dev/proxi/docs/design-docs/2026-04-18-proxi-front-spa-stack.md`](../../docs/design-docs/2026-04-18-proxi-front-spa-stack.md)
 - 디자인 원칙: [`/Users/lim/dev/proxi/docs/design-docs/2026-04-18-proxi-front-design-principles.md`](../../docs/design-docs/2026-04-18-proxi-front-design-principles.md)
 - UI UX 원칙: [`/Users/lim/dev/proxi/docs/product-specs/2026-04-18-proxi-front-ui-ux-principles.md`](../../docs/product-specs/2026-04-18-proxi-front-ui-ux-principles.md)

@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import {
   archiveEcho,
@@ -106,21 +107,23 @@ export function EchoDetailPage({ echoId }: EchoDetailPageProps) {
 
   return (
     <main className="page-shell echo-page">
-      <section className="surface-panel grid gap-5">
+      <section className="surface-panel">
         <div className="action-strip">
           <Button asChild size="sm" variant="ghost">
             <a href="/echoes">피드로 돌아가기</a>
           </Button>
           {echo.isArchived ? (
-            <span className="status-note">아카이브된 Echo 입니다.</span>
+            <Badge tone="muted">아카이브된 Echo 입니다.</Badge>
           ) : null}
         </div>
 
         <article className="grid gap-4">
           <div>
             <p className="kicker">{echo.authorLabel}</p>
-            <h1 className="section-heading">Echo 상세</h1>
-            <p className="muted-copy">
+            <h1 className="hero-title text-[2.625rem] leading-[50px]">
+              Echo 상세
+            </h1>
+            <p className="caption-copy">
               {echo.createdAtLabel}
               {echo.updatedLabel ? ` · ${echo.updatedLabel}` : ""}
             </p>
@@ -147,7 +150,7 @@ export function EchoDetailPage({ echoId }: EchoDetailPageProps) {
               onClick={() => setIsEditing(true)}
               size="sm"
               type="button"
-              variant="secondary"
+              variant="tertiary"
             >
               수정
             </Button>
@@ -156,7 +159,7 @@ export function EchoDetailPage({ echoId }: EchoDetailPageProps) {
               onClick={() => setIsDeleteOpen(true)}
               size="sm"
               type="button"
-              variant="ghost"
+              variant="danger"
             >
               삭제
             </Button>
@@ -166,19 +169,21 @@ export function EchoDetailPage({ echoId }: EchoDetailPageProps) {
                 onClick={() => restoreMutation.mutate()}
                 size="sm"
                 type="button"
-                variant="secondary"
+                variant="primary"
               >
                 복구
               </Button>
             ) : null}
           </div>
           {mutationError ? (
-            <p className="status-note">{mutationErrorMessage}</p>
+            <p className="status-note status-note-danger">
+              {mutationErrorMessage}
+            </p>
           ) : null}
         </article>
       </section>
 
-      <section className="surface-panel grid gap-4">
+      <section className="surface-panel">
         <div>
           <p className="kicker">Replies</p>
           <h2 className="section-heading">{echo.replyCountLabel}</h2>
@@ -190,7 +195,7 @@ export function EchoDetailPage({ echoId }: EchoDetailPageProps) {
           <div className="list-grid">
             {echo.replies.map((reply) => (
               <article className="echo-card" key={reply.id}>
-                <p className="muted-copy">
+                <p className="caption-copy">
                   {reply.authorLabel} · {reply.createdAtLabel}
                 </p>
                 <MarkdownPreview body={reply.body} />
@@ -233,6 +238,7 @@ export function EchoDetailPage({ echoId }: EchoDetailPageProps) {
                 disabled={deleteMutation.isPending}
                 onClick={() => deleteMutation.mutate()}
                 type="button"
+                variant="danger"
               >
                 아카이브로 보내기
               </Button>

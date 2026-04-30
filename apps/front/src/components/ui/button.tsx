@@ -2,7 +2,7 @@ import { Slot } from "@radix-ui/react-slot";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { cn } from "../../lib/cn";
 
-type ButtonVariant = "primary" | "secondary" | "ghost";
+type ButtonVariant = "danger" | "ghost" | "primary" | "secondary" | "tertiary";
 type ButtonSize = "sm" | "md" | "lg";
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -14,15 +14,17 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
+  danger: "ui-button-danger",
   primary: "ui-button-primary",
   secondary: "ui-button-secondary",
+  tertiary: "ui-button-tertiary",
   ghost: "ui-button-ghost",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: "h-9 rounded-xl px-3 text-sm",
-  md: "h-11 rounded-2xl px-4 text-sm",
-  lg: "h-12 rounded-2xl px-5 text-sm",
+  sm: "h-10 px-4 text-sm",
+  md: "h-12 pl-4 pr-16 text-sm",
+  lg: "h-16 pl-4 pr-20 text-base",
 };
 
 export function Button({

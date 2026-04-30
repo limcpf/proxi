@@ -2,13 +2,15 @@
 
 ## 함께 읽을 문서
 - 운영 절차와 재현성 점검: [`/Users/lim/dev/proxi/apps/front/README.md`](./README.md)
+- 화면 디자인 시스템: [`/Users/lim/dev/proxi/apps/front/DESIGN.md`](./DESIGN.md)
 - 스택 결정 근거: [`/Users/lim/dev/proxi/docs/design-docs/2026-04-18-proxi-front-spa-stack.md`](../../docs/design-docs/2026-04-18-proxi-front-spa-stack.md)
 - 디자인 원칙: [`/Users/lim/dev/proxi/docs/design-docs/2026-04-18-proxi-front-design-principles.md`](../../docs/design-docs/2026-04-18-proxi-front-design-principles.md)
 - UI UX 원칙: [`/Users/lim/dev/proxi/docs/product-specs/2026-04-18-proxi-front-ui-ux-principles.md`](../../docs/product-specs/2026-04-18-proxi-front-ui-ux-principles.md)
 
 ## 문서 역할
 - 이 문서: 스택, 책임, 구현 기본값
-- 디자인 원칙 문서: 타이포그래피, spacing, token, visual density
+- `DESIGN.md`: 실제 화면 제작 시 적용할 시각 언어, token, 컴포넌트 스타일
+- 디자인 원칙 문서: 과거 디자인 결정과 배경
 - UI UX 원칙 문서: 화면 목적, 액션 위계, 점진적 공개, 정보 밀도
 
 ## 현재 결론
@@ -18,7 +20,8 @@
 - form/validation: `react-hook-form + zod`
 - styling/ui: `Tailwind CSS + shadcn/ui + Radix UI`
 - testing: `Vitest + Testing Library + Playwright`
-- design direction: `cozy`, `Korean-first readability`, `low-fatigue`
+- design direction: `IBM Carbon-inspired`, `enterprise precision`, `flat layered surfaces`
+- copy direction: `Korean-first UI copy`
 - UI UX direction: `one page, one purpose`, `one primary action`, `progressive disclosure`
 
 ## 왜 `React SPA` 로 시작하는가
@@ -41,7 +44,7 @@
 
 ### `Tailwind` 는 속도를 위해 쓰되 자유도를 줄인다
 - 화면은 빠르게 만들되, 스타일 값은 token 과 variant 로 제한해야 한다.
-- 디자인 원칙 문서와 UI UX 원칙 문서가 `Tailwind` 사용의 제약 기준이 된다.
+- `DESIGN.md` 와 UI UX 원칙 문서가 `Tailwind` 사용의 제약 기준이 된다.
 
 ## 채택 스택
 
@@ -112,13 +115,13 @@
 ## 스타일링 원칙
 - `Tailwind CSS` 를 사용한다.
 - raw utility 남용보다 semantic class 와 component variant 를 우선한다.
-- 디자인 원칙 문서의 typography, spacing, control size 기준을 따른다.
+- `DESIGN.md` 의 typography, spacing, token, component 기준을 따른다.
 - UI UX 원칙 문서의 정보 밀도, 버튼 수, primary action 규칙을 따른다.
 
 기본 방향:
-- cozy density
-- Korean-first readability
-- calm, low-fatigue UI
+- IBM Carbon-inspired enterprise UI
+- white/gray/blue 중심의 flat visual system
+- 8px grid 와 0px radius 중심의 rectangular UI
 - one-primary-action per page
 
 ## 컴포넌트 원칙
@@ -177,7 +180,7 @@ apps/front
 3. URL 로 올라가야 할 상태를 먼저 분리한다.
 4. query / mutation 경계를 정한다.
 5. loading / empty / error / disabled 상태를 먼저 생각한다.
-6. 디자인 원칙 문서의 typography / spacing 기준에 맞춘다.
+6. `DESIGN.md` 의 typography / spacing / component 기준에 맞춘다.
 7. UI UX 원칙 문서의 버튼 수, 정보 밀도 규칙에 맞춘다.
 8. 임의값이나 예외 variant 를 만들기 전 기존 패턴으로 설명 가능한지 확인한다.
 

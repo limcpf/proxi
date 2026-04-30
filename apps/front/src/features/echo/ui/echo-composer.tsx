@@ -110,7 +110,7 @@ export function EchoComposer({
   return (
     <form className="field-grid" onSubmit={handleSubmit}>
       <label className="grid gap-2" htmlFor={bodyFieldId}>
-        <span className="text-sm font-semibold">{labels.label}</span>
+        <span className="field-label">{labels.label}</span>
         <Textarea
           aria-invalid={form.formState.errors.body !== undefined}
           disabled={disabled || isSubmitting}
@@ -120,15 +120,15 @@ export function EchoComposer({
         />
       </label>
       {form.formState.errors.body ? (
-        <p className="muted-copy text-[var(--app-danger)]">
+        <p className="caption-copy text-[var(--cds-support-error)]">
           {form.formState.errors.body.message}
         </p>
       ) : null}
       {mode === "edit" ? null : (
         <label className="grid gap-2" htmlFor={fileFieldId}>
-          <span className="text-sm font-semibold">첨부 파일</span>
+          <span className="field-label">첨부 파일</span>
           <input
-            className="ui-input rounded-2xl px-4 py-3 text-sm"
+            className="ui-input w-full px-4 text-sm"
             disabled={disabled || isSubmitting}
             id={fileFieldId}
             multiple
@@ -138,7 +138,7 @@ export function EchoComposer({
             type="file"
           />
           {files.length > 0 ? (
-            <span className="muted-copy">
+            <span className="caption-copy">
               {files.map((file) => file.name).join(", ")}
             </span>
           ) : null}

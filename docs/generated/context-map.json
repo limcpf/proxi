@@ -44,6 +44,13 @@
       "owner_scope": "apps/front"
     },
     {
+      "path": "apps/front/DESIGN.md",
+      "kind": "policy",
+      "role": "프런트 화면 디자인 시스템과 UI 제작 규칙",
+      "read_when": ["프런트 화면 제작", "프런트 디자인 구현", "컴포넌트 스타일 결정", "Echo 화면 변경"],
+      "owner_scope": "apps/front"
+    },
+    {
       "path": "apps/shared/AGENTS.md",
       "kind": "router",
       "role": "공유 패키지 작업 진입 라우터",

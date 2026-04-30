@@ -4,6 +4,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { createEcho, listEchoes, uploadAttachmentFile } from "../api/echo.api";
 import { newEchoDraftKey } from "../lib/draft-storage";
@@ -68,38 +69,44 @@ export function EchoFeedPage({
 
   return (
     <main className="page-shell echo-page">
-      <section className="hero-shell grid gap-5">
-        <p className="kicker">Echo</p>
-        <div className="grid gap-3">
+      <section className="hero-shell">
+        <div className="grid gap-4">
+          <p className="kicker">Echo</p>
           <h1 className="hero-title">생각을 짧게 울리고, 다시 이어받는 공간</h1>
           <p className="hero-copy">
             첫 버전의 Echo 는 개인 피드형 글입니다. 작성한 Echo 는 곧바로 피드에
             쌓이고, 상세에서 댓글과 수정 흐름으로 이어집니다.
           </p>
         </div>
-        <EchoComposer
-          disabled={createMutation.isPending}
-          draftKey={newEchoDraftKey}
-          mode="create"
-          onSubmit={(body, files) =>
-            createMutation.mutateAsync({ body, files })
-          }
-        />
+        <div className="surface-panel-soft">
+          <div>
+            <p className="kicker">Compose</p>
+            <h2 className="card-heading">새 Echo 작성</h2>
+          </div>
+          <EchoComposer
+            disabled={createMutation.isPending}
+            draftKey={newEchoDraftKey}
+            mode="create"
+            onSubmit={(body, files) =>
+              createMutation.mutateAsync({ body, files })
+            }
+          />
+        </div>
         {createMutation.isError ? (
-          <p className="status-note">{errorMessage}</p>
+          <p className="status-note status-note-danger">{errorMessage}</p>
         ) : null}
       </section>
 
-      <section className="surface-panel grid gap-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      <section className="surface-panel">
+        <div className="section-toolbar">
           <div>
             <p className="kicker">Feed</p>
             <h2 className="section-heading">최근 Echo</h2>
           </div>
           <div className="action-strip">
-            <a className="muted-copy" href="/echoes/archive">
-              아카이브 보기
-            </a>
+            <Button asChild size="sm" variant="ghost">
+              <a href="/echoes/archive">아카이브 보기</a>
+            </Button>
             <span className="muted-copy">{items.length}개 표시 중</span>
           </div>
         </div>
@@ -115,25 +122,27 @@ export function EchoFeedPage({
             Echo 검색
           </label>
           <Input
+            className="min-w-0 flex-1"
             id="echo-search"
             onChange={(event) => setSearchDraft(event.currentTarget.value)}
             placeholder="본문 검색"
             value={searchDraft}
           />
-          <button className="echo-load-more" type="submit">
+          <Button size="sm" type="submit" variant="tertiary">
             검색
-          </button>
+          </Button>
           {searchTerm ? (
-            <button
-              className="echo-load-more"
+            <Button
               onClick={() => {
                 setSearchDraft("");
                 onSearchChange?.("");
               }}
+              size="sm"
               type="button"
+              variant="ghost"
             >
               초기화
-            </button>
+            </Button>
           ) : null}
         </form>
 
@@ -158,16 +167,16 @@ export function EchoFeedPage({
         </div>
 
         {listQuery.hasNextPage ? (
-          <button
-            className="echo-load-more"
+          <Button
             disabled={listQuery.isFetchingNextPage}
             onClick={() => void listQuery.fetchNextPage()}
             type="button"
+            variant="tertiary"
           >
             {listQuery.isFetchingNextPage
               ? "메아리를 더 불러오는 중이에요."
               : "더 불러오기"}
-          </button>
+          </Button>
         ) : null}
       </section>
     </main>
