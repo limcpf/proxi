@@ -127,7 +127,7 @@ textarea {
     background: var(--echo-surface);
     border: 1px solid var(--echo-border);
     box-shadow: var(--echo-shadow-panel);
-    @apply grid gap-4 rounded-xl p-5;
+    @apply grid gap-4 rounded-xl p-5 md:p-6;
   }
 
   .compose-heading {
@@ -147,7 +147,7 @@ textarea {
   }
 
   .compose-panel .composer-actions {
-    @apply pt-0.5;
+    @apply mt-0;
   }
 
   .feed-panel {
@@ -346,9 +346,9 @@ textarea {
   }
 
   .ui-input.composer-file-input {
-    height: 48px;
-    padding-bottom: 10px;
-    padding-top: 10px;
+    height: 44px;
+    padding-bottom: 8px;
+    padding-top: 8px;
   }
 
   .ui-badge-default {
