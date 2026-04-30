@@ -114,7 +114,7 @@ export function EchoComposer({
         <span className="field-label">{labels.label}</span>
         <Textarea
           aria-invalid={form.formState.errors.body !== undefined}
-          className={cn(mode === "create" ? "min-h-20 py-2.5" : "min-h-24")}
+          className={cn(mode === "create" ? "min-h-[88px] p-4" : "min-h-24")}
           disabled={disabled || isSubmitting}
           id={bodyFieldId}
           placeholder={labels.placeholder}
@@ -131,8 +131,8 @@ export function EchoComposer({
           <span className="field-label">첨부 파일</span>
           <input
             className={cn(
-              "ui-input w-full text-sm",
-              mode === "create" ? "composer-file-input px-3" : "px-4",
+              "ui-input w-full px-4 text-sm",
+              mode === "create" && "composer-file-input",
             )}
             disabled={disabled || isSubmitting}
             id={fileFieldId}
