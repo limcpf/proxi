@@ -227,15 +227,42 @@ textarea {
     @apply grid gap-3 text-base leading-8;
   }
 
-  .echo-inline-code {
+  .echo-markdown :where(p, ul, ol, blockquote, pre, table) {
+    @apply m-0;
+  }
+
+  .echo-markdown :where(ul, ol) {
+    @apply grid gap-1 pl-5;
+  }
+
+  .echo-markdown :where(ul) {
+    @apply list-disc;
+  }
+
+  .echo-markdown :where(ol) {
+    @apply list-decimal;
+  }
+
+  .echo-markdown :where(a) {
+    color: var(--app-accent);
+    @apply font-semibold underline underline-offset-4;
+  }
+
+  .echo-markdown :where(code) {
     background: rgba(34, 73, 65, 0.09);
     color: var(--app-primary);
     @apply rounded-lg px-1.5 py-0.5 text-sm;
   }
 
-  .echo-reference {
-    color: var(--app-accent);
-    @apply font-semibold;
+  .echo-markdown :where(pre) {
+    background: rgba(31, 43, 40, 0.06);
+    border: 1px solid var(--app-border);
+    @apply overflow-x-auto rounded-2xl p-4;
+  }
+
+  .echo-markdown :where(pre code) {
+    background: transparent;
+    @apply p-0;
   }
 
   .echo-load-more {
@@ -254,5 +281,16 @@ textarea {
     border: 1px solid var(--app-border);
     box-shadow: var(--app-shadow);
     @apply grid w-full max-w-md gap-4 rounded-3xl p-6;
+  }
+
+  .attachment-list {
+    @apply flex flex-wrap gap-2;
+  }
+
+  .attachment-chip {
+    background: rgba(181, 107, 46, 0.11);
+    border: 1px solid rgba(181, 107, 46, 0.18);
+    color: var(--app-accent);
+    @apply rounded-full px-3 py-1 text-sm font-semibold;
   }
 }

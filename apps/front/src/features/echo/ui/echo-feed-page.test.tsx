@@ -3,12 +3,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createEcho, listEchoes } from "../api/echo.api";
+import { createEcho, listEchoes, uploadAttachmentFile } from "../api/echo.api";
 import { EchoFeedPage } from "./echo-feed-page";
 
 vi.mock("../api/echo.api", () => ({
   createEcho: vi.fn(),
   listEchoes: vi.fn(),
+  uploadAttachmentFile: vi.fn(),
 }));
 
 const now = "2026-04-28T00:00:00.000Z";
@@ -18,6 +19,7 @@ describe("EchoFeedPage", () => {
     window.localStorage.clear();
     vi.mocked(createEcho).mockReset();
     vi.mocked(listEchoes).mockReset();
+    vi.mocked(uploadAttachmentFile).mockReset();
   });
 
   it("로딩 뒤 empty 상태를 보여준다", async () => {
@@ -53,7 +55,10 @@ describe("EchoFeedPage", () => {
     await user.type(screen.getByLabelText("새 Echo 본문"), "첫 Echo");
     await user.click(screen.getByRole("button", { name: "Echo 남기기" }));
 
-    expect(createEcho).toHaveBeenCalledWith({ body: "첫 Echo" });
+    expect(createEcho).toHaveBeenCalledWith({
+      body: "첫 Echo",
+      attachmentIds: [],
+    });
     expect(await screen.findByText("첫 Echo")).toBeInTheDocument();
   });
 });

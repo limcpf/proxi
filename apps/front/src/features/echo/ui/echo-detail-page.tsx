@@ -1,9 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Button } from "../../../components/ui/button";
-import { archiveEcho, createReply, getEcho, updateEcho } from "../api/echo.api";
+import {
+  archiveEcho,
+  createReply,
+  getEcho,
+  restoreEcho,
+  updateEcho,
+  uploadAttachmentFile,
+} from "../api/echo.api";
 import { echoEditDraftKey, echoReplyDraftKey } from "../lib/draft-storage";
-import { echoQueryKeys, toEchoViewModel } from "../model";
+import {
+  type EchoFeedItemViewModel,
+  echoQueryKeys,
+  toEchoViewModel,
+} from "../model";
 import { EchoComposer } from "./echo-composer";
 import { MarkdownPreview } from "./markdown-preview";
 
@@ -36,8 +47,26 @@ export function EchoDetailPage({ echoId }: EchoDetailPageProps) {
       });
     },
   });
+  const restoreMutation = useMutation({
+    mutationFn: () => restoreEcho(echoId),
+    onSuccess: () => {
+      invalidateEchoQueries(queryClient, echoId);
+      queryClient.invalidateQueries({
+        queryKey: ["echoes", "archive"],
+      });
+    },
+  });
   const replyMutation = useMutation({
-    mutationFn: (body: string) => createReply(echoId, { body }),
+    mutationFn: async (input: { body: string; files: File[] }) => {
+      const attachments = await Promise.all(
+        input.files.map((file) => uploadAttachmentFile(file)),
+      );
+
+      return createReply(echoId, {
+        body: input.body,
+        attachmentIds: attachments.map((attachment) => attachment.id),
+      });
+    },
     onSuccess: () => invalidateEchoQueries(queryClient, echoId),
   });
 
@@ -66,7 +95,10 @@ export function EchoDetailPage({ echoId }: EchoDetailPageProps) {
 
   const echo = toEchoViewModel(detailQuery.data);
   const mutationError =
-    updateMutation.error ?? deleteMutation.error ?? replyMutation.error;
+    updateMutation.error ??
+    deleteMutation.error ??
+    restoreMutation.error ??
+    replyMutation.error;
   const mutationErrorMessage =
     mutationError instanceof Error
       ? mutationError.message
@@ -103,7 +135,10 @@ export function EchoDetailPage({ echoId }: EchoDetailPageProps) {
               onSubmit={(body) => updateMutation.mutateAsync(body)}
             />
           ) : (
-            <MarkdownPreview body={detailQuery.data.body} />
+            <div className="grid gap-3">
+              <MarkdownPreview body={detailQuery.data.body} />
+              <AttachmentList echo={echo} />
+            </div>
           )}
 
           <div className="action-strip">
@@ -125,6 +160,17 @@ export function EchoDetailPage({ echoId }: EchoDetailPageProps) {
             >
               삭제
             </Button>
+            {echo.isArchived ? (
+              <Button
+                disabled={restoreMutation.isPending}
+                onClick={() => restoreMutation.mutate()}
+                size="sm"
+                type="button"
+                variant="secondary"
+              >
+                복구
+              </Button>
+            ) : null}
           </div>
           {mutationError ? (
             <p className="status-note">{mutationErrorMessage}</p>
@@ -148,6 +194,7 @@ export function EchoDetailPage({ echoId }: EchoDetailPageProps) {
                   {reply.authorLabel} · {reply.createdAtLabel}
                 </p>
                 <MarkdownPreview body={reply.body} />
+                <AttachmentList echo={reply} />
               </article>
             ))}
           </div>
@@ -162,7 +209,9 @@ export function EchoDetailPage({ echoId }: EchoDetailPageProps) {
             disabled={replyMutation.isPending}
             draftKey={echoReplyDraftKey(echo.id)}
             mode="reply"
-            onSubmit={(body) => replyMutation.mutateAsync(body)}
+            onSubmit={(body, files) =>
+              replyMutation.mutateAsync({ body, files })
+            }
           />
         )}
       </section>
@@ -200,6 +249,26 @@ export function EchoDetailPage({ echoId }: EchoDetailPageProps) {
         </section>
       ) : null}
     </main>
+  );
+}
+
+function AttachmentList({ echo }: { echo: EchoFeedItemViewModel }) {
+  if (echo.attachments.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="attachment-list">
+      {echo.attachments.map((attachment) => (
+        <a
+          className="attachment-chip"
+          href={attachment.downloadUrl}
+          key={attachment.id}
+        >
+          {attachment.originalFileName}
+        </a>
+      ))}
+    </div>
   );
 }
 

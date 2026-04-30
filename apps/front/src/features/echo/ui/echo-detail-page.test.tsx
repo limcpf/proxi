@@ -3,14 +3,23 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { archiveEcho, createReply, getEcho, updateEcho } from "../api/echo.api";
+import {
+  archiveEcho,
+  createReply,
+  getEcho,
+  restoreEcho,
+  updateEcho,
+  uploadAttachmentFile,
+} from "../api/echo.api";
 import { EchoDetailPage } from "./echo-detail-page";
 
 vi.mock("../api/echo.api", () => ({
   archiveEcho: vi.fn(),
   createReply: vi.fn(),
   getEcho: vi.fn(),
+  restoreEcho: vi.fn(),
   updateEcho: vi.fn(),
+  uploadAttachmentFile: vi.fn(),
 }));
 
 const now = "2026-04-28T00:00:00.000Z";
@@ -21,7 +30,9 @@ describe("EchoDetailPage", () => {
     vi.mocked(archiveEcho).mockReset();
     vi.mocked(createReply).mockReset();
     vi.mocked(getEcho).mockReset();
+    vi.mocked(restoreEcho).mockReset();
     vi.mocked(updateEcho).mockReset();
+    vi.mocked(uploadAttachmentFile).mockReset();
   });
 
   it("상세와 댓글을 보여준다", async () => {
@@ -107,8 +118,32 @@ describe("EchoDetailPage", () => {
     await user.type(screen.getByLabelText("댓글 본문"), "reply");
     await user.click(screen.getByRole("button", { name: "댓글 남기기" }));
 
-    expect(createReply).toHaveBeenCalledWith("echo_root", { body: "reply" });
+    expect(createReply).toHaveBeenCalledWith("echo_root", {
+      body: "reply",
+      attachmentIds: [],
+    });
     expect(await screen.findByText("reply")).toBeInTheDocument();
+  });
+
+  it("아카이브된 Echo 를 복구한다", async () => {
+    const user = userEvent.setup();
+
+    vi.mocked(getEcho)
+      .mockResolvedValueOnce(
+        createEchoDetail("echo_root", "root", { status: "archived" }),
+      )
+      .mockResolvedValue(createEchoDetail("echo_root", "root"));
+    vi.mocked(restoreEcho).mockResolvedValue(
+      createEchoDetail("echo_root", "root"),
+    );
+
+    renderPage();
+
+    await screen.findByText("아카이브된 Echo 입니다.");
+    await user.click(screen.getByRole("button", { name: "복구" }));
+
+    expect(restoreEcho).toHaveBeenCalledWith("echo_root");
+    expect(await screen.findByText("댓글 본문")).toBeInTheDocument();
   });
 });
 

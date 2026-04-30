@@ -4,26 +4,26 @@ import { parseEchoListSearch } from "../features/echo/model";
 import { rootRoute } from "./root";
 import { RoutePending } from "./route-pending";
 
-const EchoFeedPage = lazy(() =>
-  import("../features/echo/ui/echo-feed-page").then((module) => ({
-    default: module.EchoFeedPage,
+const EchoArchivePage = lazy(() =>
+  import("../features/echo/ui/echo-archive-page").then((module) => ({
+    default: module.EchoArchivePage,
   })),
 );
 
-export const echoesRoute = createRoute({
+export const echoArchiveRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/echoes",
+  path: "/echoes/archive",
   validateSearch: parseEchoListSearch,
-  component: EchoesRouteComponent,
+  component: EchoArchiveRouteComponent,
 });
 
-function EchoesRouteComponent() {
-  const navigate = echoesRoute.useNavigate();
-  const search = echoesRoute.useSearch();
+function EchoArchiveRouteComponent() {
+  const navigate = echoArchiveRoute.useNavigate();
+  const search = echoArchiveRoute.useSearch();
 
   return (
     <Suspense fallback={<RoutePending />}>
-      <EchoFeedPage
+      <EchoArchivePage
         onSearchChange={(q) =>
           navigate({
             search: () => (q.trim().length > 0 ? { q: q.trim() } : {}),

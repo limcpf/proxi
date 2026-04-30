@@ -17,7 +17,7 @@
 - router/data: `TanStack Router + TanStack Query`
 - form/validation: `react-hook-form + zod`
 - styling/ui: `Tailwind CSS + shadcn/ui + Radix UI`
-- testing: `Vitest + Testing Library`
+- testing: `Vitest + Testing Library + Playwright`
 - design direction: `cozy`, `Korean-first readability`, `low-fatigue`
 - UI UX direction: `one page, one purpose`, `one primary action`, `progressive disclosure`
 
@@ -55,7 +55,7 @@
 - Validation: `zod`
 - Styling: `Tailwind CSS`
 - UI primitive / base components: `shadcn/ui`, `Radix UI`
-- Testing: `Vitest`, `Testing Library`
+- Testing: `Vitest`, `Testing Library`, `Playwright`
 
 ### 보조
 - Icon: `lucide-react` 계열 사용 가능
@@ -75,7 +75,6 @@
 ### 보류
 - OpenAPI 기반 타입/클라이언트 자동 생성
 - Storybook
-- E2E 테스트 도구
 - 다국어 시스템
 - 디자인 token 자동 생성 파이프라인
 
@@ -98,6 +97,9 @@
 ## API 연동 원칙
 - 프런트는 백엔드 모듈을 직접 import 하지 않는다.
 - 프런트는 HTTP API 계약을 통해 백엔드와 통신한다.
+- 개발 기본 API 경로는 Vite proxy 의 `/api` 이며 백엔드 origin 은 `http://localhost:3000` 이다.
+- attachment download 는 백엔드가 내려준 `/attachments/...` URL 을 같은 origin proxy 로 통과시킨다.
+- 브라우저 E2E 기준 URL 은 `http://localhost:5173` 하나로 통일한다.
 - 초반에는 얇은 API layer 로 시작한다.
 - API 계약이 커지면 OpenAPI 기반 생성 방식을 검토한다.
 
@@ -161,6 +163,7 @@ apps/front
 
 ## 테스트 기본값
 - 컴포넌트와 로직 테스트는 `Vitest + Testing Library` 로 시작한다.
+- 브라우저 happy path 는 `Playwright` 로 별도 명령에서 검증한다.
 - 우선순위는 아래 순서다.
 
 1. 핵심 폼 검증

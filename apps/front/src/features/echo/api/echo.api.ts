@@ -1,21 +1,26 @@
 import {
   type CreateEchoRequest,
   createEchoRequestSchema,
+  type EchoAttachment,
   type EchoDetail,
+  echoAttachmentSchema,
   echoDetailSchema,
   type ListEchoesRequest,
   type ListEchoesResponse,
   listEchoesResponseSchema,
   type UpdateEchoRequest,
+  type UploadAttachmentRequest,
   updateEchoRequestSchema,
+  uploadAttachmentRequestSchema,
 } from "@proxi/shared";
 
-const apiBaseUrl = import.meta.env.VITE_PROXI_API_BASE_URL ?? "";
+const apiBaseUrl = import.meta.env.VITE_PROXI_API_BASE_URL ?? "/api";
 
 export class EchoApiError extends Error {
   constructor(
     readonly code: string,
     message: string,
+    readonly requestId?: string,
   ) {
     super(message);
     this.name = "EchoApiError";
@@ -31,10 +36,34 @@ export async function listEchoes(
     search.set("cursor", request.cursor);
   }
 
+  if (request.q !== undefined) {
+    search.set("q", request.q);
+  }
+
   search.set("status", request.status ?? "published");
 
   const response = await requestJson(
     `/echoes${search.size > 0 ? `?${search.toString()}` : ""}`,
+  );
+
+  return listEchoesResponseSchema.parse(response);
+}
+
+export async function listArchivedEchoes(
+  request: Omit<ListEchoesRequest, "status">,
+): Promise<ListEchoesResponse> {
+  const search = new URLSearchParams();
+
+  if (request.cursor !== undefined) {
+    search.set("cursor", request.cursor);
+  }
+
+  if (request.q !== undefined) {
+    search.set("q", request.q);
+  }
+
+  const response = await requestJson(
+    `/echoes/archive${search.size > 0 ? `?${search.toString()}` : ""}`,
   );
 
   return listEchoesResponseSchema.parse(response);
@@ -75,6 +104,17 @@ export async function archiveEcho(echoId: string): Promise<void> {
   });
 }
 
+export async function restoreEcho(echoId: string): Promise<EchoDetail> {
+  const response = await requestJson(
+    `/echoes/${encodeURIComponent(echoId)}/restore`,
+    {
+      method: "POST",
+    },
+  );
+
+  return echoDetailSchema.parse(response);
+}
+
 export async function createReply(
   echoId: string,
   request: CreateEchoRequest,
@@ -88,6 +128,28 @@ export async function createReply(
   );
 
   return echoDetailSchema.parse(response);
+}
+
+export async function uploadAttachment(
+  request: UploadAttachmentRequest,
+): Promise<EchoAttachment> {
+  const response = await requestJson("/attachments", {
+    method: "POST",
+    body: JSON.stringify(uploadAttachmentRequestSchema.parse(request)),
+  });
+
+  return echoAttachmentSchema.parse(response);
+}
+
+export async function uploadAttachmentFile(file: File) {
+  const contentBase64 = toBase64(await file.arrayBuffer());
+
+  return uploadAttachment({
+    fileName: file.name,
+    mimeType: file.type as UploadAttachmentRequest["mimeType"],
+    sizeBytes: file.size,
+    contentBase64,
+  });
 }
 
 async function requestJson(path: string, init: RequestInit = {}) {
@@ -108,7 +170,7 @@ async function requestJson(path: string, init: RequestInit = {}) {
   if (!response.ok) {
     const error = parseApiError(payload);
 
-    throw new EchoApiError(error.code, error.message);
+    throw new EchoApiError(error.code, error.message, error.requestId);
   }
 
   return payload;
@@ -126,11 +188,28 @@ function parseApiError(payload: unknown) {
     return {
       code: payload.code,
       message: payload.message,
+      requestId:
+        "requestId" in payload && typeof payload.requestId === "string"
+          ? payload.requestId
+          : undefined,
     };
   }
 
   return {
     code: "echo_api_error",
     message: "메아리가 길을 잃었어요. 잠시 뒤 다시 불러와 주세요.",
+    requestId: undefined,
   };
+}
+
+function toBase64(buffer: ArrayBuffer) {
+  const bytes = new Uint8Array(buffer);
+  const chunkSize = 32_768;
+  let binary = "";
+
+  for (let index = 0; index < bytes.length; index += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
+  }
+
+  return window.btoa(binary);
 }

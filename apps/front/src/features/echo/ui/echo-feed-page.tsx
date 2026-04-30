@@ -3,30 +3,51 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { createEcho, listEchoes } from "../api/echo.api";
+import { useEffect, useState } from "react";
+import { Input } from "../../../components/ui/input";
+import { createEcho, listEchoes, uploadAttachmentFile } from "../api/echo.api";
 import { newEchoDraftKey } from "../lib/draft-storage";
 import { echoQueryKeys, toEchoFeedItemViewModel } from "../model";
 import { EchoCard } from "./echo-card";
 import { EchoComposer } from "./echo-composer";
 
-const publishedListKey = echoQueryKeys.list({
-  status: "published",
-});
+interface EchoFeedPageProps {
+  onSearchChange?: (q: string) => void;
+  searchTerm?: string;
+}
 
-export function EchoFeedPage() {
+export function EchoFeedPage({
+  onSearchChange,
+  searchTerm = "",
+}: EchoFeedPageProps) {
   const queryClient = useQueryClient();
+  const [searchDraft, setSearchDraft] = useState(searchTerm);
+  const publishedListKey = echoQueryKeys.list({
+    q: searchTerm || undefined,
+    status: "published",
+  });
   const listQuery = useInfiniteQuery({
     queryKey: publishedListKey,
     queryFn: ({ pageParam }) =>
       listEchoes({
         cursor: pageParam,
+        q: searchTerm || undefined,
         status: "published",
       }),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
   const createMutation = useMutation({
-    mutationFn: (body: string) => createEcho({ body }),
+    mutationFn: async (input: { body: string; files: File[] }) => {
+      const attachments = await Promise.all(
+        input.files.map((file) => uploadAttachmentFile(file)),
+      );
+
+      return createEcho({
+        body: input.body,
+        attachmentIds: attachments.map((attachment) => attachment.id),
+      });
+    },
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: ["echoes", "list"],
@@ -40,6 +61,10 @@ export function EchoFeedPage() {
     createMutation.error instanceof Error
       ? createMutation.error.message
       : "메아리가 길을 잃었어요. 잠시 뒤 다시 불러와 주세요.";
+
+  useEffect(() => {
+    setSearchDraft(searchTerm);
+  }, [searchTerm]);
 
   return (
     <main className="page-shell echo-page">
@@ -56,7 +81,9 @@ export function EchoFeedPage() {
           disabled={createMutation.isPending}
           draftKey={newEchoDraftKey}
           mode="create"
-          onSubmit={(body) => createMutation.mutateAsync(body)}
+          onSubmit={(body, files) =>
+            createMutation.mutateAsync({ body, files })
+          }
         />
         {createMutation.isError ? (
           <p className="status-note">{errorMessage}</p>
@@ -69,8 +96,46 @@ export function EchoFeedPage() {
             <p className="kicker">Feed</p>
             <h2 className="section-heading">최근 Echo</h2>
           </div>
-          <span className="muted-copy">{items.length}개 표시 중</span>
+          <div className="action-strip">
+            <a className="muted-copy" href="/echoes/archive">
+              아카이브 보기
+            </a>
+            <span className="muted-copy">{items.length}개 표시 중</span>
+          </div>
         </div>
+
+        <form
+          className="action-strip"
+          onSubmit={(event) => {
+            event.preventDefault();
+            onSearchChange?.(searchDraft);
+          }}
+        >
+          <label className="sr-only" htmlFor="echo-search">
+            Echo 검색
+          </label>
+          <Input
+            id="echo-search"
+            onChange={(event) => setSearchDraft(event.currentTarget.value)}
+            placeholder="본문 검색"
+            value={searchDraft}
+          />
+          <button className="echo-load-more" type="submit">
+            검색
+          </button>
+          {searchTerm ? (
+            <button
+              className="echo-load-more"
+              onClick={() => {
+                setSearchDraft("");
+                onSearchChange?.("");
+              }}
+              type="button"
+            >
+              초기화
+            </button>
+          ) : null}
+        </form>
 
         {listQuery.isPending ? (
           <p className="status-note">메아리를 불러오는 중이에요.</p>

@@ -18,6 +18,19 @@ export function EchoCard({ echo }: EchoCardProps) {
         {echo.isArchived ? <Badge tone="muted">archived</Badge> : null}
       </div>
       <p className="text-base leading-7">{echo.preview}</p>
+      {echo.attachments.length > 0 ? (
+        <div className="attachment-list">
+          {echo.attachments.map((attachment) => (
+            <a
+              className="attachment-chip"
+              href={attachment.downloadUrl}
+              key={attachment.id}
+            >
+              {attachment.originalFileName}
+            </a>
+          ))}
+        </div>
+      ) : null}
       <div className="action-strip">
         <Button asChild size="sm" variant="secondary">
           <a href={`/echoes/${echo.id}`}>상세 보기</a>

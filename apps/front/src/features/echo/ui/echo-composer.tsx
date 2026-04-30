@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createEchoRequestSchema } from "@proxi/shared";
-import { useEffect, useId } from "react";
+import { useEffect, useId, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "../../../components/ui/button";
 import { Textarea } from "../../../components/ui/textarea";
@@ -14,7 +14,7 @@ interface EchoComposerProps {
   initialBody?: string;
   mode: EchoComposerMode;
   onCancel?: () => void;
-  onSubmit: (body: string) => Promise<unknown>;
+  onSubmit: (body: string, files: File[]) => Promise<unknown>;
 }
 
 interface EchoComposerFormValues {
@@ -66,9 +66,11 @@ export function EchoComposer({
     },
   });
   const labels = modeLabels[mode];
+  const [files, setFiles] = useState<File[]>([]);
   const isSubmitting = form.formState.isSubmitting;
   const body = form.watch("body");
   const bodyFieldId = useId();
+  const fileFieldId = useId();
 
   useEffect(() => {
     form.reset({
@@ -99,8 +101,9 @@ export function EchoComposer({
   }, [body]);
 
   const handleSubmit = form.handleSubmit(async (values) => {
-    await onSubmit(values.body);
+    await onSubmit(values.body, files);
     clearDraft(draftKey);
+    setFiles([]);
     form.reset({ body: "" });
   });
 
@@ -121,6 +124,26 @@ export function EchoComposer({
           {form.formState.errors.body.message}
         </p>
       ) : null}
+      {mode === "edit" ? null : (
+        <label className="grid gap-2" htmlFor={fileFieldId}>
+          <span className="text-sm font-semibold">첨부 파일</span>
+          <input
+            className="ui-input rounded-2xl px-4 py-3 text-sm"
+            disabled={disabled || isSubmitting}
+            id={fileFieldId}
+            multiple
+            onChange={(event) =>
+              setFiles(Array.from(event.currentTarget.files ?? []))
+            }
+            type="file"
+          />
+          {files.length > 0 ? (
+            <span className="muted-copy">
+              {files.map((file) => file.name).join(", ")}
+            </span>
+          ) : null}
+        </label>
+      )}
       <div className="action-strip">
         <Button disabled={disabled || isSubmitting} type="submit">
           {isSubmitting
