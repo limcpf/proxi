@@ -3,16 +3,19 @@ import {
   Controller,
   Get,
   Header,
+  Inject,
   Param,
   Post,
   StreamableFile,
 } from "@nestjs/common";
 import type { EchoAttachment } from "@proxi/shared";
-import type { AttachmentService } from "./attachment.service.js";
+import { AttachmentService } from "./attachment.service.js";
 
 @Controller("attachments")
 export class AttachmentController {
-  constructor(private readonly attachments: AttachmentService) {}
+  constructor(
+    @Inject(AttachmentService) private readonly attachments: AttachmentService,
+  ) {}
 
   @Post()
   async uploadAttachment(@Body() body: unknown): Promise<EchoAttachment> {
