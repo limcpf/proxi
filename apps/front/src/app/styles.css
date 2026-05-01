@@ -5,24 +5,24 @@
   font-family:
     "IBM Plex Sans", "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo",
     sans-serif;
-  --echo-bg: #f7f8fb;
+  --echo-bg: #f4f4f4;
   --echo-surface: #ffffff;
-  --echo-surface-soft: #f1f4f9;
-  --echo-text: #172033;
-  --echo-text-muted: #5d6678;
-  --echo-text-subtle: #7b8496;
-  --echo-border: #dfe5ee;
-  --echo-border-strong: #c8d2e0;
-  --echo-primary: #355d7c;
-  --echo-primary-hover: #294962;
-  --echo-primary-active: #1f384c;
-  --echo-primary-soft: #edf4f8;
-  --echo-danger: #d14343;
-  --echo-danger-hover: #b63737;
-  --echo-success: #1f8a5b;
-  --echo-focus: rgba(53, 93, 124, 0.24);
-  --echo-shadow-card: 0 1px 2px rgba(15, 23, 42, 0.06);
-  --echo-shadow-panel: 0 12px 32px rgba(15, 23, 42, 0.08);
+  --echo-surface-soft: #e8e8e8;
+  --echo-text: #161616;
+  --echo-text-muted: #525252;
+  --echo-text-subtle: #6f6f6f;
+  --echo-border: #e0e0e0;
+  --echo-border-strong: #8d8d8d;
+  --echo-primary: #0f62fe;
+  --echo-primary-hover: #0050e6;
+  --echo-primary-active: #002d9c;
+  --echo-primary-soft: #edf5ff;
+  --echo-danger: #da1e28;
+  --echo-danger-hover: #ba1b23;
+  --echo-success: #24a148;
+  --echo-focus: rgba(15, 98, 254, 0.35);
+  --echo-shadow-card: none;
+  --echo-shadow-panel: none;
 }
 
 * {
@@ -69,9 +69,9 @@ textarea {
   }
 
   .app-masthead {
-    background: rgba(255, 255, 255, 0.9);
+    background: var(--echo-surface);
     border-bottom: 1px solid var(--echo-border);
-    backdrop-filter: blur(14px);
+    backdrop-filter: none;
     @apply sticky top-0 z-20 px-4 sm:px-6;
   }
 
@@ -86,8 +86,8 @@ textarea {
 
   .app-brand-mark {
     background: var(--echo-primary);
-    box-shadow: 0 0 0 4px var(--echo-primary-soft);
-    @apply h-3 w-3 rounded-full;
+    box-shadow: none;
+    @apply h-2.5 w-2.5;
   }
 
   .app-nav {
@@ -96,7 +96,7 @@ textarea {
 
   .app-nav-link {
     color: var(--echo-text-muted);
-    @apply rounded-lg px-3 py-2 text-sm font-medium transition-colors;
+    @apply px-3 py-2 text-base font-semibold transition-colors;
   }
 
   .app-nav-link:hover {
@@ -105,7 +105,7 @@ textarea {
   }
 
   .page-shell {
-    @apply mx-auto grid min-h-[calc(100vh-56px)] w-full max-w-[860px] gap-0 px-4 py-5 sm:px-6 sm:py-6;
+    @apply mx-auto grid min-h-[calc(100vh-56px)] w-full max-w-[860px] content-start items-start gap-4 px-4 py-3 sm:px-6 sm:py-5;
   }
 
   .hero-shell {
@@ -116,26 +116,28 @@ textarea {
     background: var(--echo-surface);
     border: 1px solid var(--echo-border);
     box-shadow: var(--echo-shadow-card);
-    @apply grid gap-4 rounded-xl p-4 sm:p-5;
+    border-radius: 2px;
+    @apply grid w-full content-start items-start gap-3 p-4;
   }
 
   .compose-section {
-    @apply mb-5 grid gap-2;
+    @apply grid w-full content-start items-start gap-2;
   }
 
   .compose-panel {
     background: var(--echo-surface);
     border: 1px solid var(--echo-border);
-    box-shadow: var(--echo-shadow-panel);
-    @apply grid gap-4 rounded-xl p-5 md:p-6;
+    box-shadow: var(--echo-shadow-card);
+    border-radius: 2px;
+    @apply grid w-full content-start items-start gap-3 p-4;
   }
 
   .compose-panel .echo-composer {
-    @apply gap-3.5;
+    @apply w-full content-start items-start gap-2;
   }
 
   .compose-panel .composer-field {
-    @apply gap-1.5;
+    @apply w-full gap-1;
   }
 
   .compose-panel .composer-actions {
@@ -143,11 +145,11 @@ textarea {
   }
 
   .feed-panel {
-    @apply grid gap-3;
+    @apply grid w-full content-start items-start gap-3;
   }
 
   .feed-controls {
-    @apply grid gap-3;
+    @apply grid w-full content-start gap-2;
   }
 
   .kicker {
@@ -167,22 +169,22 @@ textarea {
 
   .section-heading {
     color: var(--echo-text);
-    @apply text-xl font-semibold leading-7 tracking-[-0.01em];
+    @apply text-base font-semibold leading-6 tracking-[-0.01em];
   }
 
   .card-heading {
     color: var(--echo-text);
-    @apply text-xl font-semibold leading-7 tracking-[-0.01em];
+    @apply text-base font-semibold leading-6 tracking-[-0.01em];
   }
 
   .muted-copy {
     color: var(--echo-text-muted);
-    @apply text-sm leading-5;
+    @apply text-[0.9375rem] font-medium leading-5;
   }
 
   .caption-copy {
     color: var(--echo-text-subtle);
-    @apply text-sm leading-5;
+    @apply text-sm font-semibold leading-5;
   }
 
   .action-strip {
@@ -198,19 +200,20 @@ textarea {
   }
 
   .field-label {
-    color: var(--echo-text-muted);
-    @apply text-sm font-medium leading-5;
+    color: var(--echo-text-subtle);
+    @apply text-sm font-semibold leading-5 tracking-[0.01em];
   }
 
   .list-grid {
-    @apply grid gap-3;
+    @apply grid gap-0;
   }
 
   .status-note {
-    background: var(--echo-primary-soft);
-    border: 1px solid rgba(53, 93, 124, 0.18);
+    background: #f4f4f4;
+    border: 1px solid var(--echo-border);
     color: var(--echo-text-muted);
-    @apply rounded-xl px-4 py-2.5 text-sm leading-5;
+    border-radius: 2px;
+    @apply w-full px-3.5 py-2 text-[0.9375rem] font-semibold leading-5;
   }
 
   .status-note-danger {
@@ -220,8 +223,10 @@ textarea {
   }
 
   .ui-button {
-    border-radius: 10px;
-    @apply inline-flex items-center justify-center gap-2 border font-semibold transition-all duration-200 focus-visible:outline focus-visible:outline-4 disabled:pointer-events-none disabled:opacity-55;
+    border-radius: 2px;
+    font-size: 0.9375rem;
+    line-height: 1.25rem;
+    @apply inline-flex items-center justify-center gap-2 border font-semibold transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:pointer-events-none disabled:opacity-55;
   }
 
   .ui-button-primary {
@@ -233,29 +238,23 @@ textarea {
   .ui-button-primary:hover {
     background: var(--echo-primary-hover);
     border-color: var(--echo-primary-hover);
-    transform: translateY(-1px);
   }
 
   .ui-button-primary:active {
     background: var(--echo-primary-active);
     border-color: var(--echo-primary-active);
-    transform: translateY(0);
   }
 
   .ui-button-secondary {
     background: var(--echo-surface);
     border-color: var(--echo-border-strong);
     color: var(--echo-text);
+    font-weight: 600;
   }
 
   .ui-button-secondary:hover {
     background: var(--echo-surface-soft);
     border-color: var(--echo-border-strong);
-    transform: translateY(-1px);
-  }
-
-  .ui-button-secondary:active {
-    transform: translateY(0);
   }
 
   .ui-button-tertiary {
@@ -273,6 +272,7 @@ textarea {
     background: transparent;
     border-color: transparent;
     color: var(--echo-text-muted);
+    font-weight: 600;
   }
 
   .ui-button-ghost:hover {
@@ -301,7 +301,7 @@ textarea {
   .ui-textarea {
     background: var(--echo-surface);
     border: 1px solid var(--echo-border);
-    border-radius: 12px;
+    border-radius: 2px;
     color: var(--echo-text);
     outline: none;
     transition:
@@ -312,7 +312,8 @@ textarea {
 
   .ui-input::placeholder,
   .ui-textarea::placeholder {
-    color: var(--echo-text-subtle);
+    color: var(--echo-border-strong);
+    opacity: 1;
   }
 
   .ui-input:hover,
@@ -323,7 +324,7 @@ textarea {
   .ui-input:focus,
   .ui-textarea:focus {
     border-color: var(--echo-primary);
-    box-shadow: 0 0 0 4px var(--echo-focus);
+    box-shadow: 0 0 0 2px var(--echo-focus);
   }
 
   .ui-input[aria-invalid="true"],
@@ -356,27 +357,137 @@ textarea {
   .ui-badge-muted {
     background: var(--echo-surface-soft);
     color: var(--echo-text-muted);
+    @apply text-sm font-semibold;
   }
 
   .echo-page {
     @apply max-w-[820px];
   }
 
+  .echo-feed-page {
+    @apply max-w-[760px] content-start items-start gap-4 py-3 sm:py-5;
+  }
+
   .detail-page {
-    @apply gap-5;
+    @apply max-w-[760px] content-start items-start gap-4 py-3 sm:py-5;
+  }
+
+  .feed-toolbar {
+    border-bottom: 1px solid var(--echo-border);
+    @apply flex flex-wrap items-center justify-between gap-2 pb-2;
+  }
+
+  .detail-toolbar {
+    border-bottom: 1px solid var(--echo-border);
+    @apply flex flex-wrap items-center justify-between gap-2 pb-2;
+  }
+
+  .detail-meta {
+    @apply flex flex-wrap items-center gap-x-2 gap-y-1;
+  }
+
+  .detail-body {
+    border-bottom: 1px solid var(--echo-border);
+    @apply grid gap-3 pb-3;
+  }
+
+  .detail-actions {
+    @apply flex flex-wrap items-center justify-between gap-2;
+  }
+
+  .reply-panel {
+    background: var(--echo-surface);
+    border: 1px solid var(--echo-border);
+    border-radius: 2px;
+    @apply grid w-full content-start gap-3 p-4;
+  }
+
+  .reply-list {
+    border: 1px solid var(--echo-border);
+    @apply grid gap-0;
+  }
+
+  .reply-card {
+    background: var(--echo-surface);
+    border-bottom: 1px solid var(--echo-border);
+    @apply grid gap-2 p-4;
+  }
+
+  .reply-card:last-child {
+    border-bottom: 0;
+  }
+
+  .archive-row {
+    @apply grid;
+  }
+
+  .archive-row-actions {
+    background: var(--echo-surface);
+    border-bottom: 1px solid var(--echo-border);
+    @apply flex justify-end px-4 pb-3;
+  }
+
+  .archive-row:last-child .archive-row-actions {
+    border-bottom: 0;
+  }
+
+  .feed-title-row {
+    @apply flex items-baseline gap-2;
+  }
+
+  .feed-title {
+    color: var(--echo-text-muted);
+    @apply text-base font-bold leading-6 tracking-[-0.005em];
+  }
+
+  .feed-count {
+    color: var(--echo-text-subtle);
+    @apply text-sm font-semibold leading-5;
+  }
+
+  .feed-toolbar-actions {
+    @apply flex items-center gap-1;
+  }
+
+  .feed-search-form {
+    @apply w-full;
+  }
+
+  .composer-attachments {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  .composer-file-list {
+    @apply flex min-w-0 flex-1 flex-wrap gap-1.5;
+  }
+
+  .composer-file-chip {
+    background: var(--echo-primary-soft);
+    color: var(--echo-primary);
+    border-radius: 2px;
+    @apply max-w-full truncate px-2.5 py-1 text-sm font-semibold leading-5;
+  }
+
+  .echo-feed-list {
+    background: var(--echo-surface);
+    border: 1px solid var(--echo-border);
   }
 
   .echo-card {
     background: var(--echo-surface);
-    border: 1px solid var(--echo-border);
+    border: 0;
+    border-bottom: 1px solid var(--echo-border);
     box-shadow: var(--echo-shadow-card);
-    @apply grid gap-2.5 rounded-xl p-3.5 transition-all duration-200 sm:p-4;
+    border-radius: 0;
+    @apply grid w-full content-start gap-2 p-4 transition-colors duration-150;
+  }
+
+  .echo-card:last-child {
+    border-bottom: 0;
   }
 
   .echo-card:hover {
-    border-color: var(--echo-border-strong);
-    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
-    transform: translateY(-1px);
+    background: #f4f4f4;
   }
 
   .echo-card-header {
@@ -384,22 +495,41 @@ textarea {
   }
 
   .echo-card-author {
-    color: var(--echo-text);
-    @apply text-sm font-semibold leading-5;
+    color: var(--echo-text-muted);
+    @apply text-sm font-bold leading-5;
   }
 
   .echo-card-body {
     color: var(--echo-text);
-    @apply text-base leading-6;
+    @apply text-[1.0625rem] font-medium leading-7 tracking-[-0.006em];
+  }
+
+  .echo-card-footer {
+    @apply flex flex-wrap items-center justify-between gap-2;
+  }
+
+  .echo-card-meta {
+    color: var(--echo-text-subtle);
+    @apply flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-semibold leading-5;
   }
 
   .echo-card-actions {
-    @apply flex flex-wrap items-center gap-2;
+    @apply flex flex-wrap items-center gap-1;
+  }
+
+  .echo-card-link {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    color: var(--echo-text-muted);
+    font-family: inherit;
+    border-radius: 2px;
+    @apply inline-flex h-8 cursor-pointer items-center px-2 text-sm font-bold leading-5 transition-colors hover:bg-[var(--echo-surface-soft)] hover:text-[var(--echo-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--echo-focus)];
   }
 
   .echo-markdown {
     color: var(--echo-text);
-    @apply grid gap-4 text-base leading-7;
+    @apply grid gap-4 text-[1.0625rem] leading-7 tracking-[-0.006em];
   }
 
   .echo-markdown :where(p, ul, ol, blockquote, pre, table) {
@@ -449,7 +579,8 @@ textarea {
     background: var(--echo-surface);
     border: 1px solid var(--echo-border-strong);
     color: var(--echo-text-muted);
-    @apply h-10 rounded-xl px-4 text-sm font-semibold transition-colors hover:bg-[var(--echo-surface-soft)] disabled:opacity-50;
+    border-radius: 2px;
+    @apply h-10 px-4 text-sm font-semibold transition-colors hover:bg-[var(--echo-surface-soft)] disabled:opacity-50;
   }
 
   .echo-modal-backdrop {
@@ -461,7 +592,8 @@ textarea {
     background: var(--echo-surface);
     border: 1px solid var(--echo-border);
     box-shadow: var(--echo-shadow-panel);
-    @apply grid w-full max-w-md gap-4 rounded-2xl p-6;
+    border-radius: 2px;
+    @apply grid w-full max-w-md gap-4 p-6;
   }
 
   .attachment-list {
@@ -471,6 +603,7 @@ textarea {
   .attachment-chip {
     background: var(--echo-primary-soft);
     color: var(--echo-primary);
-    @apply rounded-full px-3 py-1 text-sm font-medium transition-colors hover:bg-[var(--echo-surface-soft)] hover:text-[var(--echo-primary-hover)];
+    border-radius: 2px;
+    @apply px-2.5 py-1 text-sm font-semibold leading-5 transition-colors hover:bg-[var(--echo-surface-soft)] hover:text-[var(--echo-primary-hover)];
   }
 }

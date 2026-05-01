@@ -29,6 +29,10 @@ describe("EchoFeedPage", () => {
 
     renderPage();
 
+    expect(
+      screen.queryByText("짧게 쓰고, 다시 이어받는 공간"),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("textbox", { name: "Echo 검색" })).toBeNull();
     expect(screen.getByText("메아리를 불러오는 중이에요.")).toBeInTheDocument();
     expect(
       await screen.findByText(
@@ -61,9 +65,48 @@ describe("EchoFeedPage", () => {
     });
     expect(await screen.findByText("첫 Echo")).toBeInTheDocument();
   });
+
+  it("검색은 보조 액션을 누른 뒤 노출한다", async () => {
+    const user = userEvent.setup();
+    const onSearchChange = vi.fn();
+    vi.mocked(listEchoes).mockResolvedValue({
+      items: [],
+    });
+
+    renderPage({ onSearchChange });
+
+    expect(screen.queryByRole("textbox", { name: "Echo 검색" })).toBeNull();
+
+    await user.click(screen.getByRole("button", { name: "검색" }));
+    await user.type(screen.getByRole("textbox", { name: "Echo 검색" }), "첫");
+    await user.click(screen.getByRole("button", { name: "검색" }));
+
+    expect(onSearchChange).toHaveBeenCalledWith("첫");
+  });
+
+  it("파일 input 은 숨기고 선택된 첨부 파일만 표시한다", async () => {
+    const user = userEvent.setup();
+    vi.mocked(listEchoes).mockResolvedValue({
+      items: [],
+    });
+
+    renderPage();
+
+    const fileInput = screen.getByLabelText("첨부 파일");
+    expect(fileInput).toHaveClass("sr-only");
+
+    await user.upload(
+      fileInput,
+      new File(["memo"], "memo.txt", { type: "text/plain" }),
+    );
+
+    expect(screen.getByText("memo.txt")).toBeInTheDocument();
+  });
 });
 
-function renderPage() {
+function renderPage(
+  props: { onSearchChange?: (q: string) => void; searchTerm?: string } = {},
+) {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -77,7 +120,7 @@ function renderPage() {
 
   return render(
     <QueryClientProvider client={queryClient}>
-      <EchoFeedPage />
+      <EchoFeedPage {...props} />
     </QueryClientProvider>,
   );
 }

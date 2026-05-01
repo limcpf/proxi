@@ -198,6 +198,13 @@
       "owner_scope": "docs/exec-plans/active"
     },
     {
+      "path": "docs/exec-plans/completed/2026-05-01-echo-minimal-feed-ui.md",
+      "kind": "exec-plan",
+      "role": "Echo 미니멀 피드 UI 구현 기록",
+      "read_when": ["Echo 피드 UI 구현 결과 확인", "Echo 화면 여백 축소 결과 확인", "Echo 미니멀 UI 구현 참고"],
+      "owner_scope": "docs/exec-plans/completed"
+    },
+    {
       "path": "docs/exec-plans/completed/2026-04-05-agent-knowledge-system-merge.md",
       "kind": "exec-plan",
       "role": "문서 운영 시스템 병합 작업 기록",
@@ -293,6 +300,13 @@
       "kind": "reference",
       "role": "Echo 후속 slice 요구사항",
       "read_when": ["Echo attachment 요구사항", "Echo archive 요구사항", "Echo 검색 요구사항", "후속 slice 수용 기준 작성"],
+      "owner_scope": "docs/product-specs"
+    },
+    {
+      "path": "docs/product-specs/2026-05-01-echo-minimal-feed-ui.md",
+      "kind": "reference",
+      "role": "Echo 피드 화면 미니멀 UI 요구사항",
+      "read_when": ["Echo 피드 UI 기준 확인", "Echo 화면 여백 축소", "Echo 미니멀 UI 수용 기준 작성", "프런트 피드 재설계"],
       "owner_scope": "docs/product-specs"
     },
     {

@@ -73,7 +73,7 @@ export function EchoDetailPage({ echoId }: EchoDetailPageProps) {
 
   if (detailQuery.isPending) {
     return (
-      <main className="page-shell">
+      <main className="page-shell echo-page detail-page">
         <p className="status-note">메아리를 불러오는 중이에요.</p>
       </main>
     );
@@ -81,8 +81,8 @@ export function EchoDetailPage({ echoId }: EchoDetailPageProps) {
 
   if (detailQuery.isError) {
     return (
-      <main className="page-shell">
-        <section className="surface-panel grid gap-4">
+      <main className="page-shell echo-page detail-page">
+        <section className="surface-panel">
           <p className="section-heading">
             찾는 Echo 가 없어요. 피드로 돌아갈까요?
           </p>
@@ -108,7 +108,7 @@ export function EchoDetailPage({ echoId }: EchoDetailPageProps) {
   return (
     <main className="page-shell echo-page detail-page">
       <section className="surface-panel">
-        <div className="action-strip">
+        <div className="detail-toolbar">
           <Button asChild size="sm" variant="ghost">
             <a href="/echoes">피드로 돌아가기</a>
           </Button>
@@ -117,14 +117,14 @@ export function EchoDetailPage({ echoId }: EchoDetailPageProps) {
           ) : null}
         </div>
 
-        <article className="grid gap-4">
-          <div>
-            <p className="kicker">{echo.authorLabel}</p>
-            <h1 className="section-heading">Echo 상세</h1>
-            <p className="caption-copy">
+        <article className="grid gap-3">
+          <h1 className="sr-only">Echo 상세</h1>
+          <div className="detail-meta">
+            <span className="echo-card-author">{echo.authorLabel}</span>
+            <span className="caption-copy">
               {echo.createdAtLabel}
               {echo.updatedLabel ? ` · ${echo.updatedLabel}` : ""}
-            </p>
+            </span>
           </div>
 
           {isEditing ? (
@@ -136,42 +136,44 @@ export function EchoDetailPage({ echoId }: EchoDetailPageProps) {
               onSubmit={(body) => updateMutation.mutateAsync(body)}
             />
           ) : (
-            <div className="grid gap-3">
+            <div className="detail-body">
               <MarkdownPreview body={detailQuery.data.body} />
               <AttachmentList echo={echo} />
             </div>
           )}
 
-          <div className="action-strip">
-            <Button
-              disabled={echo.isArchived}
-              onClick={() => setIsEditing(true)}
-              size="sm"
-              type="button"
-              variant="secondary"
-            >
-              수정
-            </Button>
-            <Button
-              disabled={echo.isArchived || deleteMutation.isPending}
-              onClick={() => setIsDeleteOpen(true)}
-              size="sm"
-              type="button"
-              variant="danger"
-            >
-              삭제
-            </Button>
-            {echo.isArchived ? (
+          <div className="detail-actions">
+            <div className="action-strip">
               <Button
-                disabled={restoreMutation.isPending}
-                onClick={() => restoreMutation.mutate()}
+                disabled={echo.isArchived}
+                onClick={() => setIsEditing(true)}
                 size="sm"
                 type="button"
-                variant="primary"
+                variant="secondary"
               >
-                복구
+                수정
               </Button>
-            ) : null}
+              <Button
+                disabled={echo.isArchived || deleteMutation.isPending}
+                onClick={() => setIsDeleteOpen(true)}
+                size="sm"
+                type="button"
+                variant="danger"
+              >
+                삭제
+              </Button>
+              {echo.isArchived ? (
+                <Button
+                  disabled={restoreMutation.isPending}
+                  onClick={() => restoreMutation.mutate()}
+                  size="sm"
+                  type="button"
+                  variant="primary"
+                >
+                  복구
+                </Button>
+              ) : null}
+            </div>
           </div>
           {mutationError ? (
             <p className="status-note status-note-danger">
@@ -181,18 +183,20 @@ export function EchoDetailPage({ echoId }: EchoDetailPageProps) {
         </article>
       </section>
 
-      <section className="surface-panel">
-        <div>
-          <p className="kicker">Replies</p>
-          <h2 className="section-heading">{echo.replyCountLabel}</h2>
+      <section className="reply-panel">
+        <div className="feed-toolbar">
+          <div className="feed-title-row">
+            <h2 className="feed-title">댓글</h2>
+            <span className="feed-count">{echo.replyCountLabel}</span>
+          </div>
         </div>
 
         {echo.replies.length === 0 ? (
           <p className="status-note">아직 이어진 메아리가 없어요.</p>
         ) : (
-          <div className="list-grid">
+          <div className="reply-list">
             {echo.replies.map((reply) => (
-              <article className="echo-card" key={reply.id}>
+              <article className="reply-card" key={reply.id}>
                 <p className="caption-copy">
                   {reply.authorLabel} · {reply.createdAtLabel}
                 </p>

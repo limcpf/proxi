@@ -23,6 +23,7 @@ export function EchoFeedPage({
 }: EchoFeedPageProps) {
   const queryClient = useQueryClient();
   const [searchDraft, setSearchDraft] = useState(searchTerm);
+  const [isSearchOpen, setIsSearchOpen] = useState(searchTerm.length > 0);
   const publishedListKey = echoQueryKeys.list({
     q: searchTerm || undefined,
     status: "published",
@@ -65,22 +66,16 @@ export function EchoFeedPage({
 
   useEffect(() => {
     setSearchDraft(searchTerm);
+    if (searchTerm.length > 0) {
+      setIsSearchOpen(true);
+    }
   }, [searchTerm]);
 
-  return (
-    <main className="page-shell echo-page">
-      <section className="hero-shell">
-        <div className="grid gap-2">
-          <p className="kicker">Echo</p>
-          <h1 className="hero-title">짧게 쓰고, 다시 이어받는 공간</h1>
-          <p className="hero-copy">
-            떠오른 생각을 빠르게 남기고, 필요할 때 아카이브와 댓글로 흐름을
-            정리합니다.
-          </p>
-        </div>
-      </section>
+  const shouldShowSearch = isSearchOpen || searchTerm.length > 0;
 
-      <section className="compose-section">
+  return (
+    <main className="page-shell echo-page echo-feed-page">
+      <section aria-label="새 Echo 작성" className="compose-section">
         <div className="compose-panel">
           <EchoComposer
             disabled={createMutation.isPending}
@@ -98,53 +93,68 @@ export function EchoFeedPage({
 
       <section className="feed-panel">
         <div className="feed-controls">
-          <div className="section-toolbar">
-            <div>
-              <p className="kicker">Feed</p>
-              <h2 className="section-heading">최근 Echo</h2>
+          <div className="feed-toolbar">
+            <div className="feed-title-row">
+              <h1 className="feed-title">최근</h1>
+              <span className="feed-count">{items.length}개</span>
             </div>
-            <div className="action-strip">
+            <div className="feed-toolbar-actions">
+              {shouldShowSearch ? null : (
+                <Button
+                  onClick={() => setIsSearchOpen(true)}
+                  size="sm"
+                  type="button"
+                  variant="ghost"
+                >
+                  검색
+                </Button>
+              )}
               <Button asChild size="sm" variant="ghost">
-                <a href="/echoes/archive">아카이브 보기</a>
+                <a href="/echoes/archive">아카이브</a>
               </Button>
-              <span className="muted-copy">{items.length}개 표시 중</span>
             </div>
           </div>
 
-          <form
-            className="action-strip"
-            onSubmit={(event) => {
-              event.preventDefault();
-              onSearchChange?.(searchDraft);
-            }}
-          >
-            <label className="sr-only" htmlFor="echo-search">
-              Echo 검색
-            </label>
-            <Input
-              className="min-w-0 flex-1"
-              id="echo-search"
-              onChange={(event) => setSearchDraft(event.currentTarget.value)}
-              placeholder="본문 검색"
-              value={searchDraft}
-            />
-            <Button size="sm" type="submit" variant="secondary">
-              검색
-            </Button>
-            {searchTerm ? (
-              <Button
-                onClick={() => {
-                  setSearchDraft("");
-                  onSearchChange?.("");
-                }}
-                size="sm"
-                type="button"
-                variant="ghost"
-              >
-                초기화
+          {shouldShowSearch ? (
+            <form
+              className="feed-search-form action-strip"
+              onSubmit={(event) => {
+                event.preventDefault();
+                onSearchChange?.(searchDraft);
+                if (searchDraft.trim().length === 0) {
+                  setIsSearchOpen(false);
+                }
+              }}
+            >
+              <label className="sr-only" htmlFor="echo-search">
+                Echo 검색
+              </label>
+              <Input
+                className="min-w-0 flex-1"
+                id="echo-search"
+                onChange={(event) => setSearchDraft(event.currentTarget.value)}
+                placeholder="본문 검색"
+                value={searchDraft}
+              />
+              <Button size="sm" type="submit" variant="secondary">
+                검색
               </Button>
-            ) : null}
-          </form>
+              {searchTerm ? (
+                <Button
+                  onClick={() => {
+                    setSearchDraft("");
+                    setIsSearchOpen(false);
+                    onSearchChange?.("");
+                  }}
+                  size="sm"
+                  type="button"
+                  variant="ghost"
+                >
+                  초기화
+                </Button>
+              ) : null}
+            </form>
+          ) : null}
         </div>
 
         {listQuery.isPending ? (
@@ -161,7 +171,7 @@ export function EchoFeedPage({
           </p>
         ) : null}
 
-        <div className="list-grid">
+        <div className="echo-feed-list list-grid">
           {items.map((echo) => (
             <EchoCard echo={echo} key={echo.id} />
           ))}

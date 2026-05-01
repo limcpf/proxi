@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createEchoRequestSchema } from "@proxi/shared";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "../../../components/ui/button";
 import { Textarea } from "../../../components/ui/textarea";
@@ -72,6 +72,8 @@ export function EchoComposer({
   const body = form.watch("body");
   const bodyFieldId = useId();
   const fileFieldId = useId();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const isDisabled = disabled || isSubmitting;
 
   useEffect(() => {
     form.reset({
@@ -105,17 +107,28 @@ export function EchoComposer({
     await onSubmit(values.body, files);
     clearDraft(draftKey);
     setFiles([]);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
     form.reset({ body: "" });
   });
 
   return (
-    <form className="echo-composer field-grid" onSubmit={handleSubmit}>
+    <form
+      className={cn(
+        "echo-composer field-grid",
+        mode === "create" && "echo-composer-minimal",
+      )}
+      onSubmit={handleSubmit}
+    >
       <label className="composer-field grid gap-2" htmlFor={bodyFieldId}>
-        <span className="field-label">{labels.label}</span>
+        <span className={cn("field-label", mode !== "edit" && "sr-only")}>
+          {labels.label}
+        </span>
         <Textarea
           aria-invalid={form.formState.errors.body !== undefined}
-          className={cn(mode === "create" ? "min-h-[88px] p-4" : "min-h-24")}
-          disabled={disabled || isSubmitting}
+          className={cn(mode === "edit" ? "min-h-24" : "min-h-16")}
+          disabled={isDisabled}
           id={bodyFieldId}
           placeholder={labels.placeholder}
           {...form.register("body")}
@@ -127,30 +140,44 @@ export function EchoComposer({
         </p>
       ) : null}
       {mode === "edit" ? null : (
-        <label className="composer-field grid gap-2" htmlFor={fileFieldId}>
-          <span className="field-label">첨부 파일</span>
+        <div className="composer-attachments">
           <input
-            className={cn(
-              "ui-input w-full px-4 text-sm",
-              mode === "create" && "composer-file-input",
-            )}
-            disabled={disabled || isSubmitting}
+            aria-label="첨부 파일"
+            className="sr-only"
+            disabled={isDisabled}
             id={fileFieldId}
             multiple
             onChange={(event) =>
               setFiles(Array.from(event.currentTarget.files ?? []))
             }
+            ref={fileInputRef}
             type="file"
           />
+          <Button
+            disabled={isDisabled}
+            onClick={() => fileInputRef.current?.click()}
+            size="sm"
+            type="button"
+            variant="ghost"
+          >
+            첨부
+          </Button>
           {files.length > 0 ? (
-            <span className="caption-copy">
-              {files.map((file) => file.name).join(", ")}
-            </span>
+            <div className="composer-file-list">
+              {files.map((file) => (
+                <span
+                  className="composer-file-chip"
+                  key={`${file.name}-${file.lastModified}`}
+                >
+                  {file.name}
+                </span>
+              ))}
+            </div>
           ) : null}
-        </label>
+        </div>
       )}
       <div className="composer-actions action-strip">
-        <Button disabled={disabled || isSubmitting} type="submit">
+        <Button disabled={isDisabled} type="submit">
           {isSubmitting
             ? "저장 중이에요. 잠깐만 기다려 주세요."
             : labels.button}

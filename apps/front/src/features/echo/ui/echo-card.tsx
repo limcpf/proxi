@@ -1,5 +1,4 @@
 import { Badge } from "../../../components/ui/badge";
-import { Button } from "../../../components/ui/button";
 import type { EchoFeedItemViewModel } from "../model";
 
 interface EchoCardProps {
@@ -9,14 +8,6 @@ interface EchoCardProps {
 export function EchoCard({ echo }: EchoCardProps) {
   return (
     <article className="echo-card">
-      <div className="echo-card-header">
-        <span className="echo-card-author">{echo.authorLabel}</span>
-        <span className="caption-copy">{echo.createdAtLabel}</span>
-        {echo.updatedLabel ? (
-          <span className="caption-copy">{echo.updatedLabel}</span>
-        ) : null}
-        {echo.isArchived ? <Badge tone="muted">아카이브됨</Badge> : null}
-      </div>
       <p className="echo-card-body">{echo.preview}</p>
       {echo.attachments.length > 0 ? (
         <div className="attachment-list">
@@ -31,19 +22,26 @@ export function EchoCard({ echo }: EchoCardProps) {
           ))}
         </div>
       ) : null}
-      <div className="echo-card-actions">
-        <Button asChild size="sm" variant="secondary">
-          <a href={`/echoes/${echo.id}`}>상세 보기</a>
-        </Button>
-        <span className="muted-copy">{echo.replyCountLabel}</span>
-        <Button
-          onClick={() => void navigator.clipboard?.writeText(echo.body)}
-          size="sm"
-          type="button"
-          variant="ghost"
-        >
-          본문 복사
-        </Button>
+      <div className="echo-card-footer">
+        <div className="echo-card-meta">
+          <span className="echo-card-author">{echo.authorLabel}</span>
+          <span>{echo.createdAtLabel}</span>
+          {echo.updatedLabel ? <span>{echo.updatedLabel}</span> : null}
+          <span>{echo.replyCountLabel}</span>
+          {echo.isArchived ? <Badge tone="muted">아카이브됨</Badge> : null}
+        </div>
+        <div className="echo-card-actions">
+          <a className="echo-card-link" href={`/echoes/${echo.id}`}>
+            상세
+          </a>
+          <button
+            className="echo-card-link"
+            onClick={() => void navigator.clipboard?.writeText(echo.body)}
+            type="button"
+          >
+            복사
+          </button>
+        </div>
       </div>
     </article>
   );
