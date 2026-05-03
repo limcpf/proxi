@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { describe, expect, it, vi } from "vitest";
-import { InMemoryEchoRepository } from "../adapters/persistence/in-memory-echo.repository.js";
 import { EchoApplicationError } from "../domain/echo.errors.js";
+import { FakeEchoRepository } from "../testing/fake-echo.repository.js";
 import { EchoApplicationService } from "./echo.application.service.js";
 
 describe("EchoApplicationService", () => {
@@ -65,7 +65,7 @@ describe("EchoApplicationService", () => {
   });
 
   it("첨부 가능한 파일만 Echo 에 연결한다", async () => {
-    const repository = new InMemoryEchoRepository();
+    const repository = new FakeEchoRepository();
     repository.addAttachmentForTest({
       id: "attachment_one",
       originalFileName: "memo.txt",
@@ -134,5 +134,5 @@ describe("EchoApplicationService", () => {
 function createService() {
   vi.spyOn(console, "info").mockImplementation(() => undefined);
 
-  return new EchoApplicationService(new InMemoryEchoRepository());
+  return new EchoApplicationService(new FakeEchoRepository());
 }

@@ -4,7 +4,7 @@ import { Test } from "@nestjs/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { EchoApplicationService } from "../../application/echo.application.service.js";
 import { ECHO_REPOSITORY } from "../../ports/echo.repository.js";
-import { InMemoryEchoRepository } from "../persistence/in-memory-echo.repository.js";
+import { FakeEchoRepository } from "../../testing/fake-echo.repository.js";
 import { EchoController } from "./echo.controller.js";
 
 describe("EchoController", () => {
@@ -19,7 +19,7 @@ describe("EchoController", () => {
         EchoApplicationService,
         {
           provide: ECHO_REPOSITORY,
-          useClass: InMemoryEchoRepository,
+          useClass: FakeEchoRepository,
         },
       ],
     }).compile();

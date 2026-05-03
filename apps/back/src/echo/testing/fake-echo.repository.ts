@@ -2,13 +2,15 @@ import type {
   EchoAttachmentEntity,
   EchoEntity,
   EchoWithReplyCount,
-} from "../../domain/echo.entity.js";
+} from "../domain/echo.entity.js";
+import { badRequest } from "../domain/echo.errors.js";
 import type {
   EchoRepository,
   ListRootEchoesQuery,
-} from "../../ports/echo.repository.js";
+} from "../ports/echo.repository.js";
 
-export class InMemoryEchoRepository implements EchoRepository {
+// 테스트 전용 EchoRepository fake 이며 런타임 모듈에 바인딩하면 안 된다.
+export class FakeEchoRepository implements EchoRepository {
   private readonly echoes = new Map<string, EchoEntity>();
   private readonly attachments = new Map<
     string,
@@ -20,17 +22,22 @@ export class InMemoryEchoRepository implements EchoRepository {
   }
 
   async countAttachableAttachments(attachmentIds: string[]): Promise<number> {
-    return attachmentIds.filter((attachmentId) => {
-      const attachment = this.attachments.get(attachmentId);
-
-      return attachment !== undefined && attachment.echoId === undefined;
-    }).length;
+    return this.countAttachableAttachmentIds(attachmentIds);
   }
 
   async create(
     echo: EchoEntity,
     attachmentIds: string[] = [],
   ): Promise<EchoWithReplyCount> {
+    if (
+      this.countAttachableAttachmentIds(attachmentIds) !== attachmentIds.length
+    ) {
+      throw badRequest(
+        "echo_attachment_unavailable",
+        "첨부할 수 없는 파일이 포함되어 있어요.",
+      );
+    }
+
     this.echoes.set(echo.id, { ...echo });
     this.attachAttachments(echo.id, attachmentIds);
 
@@ -132,7 +139,7 @@ export class InMemoryEchoRepository implements EchoRepository {
     const echo = this.echoes.get(echoId);
 
     if (echo === undefined) {
-      throw new Error(`Echo ${echoId} was not found in memory repository.`);
+      throw new Error(`Echo ${echoId} was not found in fake repository.`);
     }
 
     return echo;
@@ -150,6 +157,14 @@ export class InMemoryEchoRepository implements EchoRepository {
     return Array.from(this.echoes.values()).filter(
       (echo) => echo.parentEchoId === echoId && echo.status === "published",
     ).length;
+  }
+
+  private countAttachableAttachmentIds(attachmentIds: string[]) {
+    return attachmentIds.filter((attachmentId) => {
+      const attachment = this.attachments.get(attachmentId);
+
+      return attachment !== undefined && attachment.echoId === undefined;
+    }).length;
   }
 
   private listAttachments(echoId: string) {
