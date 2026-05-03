@@ -32,9 +32,7 @@ export class EchoApplicationService {
 
   async createRoot(input: unknown): Promise<EchoDetail> {
     const request = parseRequest(createEchoRequestSchema, input);
-    const attachmentIds = await this.validateAttachmentIds(
-      request.attachmentIds,
-    );
+    const attachmentIds = deduplicateAttachmentIds(request.attachmentIds);
 
     if (request.parentEchoId !== undefined) {
       throw badRequest(
@@ -173,9 +171,7 @@ export class EchoApplicationService {
   ): Promise<EchoDetail> {
     const parentId = parseRequest(echoIdSchema, parentEchoId);
     const request = parseRequest(createEchoRequestSchema, input);
-    const attachmentIds = await this.validateAttachmentIds(
-      request.attachmentIds,
-    );
+    const attachmentIds = deduplicateAttachmentIds(request.attachmentIds);
     const parent = await this.findRequired(parentId);
 
     assertPublished(parent.status, "아카이브된 Echo 에는 댓글을 달 수 없어요.");
@@ -222,25 +218,14 @@ export class EchoApplicationService {
 
     return echo;
   }
-
-  private async validateAttachmentIds(attachmentIds: string[]) {
-    const uniqueAttachmentIds = Array.from(new Set(attachmentIds));
-    const attachableCount =
-      await this.repository.countAttachableAttachments(uniqueAttachmentIds);
-
-    if (attachableCount !== uniqueAttachmentIds.length) {
-      throw badRequest(
-        "echo_attachment_unavailable",
-        "첨부할 수 없는 파일이 포함되어 있어요.",
-      );
-    }
-
-    return uniqueAttachmentIds;
-  }
 }
 
 function createEchoId() {
   return `echo_${randomUUID()}`;
+}
+
+function deduplicateAttachmentIds(attachmentIds: string[]) {
+  return Array.from(new Set(attachmentIds));
 }
 
 interface SafeParseSchema<TOutput> {

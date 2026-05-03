@@ -10,6 +10,7 @@ import type {
   EchoEntity,
   EchoWithReplyCount,
 } from "../../domain/echo.entity.js";
+import { badRequest } from "../../domain/echo.errors.js";
 import type {
   EchoRepository,
   ListRootEchoesQuery,
@@ -83,7 +84,7 @@ export class PrismaEchoRepository implements EchoRepository {
       });
 
       if (attachmentIds.length > 0) {
-        await transaction.attachment.updateMany({
+        const updatedAttachments = await transaction.attachment.updateMany({
           where: {
             id: {
               in: attachmentIds,
@@ -94,6 +95,13 @@ export class PrismaEchoRepository implements EchoRepository {
             echoId: echo.id,
           },
         });
+
+        if (updatedAttachments.count !== attachmentIds.length) {
+          throw badRequest(
+            "echo_attachment_unavailable",
+            "첨부할 수 없는 파일이 포함되어 있어요.",
+          );
+        }
       }
 
       return transaction.echo.findUniqueOrThrow({
