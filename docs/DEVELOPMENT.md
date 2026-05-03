@@ -55,6 +55,7 @@ corepack pnpm --filter @proxi/front dev
 브라우저 기준 URL 은 `http://localhost:5173` 하나로 통일한다. 프런트 개발 서버는 `/api` 요청과 attachment download 요청을 백엔드 `http://localhost:3000` 으로 proxy 한다.
 
 백엔드 origin 을 직접 열어야 하는 도구는 `PROXI_CORS_ORIGINS` 에 허용 origin 을 명시한다.
+프런트와 백엔드가 다른 origin 으로 배포되면 백엔드는 `PROXI_PUBLIC_API_BASE_URL` 을 브라우저에서 접근 가능한 API origin 으로 설정해 attachment download URL 을 그 origin 기준으로 내려준다.
 
 ## Attachment 저장소
 개발 기본 저장소는 `apps/back/.local/uploads` 이다. 운영이나 별도 환경에서는 `PROXI_UPLOAD_ROOT` 로 저장 root 를 바꾼다.

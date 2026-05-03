@@ -59,6 +59,13 @@ describe("Prisma-backed providers", () => {
       attachments.openDownload("attachment_missing"),
     ).rejects.toThrow(NotFoundException);
     expect(prisma.attachment.findUnique).toHaveBeenCalledWith({
+      include: {
+        echo: {
+          select: {
+            authorActorId: true,
+          },
+        },
+      },
       where: {
         id: "attachment_missing",
       },

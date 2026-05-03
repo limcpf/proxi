@@ -40,6 +40,7 @@
 ## 개발 운영
 - 개발 기본 CORS origin 은 `PROXI_CORS_ORIGINS` 로 제어하며 기본값은 `http://localhost:5173` 이다.
 - 개발 attachment 저장소는 `PROXI_UPLOAD_ROOT` 로 제어하며 기본값은 `.local/uploads` 이다.
+- attachment download URL 의 public origin 은 `PROXI_PUBLIC_API_BASE_URL` 로 제어한다. 값이 없으면 기존 상대 경로를 반환한다.
 - 로컬 migration 은 `corepack pnpm --filter @proxi/back prisma:migrate:dev` 를 사용한다.
 - 운영/CI migration 은 `corepack pnpm --filter @proxi/back prisma:migrate:deploy` 를 사용한다.
 

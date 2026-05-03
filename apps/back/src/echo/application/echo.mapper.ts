@@ -4,6 +4,7 @@ import type {
   PersistedEchoStatus,
 } from "@proxi/shared";
 import { echoDetailSchema, echoSummarySchema } from "@proxi/shared";
+import { createAttachmentDownloadUrl } from "../../attachment/attachment-url.js";
 import type { EchoWithReplyCount } from "../domain/echo.entity.js";
 
 export function toEchoSummary(echo: EchoWithReplyCount): EchoSummary {
@@ -22,7 +23,7 @@ export function toEchoSummary(echo: EchoWithReplyCount): EchoSummary {
       mimeType: attachment.mimeType,
       sizeBytes: attachment.sizeBytes,
       checksum: attachment.checksum,
-      downloadUrl: `/attachments/${encodeURIComponent(attachment.id)}/download`,
+      downloadUrl: createAttachmentDownloadUrl(attachment.id),
       createdAt: attachment.createdAt.toISOString(),
     })),
     parentEchoId: echo.parentEchoId,
