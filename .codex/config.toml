@@ -1,6 +1,7 @@
-model = "gpt-5.4"
-model_reasoning_effort = "high"
+model = "gpt-5.5"
+model_reasoning_effort = "xhigh"
 personality = "pragmatic"
+suppress_unstable_features_warning = true
 
 # 프로젝트 루트 탐색을 현재 저장소 기준으로 유지
 project_root_markers = [".git"]
@@ -12,6 +13,7 @@ max_depth = 1
 [features]
 codex_hooks = true
 multi_agent = true
+goals = true
 
 [sandbox_workspace_write]
 network_access = true
