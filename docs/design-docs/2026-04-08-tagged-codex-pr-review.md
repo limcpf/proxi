@@ -12,7 +12,8 @@
 
 ## 결정
 - GitHub 와 연결된 Codex OAuth 댓글 경로를 기본 리뷰 경로로 사용한다.
-- `Verify` workflow 가 `pull_request` 에서 성공하면 후속 job 이 `COMMENTER_PAT` 로 기본 종합 리뷰 요청 코멘트 1개를 자동으로 남긴다.
+- `Verify` workflow 의 `request_codex_review` job 은 복구용으로 보존하되 현재는 `if: ${{ false }}` 로 비활성화한다.
+- 자동 리뷰 요청을 복구할 때는 `Verify` workflow 가 `pull_request` 에서 성공하면 후속 job 이 `COMMENTER_PAT` 로 기본 종합 리뷰 요청 코멘트 1개를 남긴다.
 - `COMMENTER_PAT` 는 Codex 와 연결된 같은 GitHub 계정의 토큰을 사용한다.
 - 기본 종합 리뷰는 `architecture`, `security`, `docs`, `feature`, `qa` 5개 관점을 한 댓글 안의 고정 섹션으로 요청한다.
 - 자동 코멘트는 `head.sha + composite` 기준 marker 를 남겨 같은 커밋에 중복 요청이 쌓이지 않게 한다.
@@ -30,8 +31,9 @@
 ## 영향
 - 리뷰 요청 방식은 GitHub 의 기본 Codex OAuth 연동 동작에 맞춰 단순해진다.
 - 저장소 안에서 별도 prompt 세트나 API key secret 을 운영하지 않는다.
-- `Verify` 성공이 기본 리뷰 요청의 선행 조건이 된다.
-- PR 대화에는 기본 자동 요청이 1개 코멘트로만 남아, 리뷰 시작점이 더 읽기 쉬워진다.
+- 현재는 `Verify` 성공 후에도 기본 자동 리뷰 요청 코멘트를 남기지 않는다.
+- 자동 리뷰 요청을 복구하면 `Verify` 성공이 기본 리뷰 요청의 선행 조건이 된다.
+- 복구 후 PR 대화에는 기본 자동 요청이 1개 코멘트로만 남아, 리뷰 시작점이 더 읽기 쉬워진다.
 - 기본 번들은 1개 코멘트로 고정하되, 필요하면 추가 관점을 같은 방식으로 확장할 수 있다.
 - `COMMENTER_PAT` 는 저장소 secret 으로만 보관하고, 범위는 이 저장소의 `Issues: write`, `Pull requests: write` 수준으로 최소화한다.
 - workflow 댓글 본문과 문서 예시는 같은 프롬프트 구조를 공유해야 한다.
@@ -117,5 +119,6 @@
 ```
 
 ## 운영 메모
+- `request_codex_review` job 은 현재 비활성화되어 있다. 복구하려면 `.github/workflows/verify.yml` 에서 `if: ${{ false }}` 를 `if: github.event_name == 'pull_request'` 로 되돌린다.
 - `COMMENTER_PAT` 가 비어 있으면 자동 댓글 job 은 notice 만 남기고 건너뛴다.
 - fine-grained PAT 를 권장하고, 발급 계정은 Codex 와 연결된 같은 GitHub 계정을 사용한다.

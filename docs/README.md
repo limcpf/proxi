@@ -24,4 +24,4 @@
 - 각 하위 폴더는 `index.md` 또는 `README.md` 로 후속 문서를 노출한다.
 - `docs` 아래 Markdown 이 아닌 파일은 `docs/generated/` 에만 둔다.
 - 문서 구조 변경 후에는 `pnpm run verify:docs` 를 통과시킨다.
-- Codex hook 은 세션 시작, 작업 브랜치/worktree 준비, Bash 후속 검사, 종료 전 단계에서 같은 라우팅 기준과 검증 요구를 다시 확인한다.
+- Codex hook 은 세션 시작, 작업 브랜치/worktree 준비, Bash 직전 main 차단, Bash 후속 상태 기록, 종료 전 단계에서 같은 라우팅 기준과 검증 요구를 다시 확인한다.

@@ -37,3 +37,4 @@
 - 같은 날 `Verify` 성공 후 PR 에 `@codex` 리뷰 요청 코멘트를 자동으로 남기는 후속 job 을 `GITHUB_TOKEN` 으로 구현하려 했지만, 댓글 작성 주체가 `github-actions[bot]` 로 남아 Codex 응답 경로와 맞지 않았다.
 - 이후 `COMMENTER_PAT` secret 을 사용해 Codex 와 연결된 같은 GitHub 계정으로 `architecture`, `security`, `docs`, `feature`, `qa` 5개 관점 코멘트를 자동으로 남기는 방식으로 조정했다.
 - 이후 자동 댓글 본문을 관점별 상세 프롬프트 구조로 확장해, 우선순위와 출력 형식을 workflow 와 설계 문서에 함께 고정했다.
+- 2026-05-04: `request_codex_review` job 은 파일 안에 보존하되 `if: ${{ false }}` 로 비활성화했다. 나중에 복구하려면 job 의 `if` 조건을 `github.event_name == 'pull_request'` 로 되돌린다.
