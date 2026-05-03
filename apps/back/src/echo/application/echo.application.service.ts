@@ -6,6 +6,7 @@ import {
   echoIdSchema,
   type ListEchoesResponse,
   listEchoesRequestSchema,
+  type PersistedEchoStatus,
   updateEchoRequestSchema,
 } from "@proxi/shared";
 import { ownerActor } from "../../common/auth/current-actor.js";
@@ -72,10 +73,11 @@ export class EchoApplicationService {
   }
 
   private async listRootEchoesByStatus(
-    status: "published" | "archived",
+    status: PersistedEchoStatus,
     input: unknown,
   ): Promise<ListEchoesResponse> {
     const request = parseRequest(listEchoesRequestSchema, input ?? {});
+    assertRequestedStatusMatchesRoute(status, request.status);
     const items = await this.repository.listRootEchoes({
       cursor: request.cursor,
       search: request.q,
@@ -271,5 +273,17 @@ function assertOwnerCanMutate(authorActorId: string) {
 function assertPublished(status: EchoEntity["status"], message: string) {
   if (status !== "published") {
     throw conflict("echo_not_published", message);
+  }
+}
+
+function assertRequestedStatusMatchesRoute(
+  routeStatus: PersistedEchoStatus,
+  requestedStatus: PersistedEchoStatus | undefined,
+) {
+  if (requestedStatus !== undefined && requestedStatus !== routeStatus) {
+    throw badRequest(
+      "echo_status_route_mismatch",
+      "요청 status 와 목록 경로가 일치하지 않아요.",
+    );
   }
 }

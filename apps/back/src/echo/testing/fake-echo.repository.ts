@@ -63,10 +63,7 @@ export class FakeEchoRepository implements EchoRepository {
       )
       .sort(compareNewestFirst);
 
-    const startIndex =
-      query.cursor === undefined
-        ? 0
-        : Math.max(sorted.findIndex((echo) => echo.id === query.cursor) + 1, 0);
+    const startIndex = getCursorStartIndex(query.cursor, sorted);
 
     return sorted
       .slice(startIndex, startIndex + query.limit)
@@ -199,4 +196,21 @@ function matchesSearch(echo: EchoEntity, search: string | undefined) {
   }
 
   return echo.body.toLowerCase().includes(search.toLowerCase());
+}
+
+function getCursorStartIndex(
+  cursor: string | undefined,
+  sortedEchoes: EchoEntity[],
+) {
+  if (cursor === undefined) {
+    return 0;
+  }
+
+  const cursorIndex = sortedEchoes.findIndex((echo) => echo.id === cursor);
+
+  if (cursorIndex === -1) {
+    throw badRequest("echo_cursor_invalid", "목록 cursor 가 유효하지 않아요.");
+  }
+
+  return cursorIndex + 1;
 }

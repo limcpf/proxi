@@ -5,6 +5,7 @@ import {
   echoDetailSchema,
   echoIdSchema,
   echoStatusSchema,
+  listEchoesRequestSchema,
   listEchoesResponseSchema,
   updateEchoRequestSchema,
   uploadAttachmentRequestSchema,
@@ -131,5 +132,27 @@ describe("Echo contracts", () => {
         echoes: [],
       }).success,
     ).toBe(false);
+  });
+
+  it("목록 요청 cursor 형식을 검증하고 status 는 경로가 결정하게 둔다", () => {
+    expect(
+      listEchoesRequestSchema.parse({
+        cursor: " echo_next ",
+        q: " 검색 ",
+      }),
+    ).toEqual({
+      cursor: "echo_next",
+      q: "검색",
+    });
+    expect(
+      listEchoesRequestSchema.parse({
+        status: "archived",
+      }).status,
+    ).toBe("archived");
+    expect(() =>
+      listEchoesRequestSchema.parse({
+        cursor: "not-an-echo-id",
+      }),
+    ).toThrow();
   });
 });

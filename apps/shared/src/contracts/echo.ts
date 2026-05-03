@@ -150,8 +150,8 @@ export const echoDetailSchema = echoSummarySchema.extend({
 });
 
 export const listEchoesRequestSchema = z.object({
-  cursor: z.string().trim().min(1).optional(),
-  status: persistedEchoStatusSchema.default("published"),
+  cursor: echoIdSchema.optional(),
+  status: persistedEchoStatusSchema.optional(),
   q: z.string().trim().min(1).max(200).optional(),
 });
 

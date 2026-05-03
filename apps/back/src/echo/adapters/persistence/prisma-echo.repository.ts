@@ -36,6 +36,11 @@ type PrismaEchoRow = {
   };
 };
 
+type PrismaRootCursorRow = {
+  id: string;
+  createdAt: Date;
+};
+
 const echoInclude = {
   attachments: {
     orderBy: {
@@ -154,8 +159,10 @@ export class PrismaEchoRepository implements EchoRepository {
       };
     }
 
+    const cursor = await this.findValidRootCursor(query.cursor, where);
+
     const rows = await this.prisma.echo.findMany({
-      where,
+      where: withCursorWindow(where, cursor),
       orderBy: [
         {
           createdAt: "desc",
@@ -164,14 +171,6 @@ export class PrismaEchoRepository implements EchoRepository {
           id: "desc",
         },
       ],
-      ...(query.cursor === undefined
-        ? {}
-        : {
-            cursor: {
-              id: query.cursor,
-            },
-            skip: 1,
-          }),
       take: query.limit,
       include: echoInclude,
     });
@@ -283,4 +282,63 @@ export class PrismaEchoRepository implements EchoRepository {
       })),
     };
   }
+
+  private async findValidRootCursor(
+    cursor: string | undefined,
+    where: Prisma.EchoWhereInput,
+  ): Promise<PrismaRootCursorRow | undefined> {
+    if (cursor === undefined) {
+      return undefined;
+    }
+
+    const cursorEcho = await this.prisma.echo.findFirst({
+      where: {
+        ...where,
+        id: cursor,
+      },
+      select: {
+        id: true,
+        createdAt: true,
+      },
+    });
+
+    if (cursorEcho === null) {
+      throw badRequest(
+        "echo_cursor_invalid",
+        "목록 cursor 가 유효하지 않아요.",
+      );
+    }
+
+    return cursorEcho;
+  }
+}
+
+function withCursorWindow(
+  where: Prisma.EchoWhereInput,
+  cursor: PrismaRootCursorRow | undefined,
+): Prisma.EchoWhereInput {
+  if (cursor === undefined) {
+    return where;
+  }
+
+  return {
+    AND: [
+      where,
+      {
+        OR: [
+          {
+            createdAt: {
+              lt: cursor.createdAt,
+            },
+          },
+          {
+            createdAt: cursor.createdAt,
+            id: {
+              lt: cursor.id,
+            },
+          },
+        ],
+      },
+    ],
+  };
 }

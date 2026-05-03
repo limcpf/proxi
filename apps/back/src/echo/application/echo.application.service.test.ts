@@ -64,6 +64,41 @@ describe("EchoApplicationService", () => {
     ]);
   });
 
+  it("목록 경로와 충돌하는 status query 를 거부한다", async () => {
+    const service = createService();
+    await service.createRoot({ body: "published" });
+
+    await expect(
+      service.listRootEchoes({ status: "archived" }),
+    ).rejects.toMatchObject({
+      code: "echo_status_route_mismatch",
+      httpStatus: 400,
+    });
+    await expect(
+      service.listArchivedRootEchoes({ status: "published" }),
+    ).rejects.toMatchObject({
+      code: "echo_status_route_mismatch",
+      httpStatus: 400,
+    });
+  });
+
+  it("목록 cursor 형식과 존재 여부를 400으로 검증한다", async () => {
+    const service = createService();
+
+    await expect(
+      service.listRootEchoes({ cursor: "not-an-echo-id" }),
+    ).rejects.toMatchObject({
+      code: "echo_validation_failed",
+      httpStatus: 400,
+    });
+    await expect(
+      service.listRootEchoes({ cursor: "echo_missing" }),
+    ).rejects.toMatchObject({
+      code: "echo_cursor_invalid",
+      httpStatus: 400,
+    });
+  });
+
   it("첨부 가능한 파일만 Echo 에 연결한다", async () => {
     const repository = new FakeEchoRepository();
     repository.addAttachmentForTest({
