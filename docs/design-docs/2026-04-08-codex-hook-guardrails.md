@@ -10,7 +10,7 @@
 
 ## 결정
 - repo-local `.codex/hooks.json` 과 `.codex/hooks/*.mjs` 를 추가한다.
-- `SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `Stop` 훅을 사용해 시작 체크리스트, `main` 에서의 task 브랜치/worktree 부트스트랩, Bash 차단, 문서 변경 리마인드, 종료 전 `corepack pnpm run verify` 강제를 구현한다.
+- `SessionStart`, `UserPromptSubmit`, `PostToolUse`, `Stop` 훅을 사용해 시작 체크리스트, `main` 에서의 task 브랜치/worktree 부트스트랩, 문서 변경 상태 기록, 종료 전 `corepack pnpm run verify` 강제를 구현한다.
 - 훅 상태는 비추적 경로인 `.codex/tmp/` 아래에 저장하고, 현재 작업트리의 문서 변경 fingerprint 와 마지막 검증 fingerprint 를 비교해 종료 시점 판단에 사용한다.
 - worktree 기본 루트는 `/tmp/<project>-wt/` 로 두고, 작업 브랜치는 `task/<slug>-<yyyymmdd>` 규칙으로 만든다.
 
@@ -22,8 +22,8 @@
 ## 영향
 - 새 세션은 시작 즉시 라우터와 기계용 목차를 다시 확인하는 컨텍스트를 받는다.
 - `main` 에서 첫 작업 프롬프트가 들어오면 에이전트가 관련 브랜치와 worktree 를 자동 생성하고, 해당 경로에서 새 세션을 다시 시작하도록 강제한다.
-- 문서/구조 변경은 작업 중 리마인드를 받고, 종료 직전에는 `verify` 없이 마무리하기 어렵다.
-- 현재 `PreToolUse` 와 `PostToolUse` 는 `Bash` 에만 반응하므로 비 Bash 편집은 `Stop` 훅에서 최종 보완한다.
+- 문서/구조 변경은 작업 시작 시점에 리마인드를 받고, 종료 직전에는 `verify` 없이 마무리하기 어렵다.
+- 현재 문서 변경 후속 상태 기록은 `PostToolUse` 의 `Bash` 실행 후에 반응하므로 비 Bash 편집은 `Stop` 훅에서 최종 보완한다.
 
 ## 후속 작업
 - Hook 이벤트 범위가 넓어지면 `apply_patch` 같은 편집도 더 이른 단계에서 포착하도록 개선한다.
@@ -33,3 +33,6 @@
 - `verify` 성공 여부 기록은 `PostToolUse` 에서 활성 실행 surface 의 명령 입력 키를 함께 읽어야 한다.
 - 초기 구현은 `tool_input.command` 만 읽어 `corepack pnpm run verify` 가 `cmd` 필드로 전달되는 실행 경로에서 `verifiedFingerprint` 가 갱신되지 않는 문제가 있었다.
 - 이후 후속 수정으로 `command` 와 `cmd` 를 모두 읽게 해, 실제 `verify` 성공 후 `Stop` 훅이 오탐 경고를 내지 않도록 보완했다.
+- 2026-05-04 후속 수정으로 `PostToolUse` 입력과 응답이 중첩 JSON 또는 대체 필드명으로 전달되는 경우도 처리한다. 실행 중 응답은 검증 성공으로 보지 않고, 완료형 `verify` 응답에서 exit code 가 누락된 경우에는 명시적 실행 중 표시가 없을 때 현재 fingerprint 를 검증 완료로 기록한다.
+- 2026-05-04 후속 수정으로 `PreToolUse` 의 `main` Bash 차단을 제거하고, `main` 분리 강제는 `UserPromptSubmit` 의 작업 시작 시점과 `Stop` 의 종료 시점 보완으로만 처리한다. 이렇게 하면 병렬 Bash 실행마다 `PreToolUse` 가 중복 실행되는 비용을 없앨 수 있다.
+- 2026-05-04 후속 수정으로 `PostToolUse` 의 사용자-facing 문서 변경 리마인드를 제거했다. `PostToolUse` 는 Bash 실행 후 상태와 verify fingerprint 만 조용히 갱신하고, 리마인드는 `UserPromptSubmit`, 종료 강제는 `Stop` 에서 담당한다.
