@@ -10,13 +10,13 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import {
+  type ActorId,
   type allowedAttachmentMimeTypes,
   type EchoAttachment,
   echoAttachmentSchema,
   type UploadAttachmentRequest,
   uploadAttachmentRequestSchema,
 } from "@proxi/shared";
-import { ownerActor } from "../echo/domain/echo.entity.js";
 import { PrismaService } from "../prisma/prisma.service.js";
 import { createAttachmentDownloadUrl } from "./attachment-url.js";
 
@@ -76,10 +76,10 @@ export class AttachmentService {
     }
   }
 
-  async openDownload(attachmentId: string) {
+  async openDownload(attachmentId: string, callerActorId: ActorId) {
     const attachment = await this.findDownloadAttachment(attachmentId);
 
-    this.assertCanOpenDownload(attachment);
+    this.assertCanOpenDownload(attachment, callerActorId);
 
     return {
       fileName: attachment.originalFileName,
@@ -160,7 +160,10 @@ export class AttachmentService {
     return attachment;
   }
 
-  private assertCanOpenDownload(attachment: DownloadAttachmentRecord) {
+  private assertCanOpenDownload(
+    attachment: DownloadAttachmentRecord,
+    callerActorId: ActorId,
+  ) {
     if (attachment.echoId === null || attachment.echo === null) {
       throw new ForbiddenException({
         code: "attachment_not_attached",
@@ -168,7 +171,7 @@ export class AttachmentService {
       });
     }
 
-    if (attachment.echo.authorActorId !== ownerActor.id) {
+    if (attachment.echo.authorActorId !== callerActorId) {
       throw new ForbiddenException({
         code: "attachment_permission_denied",
         message: "이 파일을 내려받을 권한이 없어요.",

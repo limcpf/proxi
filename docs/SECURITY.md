@@ -17,6 +17,8 @@
 - 백엔드 CORS 는 `PROXI_CORS_ORIGINS` allowlist 로 제어하며 wildcard 는 의도적으로 설정한 경우에만 쓴다.
 - 업로드 파일은 정적 공개 디렉터리에 두지 않고, attachment download endpoint 에서 권한 확인 후 stream 으로 내려준다.
 - 업로드 저장 경로는 `PROXI_UPLOAD_ROOT` 아래 상대 경로만 허용한다.
+- 첫 버전은 로그인 없는 단일 owner 제품이지만, attachment download 권한 검사는 서비스 내부 상수가 아니라 HTTP adapter 에서 전달한 요청 액터 기준으로 수행한다.
+- 정식 인증 계층이 생기면 `apps/back/src/common/auth/current-actor.ts` 의 resolver 를 교체하고 attachment 권한 검증 호출부는 유지한다.
 
 ## 문서화 규칙
 - 보안 경계가 바뀌면 설계 문서 또는 실행 계획에 위험과 완화책을 남긴다.

@@ -2,7 +2,9 @@ import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { ForbiddenException } from "@nestjs/common";
+import { actorIdSchema } from "@proxi/shared";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { ownerActor } from "../common/auth/current-actor.js";
 import type { PrismaService } from "../prisma/prisma.service.js";
 import { AttachmentService } from "./attachment.service.js";
 
@@ -31,9 +33,9 @@ describe("AttachmentService", () => {
       echo: null,
     });
 
-    await expect(service.openDownload("attachment_detached")).rejects.toThrow(
-      ForbiddenException,
-    );
+    await expect(
+      service.openDownload("attachment_detached", ownerActor.id),
+    ).rejects.toThrow(ForbiddenException);
   });
 
   it("owner Echo 에 연결된 attachment 다운로드를 허용한다", async () => {
@@ -45,7 +47,10 @@ describe("AttachmentService", () => {
       },
     });
 
-    const download = await service.openDownload("attachment_owner");
+    const download = await service.openDownload(
+      "attachment_owner",
+      ownerActor.id,
+    );
 
     expect(download.fileName).toBe("memo.txt");
     expect(download.mimeType).toBe("text/plain");
@@ -61,9 +66,12 @@ describe("AttachmentService", () => {
       },
     });
 
-    await expect(service.openDownload("attachment_agent")).rejects.toThrow(
-      ForbiddenException,
-    );
+    await expect(
+      service.openDownload(
+        "attachment_agent",
+        actorIdSchema.parse("actor_owner"),
+      ),
+    ).rejects.toThrow(ForbiddenException);
   });
 });
 

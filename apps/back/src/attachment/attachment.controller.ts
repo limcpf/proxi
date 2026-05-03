@@ -9,6 +9,10 @@ import {
   StreamableFile,
 } from "@nestjs/common";
 import type { EchoAttachment } from "@proxi/shared";
+import {
+  CurrentActor,
+  type RequestActor,
+} from "../common/auth/current-actor.js";
 import { AttachmentService } from "./attachment.service.js";
 
 @Controller("attachments")
@@ -24,8 +28,14 @@ export class AttachmentController {
 
   @Get(":attachmentId/download")
   @Header("Cache-Control", "private, max-age=60")
-  async downloadAttachment(@Param("attachmentId") attachmentId: string) {
-    const download = await this.attachments.openDownload(attachmentId);
+  async downloadAttachment(
+    @Param("attachmentId") attachmentId: string,
+    @CurrentActor() actor: RequestActor,
+  ) {
+    const download = await this.attachments.openDownload(
+      attachmentId,
+      actor.id,
+    );
 
     return new StreamableFile(download.stream, {
       disposition: createContentDisposition(download.fileName),

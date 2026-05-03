@@ -1,11 +1,5 @@
 import type { EchoAuthorType, PersistedEchoStatus } from "@proxi/shared";
 
-export const ownerActor = {
-  id: "actor_owner",
-  type: "owner",
-  displayName: "Owner",
-} as const;
-
 export interface EchoEntity {
   id: string;
   body: string;

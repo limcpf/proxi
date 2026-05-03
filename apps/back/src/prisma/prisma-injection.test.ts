@@ -2,6 +2,7 @@ import { NotFoundException } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import { describe, expect, it, vi } from "vitest";
 import { AttachmentService } from "../attachment/attachment.service.js";
+import { ownerActor } from "../common/auth/current-actor.js";
 import { PrismaEchoRepository } from "../echo/adapters/persistence/prisma-echo.repository.js";
 import { PrismaService } from "./prisma.service.js";
 
@@ -56,7 +57,7 @@ describe("Prisma-backed providers", () => {
     const attachments = module.get(AttachmentService);
 
     await expect(
-      attachments.openDownload("attachment_missing"),
+      attachments.openDownload("attachment_missing", ownerActor.id),
     ).rejects.toThrow(NotFoundException);
     expect(prisma.attachment.findUnique).toHaveBeenCalledWith({
       include: {

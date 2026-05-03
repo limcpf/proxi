@@ -8,7 +8,8 @@ import {
   listEchoesRequestSchema,
   updateEchoRequestSchema,
 } from "@proxi/shared";
-import { type EchoEntity, ownerActor } from "../domain/echo.entity.js";
+import { ownerActor } from "../../common/auth/current-actor.js";
+import type { EchoEntity } from "../domain/echo.entity.js";
 import {
   badRequest,
   conflict,
