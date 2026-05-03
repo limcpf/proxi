@@ -86,6 +86,18 @@ export async function createEcho(
   return echoDetailSchema.parse(response);
 }
 
+export async function createEchoWithFiles(input: {
+  body: string;
+  files: File[];
+}): Promise<EchoDetail> {
+  return uploadFilesWithRollback(input.files, (attachmentIds) =>
+    createEcho({
+      body: input.body,
+      attachmentIds,
+    }),
+  );
+}
+
 export async function updateEcho(
   echoId: string,
   request: UpdateEchoRequest,
@@ -130,6 +142,21 @@ export async function createReply(
   return echoDetailSchema.parse(response);
 }
 
+export async function createReplyWithFiles(
+  echoId: string,
+  input: {
+    body: string;
+    files: File[];
+  },
+): Promise<EchoDetail> {
+  return uploadFilesWithRollback(input.files, (attachmentIds) =>
+    createReply(echoId, {
+      body: input.body,
+      attachmentIds,
+    }),
+  );
+}
+
 export async function uploadAttachment(
   request: UploadAttachmentRequest,
 ): Promise<EchoAttachment> {
@@ -141,6 +168,12 @@ export async function uploadAttachment(
   return echoAttachmentSchema.parse(response);
 }
 
+export async function deleteAttachment(attachmentId: string): Promise<void> {
+  await requestJson(`/attachments/${encodeURIComponent(attachmentId)}`, {
+    method: "DELETE",
+  });
+}
+
 export async function uploadAttachmentFile(file: File) {
   const contentBase64 = toBase64(await file.arrayBuffer());
 
@@ -150,6 +183,39 @@ export async function uploadAttachmentFile(file: File) {
     sizeBytes: file.size,
     contentBase64,
   });
+}
+
+async function uploadFilesWithRollback<TResult>(
+  files: File[],
+  submit: (attachmentIds: string[]) => Promise<TResult>,
+) {
+  const uploadResults = await Promise.allSettled(
+    files.map((file) => uploadAttachmentFile(file)),
+  );
+  const uploadedAttachments = uploadResults.flatMap((result) =>
+    result.status === "fulfilled" ? [result.value] : [],
+  );
+  const uploadFailure = uploadResults.find(
+    (result): result is PromiseRejectedResult => result.status === "rejected",
+  );
+
+  if (uploadFailure !== undefined) {
+    await cleanupUploadedAttachments(uploadedAttachments);
+    throw uploadFailure.reason;
+  }
+
+  try {
+    return await submit(uploadedAttachments.map((attachment) => attachment.id));
+  } catch (error) {
+    await cleanupUploadedAttachments(uploadedAttachments);
+    throw error;
+  }
+}
+
+async function cleanupUploadedAttachments(attachments: EchoAttachment[]) {
+  await Promise.allSettled(
+    attachments.map((attachment) => deleteAttachment(attachment.id)),
+  );
 }
 
 async function requestJson(path: string, init: RequestInit = {}) {

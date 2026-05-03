@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Header,
+  HttpCode,
   Inject,
   Param,
   Post,
@@ -24,6 +26,12 @@ export class AttachmentController {
   @Post()
   async uploadAttachment(@Body() body: unknown): Promise<EchoAttachment> {
     return this.attachments.upload(body);
+  }
+
+  @Delete(":attachmentId")
+  @HttpCode(204)
+  async deleteAttachment(@Param("attachmentId") attachmentId: string) {
+    await this.attachments.deleteUnattached(attachmentId);
   }
 
   @Get(":attachmentId/download")

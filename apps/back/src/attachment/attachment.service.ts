@@ -78,6 +78,43 @@ export class AttachmentService {
     }
   }
 
+  async deleteUnattached(attachmentId: string): Promise<void> {
+    const attachment = await this.prisma.attachment.findUnique({
+      where: {
+        id: attachmentId,
+      },
+      select: {
+        echoId: true,
+        relativePath: true,
+      },
+    });
+
+    if (attachment === null || attachment.echoId !== null) {
+      return;
+    }
+
+    const absolutePath = this.toAbsolutePath(attachment.relativePath);
+    const deleted = await this.prisma.attachment.deleteMany({
+      where: {
+        id: attachmentId,
+        echoId: null,
+      },
+    });
+
+    if (deleted.count === 0) {
+      return;
+    }
+
+    await unlink(absolutePath).catch((error: NodeJS.ErrnoException) => {
+      if (error.code !== "ENOENT") {
+        console.warn("attachment.file_cleanup_failed", {
+          attachmentId,
+          code: error.code,
+        });
+      }
+    });
+  }
+
   async openDownload(attachmentId: string, callerActorId: ActorId) {
     const attachment = await this.findDownloadAttachment(attachmentId);
 

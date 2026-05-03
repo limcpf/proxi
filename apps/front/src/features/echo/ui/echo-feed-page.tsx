@@ -6,7 +6,7 @@ import {
 import { useEffect, useState } from "react";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
-import { createEcho, listEchoes, uploadAttachmentFile } from "../api/echo.api";
+import { createEchoWithFiles, listEchoes } from "../api/echo.api";
 import { newEchoDraftKey } from "../lib/draft-storage";
 import { echoQueryKeys, toEchoFeedItemViewModel } from "../model";
 import { EchoCard } from "./echo-card";
@@ -40,16 +40,8 @@ export function EchoFeedPage({
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
   const createMutation = useMutation({
-    mutationFn: async (input: { body: string; files: File[] }) => {
-      const attachments = await Promise.all(
-        input.files.map((file) => uploadAttachmentFile(file)),
-      );
-
-      return createEcho({
-        body: input.body,
-        attachmentIds: attachments.map((attachment) => attachment.id),
-      });
-    },
+    mutationFn: (input: { body: string; files: File[] }) =>
+      createEchoWithFiles(input),
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: ["echoes", "list"],

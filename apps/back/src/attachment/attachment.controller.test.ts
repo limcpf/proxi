@@ -32,6 +32,7 @@ describe("AttachmentController", () => {
         sizeBytes: 4,
         stream: Readable.from(["memo"]),
       }),
+      deleteUnattached: vi.fn(),
     };
     const module = await Test.createTestingModule({
       controllers: [AttachmentController],
@@ -50,6 +51,29 @@ describe("AttachmentController", () => {
     expect(attachments.openDownload).toHaveBeenCalledWith(
       "attachment_owner",
       ownerActor.id,
+    );
+  });
+
+  it("삭제 요청을 미연결 attachment 정리로 전달한다", async () => {
+    const attachments = {
+      deleteUnattached: vi.fn().mockResolvedValue(undefined),
+    };
+    const module = await Test.createTestingModule({
+      controllers: [AttachmentController],
+      providers: [
+        {
+          provide: AttachmentService,
+          useValue: attachments,
+        },
+      ],
+    }).compile();
+
+    const controller = module.get(AttachmentController);
+
+    await controller.deleteAttachment("attachment_orphan");
+
+    expect(attachments.deleteUnattached).toHaveBeenCalledWith(
+      "attachment_orphan",
     );
   });
 });

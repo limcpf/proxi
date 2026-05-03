@@ -35,7 +35,7 @@
 - `src/app.service.ts`: health 응답과 shared 계약 smoke 응답
 - `src/common/auth/current-actor.ts`: 첫 버전의 로그인 없는 단일 owner 요청 액터 resolver
 - `src/echo`: Echo 작성, 목록, 상세, 수정, 아카이브, 복구, 댓글, 검색
-- `src/attachment`: Echo attachment 업로드와 권한 확인 stream 다운로드
+- `src/attachment`: Echo attachment 업로드, 미연결 attachment 정리, 권한 확인 stream 다운로드
 - `prisma/schema.prisma`: Echo, EchoMention, Attachment persistence schema
 
 ## 개발 운영

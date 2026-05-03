@@ -102,6 +102,7 @@
 - 프런트는 HTTP API 계약을 통해 백엔드와 통신한다.
 - 개발 기본 API 경로는 Vite proxy 의 `/api` 이며 백엔드 origin 은 `http://localhost:3000` 이다.
 - attachment download 는 백엔드가 내려준 `downloadUrl` 을 그대로 사용한다. 교차 origin 배포에서는 백엔드 `PROXI_PUBLIC_API_BASE_URL` 과 프런트 `VITE_PROXI_API_BASE_URL` 이 같은 public API origin 을 가리켜야 한다.
+- Echo 작성 또는 댓글 작성 중 attachment 업로드 후 본문 생성이 실패하면 프런트 API layer 에서 성공한 미연결 attachment 를 삭제해 orphan 누적을 막는다.
 - 브라우저 E2E 기준 URL 은 `http://localhost:5173` 하나로 통일한다.
 - 초반에는 얇은 API layer 로 시작한다.
 - API 계약이 커지면 OpenAPI 기반 생성 방식을 검토한다.

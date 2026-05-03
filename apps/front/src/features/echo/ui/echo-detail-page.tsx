@@ -4,11 +4,10 @@ import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import {
   archiveEcho,
-  createReply,
+  createReplyWithFiles,
   getEcho,
   restoreEcho,
   updateEcho,
-  uploadAttachmentFile,
 } from "../api/echo.api";
 import { echoEditDraftKey, echoReplyDraftKey } from "../lib/draft-storage";
 import {
@@ -58,16 +57,8 @@ export function EchoDetailPage({ echoId }: EchoDetailPageProps) {
     },
   });
   const replyMutation = useMutation({
-    mutationFn: async (input: { body: string; files: File[] }) => {
-      const attachments = await Promise.all(
-        input.files.map((file) => uploadAttachmentFile(file)),
-      );
-
-      return createReply(echoId, {
-        body: input.body,
-        attachmentIds: attachments.map((attachment) => attachment.id),
-      });
-    },
+    mutationFn: (input: { body: string; files: File[] }) =>
+      createReplyWithFiles(echoId, input),
     onSuccess: () => invalidateEchoQueries(queryClient, echoId),
   });
 

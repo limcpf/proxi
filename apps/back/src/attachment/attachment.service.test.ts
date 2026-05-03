@@ -1,4 +1,4 @@
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { access, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import {
@@ -62,6 +62,41 @@ describe("AttachmentService", () => {
     download.stream.destroy();
   });
 
+  it("Echo 에 연결되지 않은 attachment 레코드와 파일을 삭제한다", async () => {
+    const filePath = path.join(uploadRoot, "memo.txt");
+    await writeFile(filePath, "memo");
+    const { attachment, service } = createServiceFixture({
+      echoId: null,
+      echo: null,
+    });
+
+    await service.deleteUnattached("attachment_owner");
+
+    expect(attachment.deleteMany).toHaveBeenCalledWith({
+      where: {
+        id: "attachment_owner",
+        echoId: null,
+      },
+    });
+    await expect(access(filePath)).rejects.toThrow();
+  });
+
+  it("Echo 에 연결된 attachment 삭제 요청은 파일을 유지한다", async () => {
+    const filePath = path.join(uploadRoot, "memo.txt");
+    await writeFile(filePath, "memo");
+    const { attachment, service } = createServiceFixture({
+      echoId: "echo_owner",
+      echo: {
+        authorActorId: "actor_owner",
+      },
+    });
+
+    await service.deleteUnattached("attachment_owner");
+
+    expect(attachment.deleteMany).not.toHaveBeenCalled();
+    await expect(access(filePath)).resolves.toBeUndefined();
+  });
+
   it("DB 레코드가 있어도 파일이 없으면 다운로드를 NotFound 로 거부한다", async () => {
     const service = createService({
       echoId: "echo_owner",
@@ -122,20 +157,37 @@ function createService(attachmentState: {
     authorActorId: string;
   } | null;
 }) {
+  return createServiceFixture(attachmentState).service;
+}
+
+function createServiceFixture(attachmentState: {
+  echoId: string | null;
+  echo: {
+    authorActorId: string;
+  } | null;
+}) {
+  const attachment = {
+    create: vi.fn(),
+    deleteMany: vi.fn().mockResolvedValue({
+      count: attachmentState.echoId === null ? 1 : 0,
+    }),
+    findUnique: vi.fn().mockResolvedValue({
+      id: "attachment_owner",
+      originalFileName: "memo.txt",
+      mimeType: "text/plain",
+      sizeBytes: 4,
+      checksum: "checksum",
+      relativePath: "memo.txt",
+      createdAt: new Date("2026-05-03T00:00:00.000Z"),
+      ...attachmentState,
+    }),
+  };
   const prisma = {
-    attachment: {
-      findUnique: vi.fn().mockResolvedValue({
-        id: "attachment_owner",
-        originalFileName: "memo.txt",
-        mimeType: "text/plain",
-        sizeBytes: 4,
-        checksum: "checksum",
-        relativePath: "memo.txt",
-        createdAt: new Date("2026-05-03T00:00:00.000Z"),
-        ...attachmentState,
-      }),
-    },
+    attachment,
   } as unknown as PrismaService;
 
-  return new AttachmentService(prisma);
+  return {
+    attachment,
+    service: new AttachmentService(prisma),
+  };
 }

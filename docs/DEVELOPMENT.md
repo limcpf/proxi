@@ -61,6 +61,7 @@ corepack pnpm --filter @proxi/front dev
 개발 기본 저장소는 `apps/back/.local/uploads` 이다. 운영이나 별도 환경에서는 `PROXI_UPLOAD_ROOT` 로 저장 root 를 바꾼다.
 
 파일은 정적 공개하지 않는다. 백엔드는 attachment stream endpoint 에서 요청 액터 기준 접근 확인을 통과한 파일만 내려준다.
+본문 생성 실패 후 남은 미연결 attachment 는 프런트가 `DELETE /attachments/:attachmentId` 로 정리한다. 이 endpoint 는 이미 Echo 에 연결된 attachment 는 삭제하지 않는다.
 
 ## 검증
 - 빠른 검증: `corepack pnpm run verify`

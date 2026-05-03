@@ -5,21 +5,19 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   archiveEcho,
-  createReply,
+  createReplyWithFiles,
   getEcho,
   restoreEcho,
   updateEcho,
-  uploadAttachmentFile,
 } from "../api/echo.api";
 import { EchoDetailPage } from "./echo-detail-page";
 
 vi.mock("../api/echo.api", () => ({
   archiveEcho: vi.fn(),
-  createReply: vi.fn(),
+  createReplyWithFiles: vi.fn(),
   getEcho: vi.fn(),
   restoreEcho: vi.fn(),
   updateEcho: vi.fn(),
-  uploadAttachmentFile: vi.fn(),
 }));
 
 const now = "2026-04-28T00:00:00.000Z";
@@ -28,11 +26,10 @@ describe("EchoDetailPage", () => {
   beforeEach(() => {
     window.localStorage.clear();
     vi.mocked(archiveEcho).mockReset();
-    vi.mocked(createReply).mockReset();
+    vi.mocked(createReplyWithFiles).mockReset();
     vi.mocked(getEcho).mockReset();
     vi.mocked(restoreEcho).mockReset();
     vi.mocked(updateEcho).mockReset();
-    vi.mocked(uploadAttachmentFile).mockReset();
   });
 
   it("상세와 댓글을 보여준다", async () => {
@@ -105,7 +102,7 @@ describe("EchoDetailPage", () => {
       .mockResolvedValue(
         createEchoDetail("echo_root", "root", { replies: [reply] }),
       );
-    vi.mocked(createReply).mockResolvedValue(
+    vi.mocked(createReplyWithFiles).mockResolvedValue(
       createEchoDetail("echo_reply", "reply", {
         parentEchoId: "echo_root",
         rootEchoId: "echo_root",
@@ -118,9 +115,9 @@ describe("EchoDetailPage", () => {
     await user.type(screen.getByLabelText("댓글 본문"), "reply");
     await user.click(screen.getByRole("button", { name: "댓글 남기기" }));
 
-    expect(createReply).toHaveBeenCalledWith("echo_root", {
+    expect(createReplyWithFiles).toHaveBeenCalledWith("echo_root", {
       body: "reply",
-      attachmentIds: [],
+      files: [],
     });
     expect(await screen.findByText("reply")).toBeInTheDocument();
   });
