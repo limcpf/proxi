@@ -6,7 +6,7 @@
 | --- | --- | --- | --- | --- |
 | 문서 라우팅 목차 수동 갱신 부담 | `docs/generated/context-map.json` 과 사람용 인덱스를 함께 유지해야 한다. | 갱신 누락 시 `verify:docs` 가 실패해 작업 흐름이 끊길 수 있다. | 중간 | 필요하면 `context-map.json` 동기화 스크립트나 템플릿 자동화를 검토한다. |
 | Hook 이벤트 범위 제한 | Codex hook 의 `PostToolUse` 는 현재 `Bash` 에만 반응한다. | `apply_patch` 같은 비 Bash 편집은 종료 시점까지는 후속 리마인드를 받지 못한다. | 중간 | Hook 이벤트 범위가 넓어지면 문서 변경 감지를 더 이른 단계로 옮긴다. |
-| Worktree 정리 정책 부재 | `/tmp/<project>-wt/` 아래 task worktree 가 자동 생성되지만 수명 주기와 prune 규칙이 없다. | 오래된 worktree 가 누적되면 디스크 사용량과 브랜치 관리 비용이 커진다. | 중간 | 주기적 prune 절차와 자동 정리 기준을 문서로 추가한다. |
+| Worktree 정리 정책 부재 | `/tmp/<project>-wt/` 아래 수동 생성한 worktree 의 수명 주기와 prune 규칙이 없다. | 오래된 worktree 가 누적되면 디스크 사용량과 브랜치 관리 비용이 커진다. | 중간 | 주기적 prune 절차와 정리 기준을 문서로 추가한다. |
 | 제품 사양 문서 부재 | 사용자 동작 기준이 저장소 안에 없다. | 구현 판단이 대화 문맥에 의존할 수 있다. | 중간 | 주요 기능부터 `docs/product-specs/` 에 수용 기준을 추가한다. |
 | 정식 인증 계층 부재 | 첫 버전은 current actor resolver 가 로그인 없는 단일 owner 를 반환한다. | 민감한 멀티 사용자 환경에서는 요청 주체 증명이 부족하다. | 높음 | 로그인, 세션 또는 토큰 인증을 도입하면 resolver 를 실제 인증 컨텍스트로 교체하고 Echo/Attachment 권한 테스트를 확장한다. |
 | Attachment object storage adapter 부재 | 첫 구현은 로컬 파일시스템에 저장한다. | 운영에서 Cloudflare R2 또는 Backblaze B2 로 옮길 때 adapter 경계가 필요하다. | 중간 | `PROXI_UPLOAD_ROOT` 기반 구현을 유지하면서 S3/R2 호환 adapter 를 분리한다. |

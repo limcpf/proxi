@@ -1,5 +1,6 @@
 import {
   getCurrentBranch,
+  getDefaultWorktreeRoot,
   fingerprintFiles,
   listDocStructureFiles,
   listRepoChanges,
@@ -7,6 +8,7 @@ import {
   readHookInput,
   readHookState,
   resolveRepoRoot,
+  shellQuote,
 } from "./lib.mjs";
 
 const input = await readHookInput();
@@ -14,11 +16,15 @@ const sessionCwd = input.cwd ?? process.cwd();
 const repoRoot = resolveRepoRoot(sessionCwd);
 const currentBranch = getCurrentBranch(repoRoot);
 const state = await readHookState(repoRoot, input.session_id ?? "default");
+const repoChanges = listRepoChanges(repoRoot);
 
-if (currentBranch === "main" && (state.bootstrapWorktreePath !== null || listRepoChanges(repoRoot).length > 0)) {
-  const reason = state.bootstrapWorktreePath
-    ? `main 브랜치에서는 직접 작업하지 않습니다. ${state.bootstrapWorktreePath} 에서 새 Codex 세션을 다시 시작하세요.`
-    : "main 브랜치에서는 직접 작업하지 않습니다. 새 작업 프롬프트로 task 브랜치와 git worktree 를 먼저 만드세요.";
+if (currentBranch === "main" && repoChanges.length > 0) {
+  const worktreeRoot = getDefaultWorktreeRoot(repoRoot);
+  const reason = [
+    "main 브랜치에서는 직접 작업하지 않습니다.",
+    "변경을 이어가려면 원하는 이름으로 branch 와 git worktree 를 직접 만든 뒤 새 Codex 세션을 시작하세요.",
+    `예: git worktree add -b <branch-name> ${shellQuote(`${worktreeRoot}/<worktree-name>`)} main`,
+  ].join("\n");
 
   if (input.stop_hook_active) {
     printJson({

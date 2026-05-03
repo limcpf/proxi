@@ -1,7 +1,6 @@
 import path from "node:path";
 
 import {
-  ensureTaskWorktree,
   getCurrentBranch,
   getDefaultWorktreeRoot,
   readHookInput,
@@ -20,26 +19,24 @@ const currentBranch = getCurrentBranch(repoRoot);
 const state = await readHookState(repoRoot, sessionId);
 
 if (currentBranch === "main") {
-  const bootstrap = await ensureTaskWorktree(repoRoot, prompt, {
-    worktreeRoot: getDefaultWorktreeRoot(repoRoot),
-  });
+  const worktreeRoot = getDefaultWorktreeRoot(repoRoot);
 
-  state.bootstrapBranch = bootstrap.branchName;
-  state.bootstrapWorktreePath = bootstrap.worktreePath;
-  state.bootstrapPromptSlug = bootstrap.slug;
+  state.bootstrapBranch = null;
+  state.bootstrapWorktreePath = null;
+  state.bootstrapPromptSlug = null;
   state.bootstrapRequestedAt = new Date().toISOString();
   state.bootstrapCompleted = false;
   await writeHookState(repoRoot, sessionId, state);
 
   const message = [
     "main 브랜치에서는 직접 작업하지 않습니다.",
-    bootstrap.created
-      ? "관련 작업용 브랜치와 git worktree 를 자동 생성했습니다."
-      : "이미 같은 작업용 브랜치와 git worktree 가 있어서 재사용합니다.",
-    `- 작업 브랜치: ${bootstrap.branchName}`,
-    `- 작업 경로: ${bootstrap.worktreePath}`,
-    `- 새 세션 시작: cd ${shellQuote(bootstrap.worktreePath)} && codex`,
-    "현재 세션은 여기서 중단하고, 생성된 worktree 경로에서 다시 시작해야 합니다.",
+    "Hook 은 branch 와 worktree 를 자동 생성하지 않습니다.",
+    "원하는 이름을 직접 정한 뒤, 터미널에서 아래 형식으로 작업 환경을 준비하세요.",
+    `- 권장 worktree 부모 경로: ${worktreeRoot}`,
+    "- 생성 명령:",
+    `  git worktree add -b <branch-name> ${shellQuote(`${worktreeRoot}/<worktree-name>`)} main`,
+    `  cd ${shellQuote(`${worktreeRoot}/<worktree-name>`)} && codex`,
+    "현재 세션은 여기서 중단하고, 직접 만든 worktree 경로에서 다시 시작해야 합니다.",
   ];
 
   process.stderr.write(`${message.join("\n")}\n`);
