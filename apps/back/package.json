@@ -1,7 +1,43 @@
 {
   "name": "@proxi/back",
   "version": "0.0.1",
-  "main": "index.js",
+  "private": true,
+  "type": "module",
+  "main": "./dist/main.js",
   "author": "limcpf",
-  "packageManager": "pnpm@10.33.0"
+  "scripts": {
+    "predev": "corepack pnpm run prisma:generate && corepack pnpm --filter @proxi/shared build",
+    "dev": "tsx watch src/main.ts",
+    "prisma:generate": "prisma generate --schema prisma/schema.prisma",
+    "prisma:migrate:dev": "prisma migrate dev --schema prisma/schema.prisma",
+    "prisma:migrate:deploy": "prisma migrate deploy --schema prisma/schema.prisma",
+    "prebuild": "corepack pnpm run prisma:generate && corepack pnpm --filter @proxi/shared build",
+    "build": "tsc -p tsconfig.build.json",
+    "pretypecheck": "corepack pnpm run prisma:generate && corepack pnpm --filter @proxi/shared build",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "pretest": "corepack pnpm run prisma:generate && corepack pnpm --filter @proxi/shared build",
+    "test": "vitest run",
+    "pretest:integration": "corepack pnpm run prisma:generate && corepack pnpm --filter @proxi/shared build",
+    "test:integration": "PROXI_INTEGRATION_TESTS=1 vitest run src/**/*.integration.test.ts",
+    "lint": "biome check ."
+  },
+  "dependencies": {
+    "@nestjs/common": "11.1.18",
+    "@nestjs/core": "11.1.18",
+    "@nestjs/platform-express": "11.1.18",
+    "@prisma/adapter-pg": "7.6.0",
+    "@prisma/client": "7.6.0",
+    "@proxi/shared": "workspace:*",
+    "pg": "^8.20.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "11.1.18",
+    "@types/node": "^24.10.0",
+    "prisma": "7.6.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.4"
+  }
 }

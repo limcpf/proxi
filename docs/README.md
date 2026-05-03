@@ -4,6 +4,7 @@
 
 ## 빠른 라우팅
 - 문서 구조 탐색, 문서 추가/이동, 인덱스 갱신: [`/Users/lim/dev/proxi/docs/generated/context-map.json`](./generated/context-map.json), 이 문서
+- 로컬 개발 환경, DB, migration, E2E 실행: [`/Users/lim/dev/proxi/docs/DEVELOPMENT.md`](./DEVELOPMENT.md)
 - 구조 변경, 경계 변경, 새 규칙 도입: [`/Users/lim/dev/proxi/docs/DESIGN.md`](./DESIGN.md), [`/Users/lim/dev/proxi/docs/design-docs/index.md`](./design-docs/index.md)
 - 장시간 작업, 중단 후 재개 필요: [`/Users/lim/dev/proxi/docs/PLANS.md`](./PLANS.md), [`/Users/lim/dev/proxi/docs/exec-plans/active/README.md`](./exec-plans/active/README.md)
 - 품질 수준 판단과 후속 작업 정리: [`/Users/lim/dev/proxi/docs/QUALITY_SCORE.md`](./QUALITY_SCORE.md), [`/Users/lim/dev/proxi/docs/exec-plans/tech-debt-tracker.md`](./exec-plans/tech-debt-tracker.md)

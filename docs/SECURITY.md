@@ -10,6 +10,16 @@
 - 개인정보 또는 민감한 운영 데이터
 - 외부 API 연동과 웹훅
 - DB 스키마, 마이그레이션, 데이터 백필
+- CORS origin allowlist
+- 사용자 업로드 파일 저장소와 다운로드 endpoint
+
+## 개발 보안 기준
+- 백엔드 CORS 는 `PROXI_CORS_ORIGINS` allowlist 로 제어하며 wildcard 는 의도적으로 설정한 경우에만 쓴다.
+- 업로드 파일은 정적 공개 디렉터리에 두지 않고, attachment download endpoint 에서 권한 확인 후 stream 으로 내려준다.
+- 업로드 저장 경로는 `PROXI_UPLOAD_ROOT` 아래 상대 경로만 허용한다.
+- attachment 삭제 endpoint 는 Echo 에 연결되지 않은 파일만 정리하며, 이미 연결된 파일은 삭제하지 않는다.
+- 첫 버전은 로그인 없는 단일 owner 제품이지만, attachment download 권한 검사는 서비스 내부 상수가 아니라 HTTP adapter 에서 전달한 요청 액터 기준으로 수행한다.
+- 정식 인증 계층이 생기면 `apps/back/src/common/auth/current-actor.ts` 의 resolver 를 교체하고 attachment 권한 검증 호출부는 유지한다.
 
 ## 문서화 규칙
 - 보안 경계가 바뀌면 설계 문서 또는 실행 계획에 위험과 완화책을 남긴다.

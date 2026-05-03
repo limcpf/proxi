@@ -23,6 +23,12 @@ lerna-debug.log*
 .temp
 .tmp
 
+# local runtime data
+.local/
+apps/back/.local/
+test-results/
+playwright-report/
+
 #omx
 .omx/
 

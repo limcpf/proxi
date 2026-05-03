@@ -1,25 +1,10 @@
-import { createRoute, useNavigate } from "@tanstack/react-router";
-import { FrontHarnessPage } from "../features/front-harness/ui/front-harness-page";
-import type { FrontHarnessView } from "../features/front-harness/model";
-import { parseFrontHarnessSearch } from "../features/front-harness/model";
+import { createRoute, redirect } from "@tanstack/react-router";
 import { rootRoute } from "./root";
 
 export const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
-  validateSearch: parseFrontHarnessSearch,
-  component: IndexRouteComponent,
+  beforeLoad: () => {
+    throw redirect({ to: "/echoes" });
+  },
 });
-
-function IndexRouteComponent() {
-  const navigate = useNavigate({ from: indexRoute.fullPath });
-  const search = indexRoute.useSearch();
-
-  const handleViewChange = (view: FrontHarnessView) => {
-    navigate({
-      search: () => (view === "overview" ? { view: "overview" } : { view }),
-    });
-  };
-
-  return <FrontHarnessPage onViewChange={handleViewChange} view={search.view} />;
-}

@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum EchoStatus {
+  published
+  archived
+}
+
+enum EchoAuthorType {
+  owner
+  agent
+}
+
+model Echo {
+  id                String         @id
+  body              String
+  status            EchoStatus     @default(published)
+  authorActorId     String
+  authorType        EchoAuthorType @default(owner)
+  authorDisplayName String
+  parentEchoId      String?
+  rootEchoId        String?
+  depth             Int            @default(0)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  deletedAt         DateTime?
+  deletedByActorId  String?
+
+  parent   Echo?         @relation("EchoReplies", fields: [parentEchoId], references: [id])
+  replies  Echo[]        @relation("EchoReplies")
+  mentions EchoMention[]
+  attachments Attachment[]
+
+  @@index([status, createdAt])
+  @@index([parentEchoId, createdAt])
+  @@index([rootEchoId, createdAt])
+}
+
+model EchoMention {
+  id          String   @id
+  echoId      String
+  agentId     String
+  displayName String
+  rangeStart  Int
+  rangeEnd    Int
+  createdAt   DateTime @default(now())
+
+  echo Echo @relation(fields: [echoId], references: [id], onDelete: Cascade)
+
+  @@index([echoId])
+  @@index([agentId])
+}
+
+model Attachment {
+  id               String   @id
+  originalFileName String
+  mimeType         String
+  sizeBytes        Int
+  checksum         String
+  relativePath     String
+  echoId           String?
+  createdAt        DateTime @default(now())
+
+  echo Echo? @relation(fields: [echoId], references: [id], onDelete: SetNull)
+
+  @@index([echoId])
+  @@index([checksum])
+}

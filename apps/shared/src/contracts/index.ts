@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+export * from "./echo.js";
+
 export const sharedContractVersion = "0.1.0" as const;
 
 export const proxiEntityIdSchema = z
@@ -23,6 +25,8 @@ export const apiErrorSchema = z.object({
     .trim()
     .min(1, "error message must not be empty.")
     .max(240, "error message must be 240 characters or fewer."),
+  details: z.unknown().optional(),
+  requestId: z.string().trim().min(1).max(128).optional(),
 });
 
 export function apiSuccessSchema<TDataSchema extends z.ZodType>(

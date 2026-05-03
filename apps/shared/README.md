@@ -4,11 +4,13 @@
 
 ## 개발 시작
 - 의존성 설치: `corepack pnpm install`
+- lint 실행: `corepack pnpm --filter @proxi/shared lint`
 - 테스트 실행: `corepack pnpm --filter @proxi/shared test`
 - 타입 검증: `corepack pnpm --filter @proxi/shared typecheck`
 - 빌드 실행: `corepack pnpm --filter @proxi/shared build`
 
 ## 검증 명령
+- shared lint: `corepack pnpm --filter @proxi/shared lint`
 - shared 테스트: `corepack pnpm --filter @proxi/shared test`
 - shared 타입 검증: `corepack pnpm --filter @proxi/shared typecheck`
 - shared 빌드: `corepack pnpm --filter @proxi/shared build`

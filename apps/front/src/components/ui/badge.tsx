@@ -13,15 +13,11 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   tone?: BadgeTone;
 }
 
-export function Badge({
-  className,
-  tone = "default",
-  ...props
-}: BadgeProps) {
+export function Badge({ className, tone = "default", ...props }: BadgeProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium",
+        "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium leading-4",
         toneClasses[tone],
         className,
       )}

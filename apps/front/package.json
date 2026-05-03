@@ -4,15 +4,21 @@
   "private": true,
   "type": "module",
   "author": "limcpf",
-  "packageManager": "pnpm@10.33.0",
   "scripts": {
     "dev": "vite",
+    "prebuild": "corepack pnpm --filter @proxi/shared build",
     "build": "tsc --noEmit && vite build",
+    "pretypecheck": "corepack pnpm --filter @proxi/shared build",
+    "typecheck": "tsc --noEmit",
+    "pretest": "corepack pnpm --filter @proxi/shared build",
+    "lint": "biome check .",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@proxi/shared": "workspace:*",
     "@radix-ui/react-slot": "^1.2.4",
     "@tanstack/react-query": "^5.99.0",
     "@tanstack/react-router": "^1.168.22",
@@ -21,10 +27,14 @@
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-hook-form": "^7.72.1",
+    "react-markdown": "^10.1.0",
+    "rehype-sanitize": "^6.0.0",
+    "remark-gfm": "^4.0.1",
     "tailwind-merge": "^3.5.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@playwright/test": "^1.59.1",
     "@tailwindcss/vite": "^4.2.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",

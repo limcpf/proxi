@@ -2,13 +2,15 @@
 
 ## 함께 읽을 문서
 - 운영 절차와 재현성 점검: [`/Users/lim/dev/proxi/apps/front/README.md`](./README.md)
+- 화면 디자인 시스템: [`/Users/lim/dev/proxi/apps/front/DESIGN.md`](./DESIGN.md)
 - 스택 결정 근거: [`/Users/lim/dev/proxi/docs/design-docs/2026-04-18-proxi-front-spa-stack.md`](../../docs/design-docs/2026-04-18-proxi-front-spa-stack.md)
 - 디자인 원칙: [`/Users/lim/dev/proxi/docs/design-docs/2026-04-18-proxi-front-design-principles.md`](../../docs/design-docs/2026-04-18-proxi-front-design-principles.md)
 - UI UX 원칙: [`/Users/lim/dev/proxi/docs/product-specs/2026-04-18-proxi-front-ui-ux-principles.md`](../../docs/product-specs/2026-04-18-proxi-front-ui-ux-principles.md)
 
 ## 문서 역할
 - 이 문서: 스택, 책임, 구현 기본값
-- 디자인 원칙 문서: 타이포그래피, spacing, token, visual density
+- `DESIGN.md`: 실제 화면 제작 시 적용할 시각 언어, token, 컴포넌트 스타일
+- 디자인 원칙 문서: 과거 디자인 결정과 배경
 - UI UX 원칙 문서: 화면 목적, 액션 위계, 점진적 공개, 정보 밀도
 
 ## 현재 결론
@@ -17,8 +19,9 @@
 - router/data: `TanStack Router + TanStack Query`
 - form/validation: `react-hook-form + zod`
 - styling/ui: `Tailwind CSS + shadcn/ui + Radix UI`
-- testing: `Vitest + Testing Library`
-- design direction: `cozy`, `Korean-first readability`, `low-fatigue`
+- testing: `Vitest + Testing Library + Playwright`
+- design direction: `IBM layout discipline`, `Threads-style content tone`, `focused compose flow`
+- copy direction: `Korean-first UI copy`
 - UI UX direction: `one page, one purpose`, `one primary action`, `progressive disclosure`
 
 ## 왜 `React SPA` 로 시작하는가
@@ -41,7 +44,7 @@
 
 ### `Tailwind` 는 속도를 위해 쓰되 자유도를 줄인다
 - 화면은 빠르게 만들되, 스타일 값은 token 과 variant 로 제한해야 한다.
-- 디자인 원칙 문서와 UI UX 원칙 문서가 `Tailwind` 사용의 제약 기준이 된다.
+- `DESIGN.md` 와 UI UX 원칙 문서가 `Tailwind` 사용의 제약 기준이 된다.
 
 ## 채택 스택
 
@@ -55,7 +58,7 @@
 - Validation: `zod`
 - Styling: `Tailwind CSS`
 - UI primitive / base components: `shadcn/ui`, `Radix UI`
-- Testing: `Vitest`, `Testing Library`
+- Testing: `Vitest`, `Testing Library`, `Playwright`
 
 ### 보조
 - Icon: `lucide-react` 계열 사용 가능
@@ -75,7 +78,6 @@
 ### 보류
 - OpenAPI 기반 타입/클라이언트 자동 생성
 - Storybook
-- E2E 테스트 도구
 - 다국어 시스템
 - 디자인 token 자동 생성 파이프라인
 
@@ -98,6 +100,10 @@
 ## API 연동 원칙
 - 프런트는 백엔드 모듈을 직접 import 하지 않는다.
 - 프런트는 HTTP API 계약을 통해 백엔드와 통신한다.
+- 개발 기본 API 경로는 Vite proxy 의 `/api` 이며 백엔드 origin 은 `http://localhost:3000` 이다.
+- attachment download 는 백엔드가 내려준 `downloadUrl` 을 그대로 사용한다. 교차 origin 배포에서는 백엔드 `PROXI_PUBLIC_API_BASE_URL` 과 프런트 `VITE_PROXI_API_BASE_URL` 이 같은 public API origin 을 가리켜야 한다.
+- Echo 작성 또는 댓글 작성 중 attachment 업로드 후 본문 생성이 실패하면 프런트 API layer 에서 성공한 미연결 attachment 를 삭제해 orphan 누적을 막는다.
+- 브라우저 E2E 기준 URL 은 `http://localhost:5173` 하나로 통일한다.
 - 초반에는 얇은 API layer 로 시작한다.
 - API 계약이 커지면 OpenAPI 기반 생성 방식을 검토한다.
 
@@ -110,13 +116,14 @@
 ## 스타일링 원칙
 - `Tailwind CSS` 를 사용한다.
 - raw utility 남용보다 semantic class 와 component variant 를 우선한다.
-- 디자인 원칙 문서의 typography, spacing, control size 기준을 따른다.
+- `DESIGN.md` 의 typography, spacing, token, component 기준을 따른다.
 - UI UX 원칙 문서의 정보 밀도, 버튼 수, primary action 규칙을 따른다.
 
 기본 방향:
-- cozy density
-- Korean-first readability
-- calm, low-fatigue UI
+- IBM식 정렬과 section segmentation
+- Threads식 content-first feed 와 muted metadata
+- neutral background 와 white card 중심의 soft visual system
+- 8px grid 와 10-16px radius 중심의 readable UI
 - one-primary-action per page
 
 ## 컴포넌트 원칙
@@ -161,6 +168,7 @@ apps/front
 
 ## 테스트 기본값
 - 컴포넌트와 로직 테스트는 `Vitest + Testing Library` 로 시작한다.
+- 브라우저 happy path 는 `Playwright` 로 별도 명령에서 검증한다.
 - 우선순위는 아래 순서다.
 
 1. 핵심 폼 검증
@@ -174,7 +182,7 @@ apps/front
 3. URL 로 올라가야 할 상태를 먼저 분리한다.
 4. query / mutation 경계를 정한다.
 5. loading / empty / error / disabled 상태를 먼저 생각한다.
-6. 디자인 원칙 문서의 typography / spacing 기준에 맞춘다.
+6. `DESIGN.md` 의 typography / spacing / component 기준에 맞춘다.
 7. UI UX 원칙 문서의 버튼 수, 정보 밀도 규칙에 맞춘다.
 8. 임의값이나 예외 variant 를 만들기 전 기존 패턴으로 설명 가능한지 확인한다.
 

@@ -44,6 +44,13 @@
       "owner_scope": "apps/front"
     },
     {
+      "path": "apps/front/DESIGN.md",
+      "kind": "policy",
+      "role": "프런트 화면 디자인 시스템과 UI 제작 규칙",
+      "read_when": ["프런트 화면 제작", "프런트 디자인 구현", "컴포넌트 스타일 결정", "Echo 화면 변경"],
+      "owner_scope": "apps/front"
+    },
+    {
       "path": "apps/shared/AGENTS.md",
       "kind": "router",
       "role": "공유 패키지 작업 진입 라우터",
@@ -83,6 +90,13 @@
       "kind": "index",
       "role": "docs 디렉터리 라우팅과 책임 인덱스",
       "read_when": ["문서 구조 탐색", "문서 추가", "문서 이동", "인덱스 갱신"],
+      "owner_scope": "docs"
+    },
+    {
+      "path": "docs/DEVELOPMENT.md",
+      "kind": "reference",
+      "role": "로컬 개발 환경과 검증 절차 기준",
+      "read_when": ["개발 환경 구성", "로컬 DB 실행", "migration 적용", "E2E 실행"],
       "owner_scope": "docs"
     },
     {
@@ -149,6 +163,13 @@
       "owner_scope": "docs/design-docs"
     },
     {
+      "path": "docs/design-docs/2026-04-26-node-monorepo-harness.md",
+      "kind": "design-doc",
+      "role": "Node 모노레포 하네스 보강 결정",
+      "read_when": ["모노레포 검증 구조 확인", "Node pnpm workspace 기준 확인", "백엔드 하네스 변경"],
+      "owner_scope": "docs/design-docs"
+    },
+    {
       "path": "docs/design-docs/core-beliefs.md",
       "kind": "design-doc",
       "role": "문서 운영 핵심 원칙",
@@ -168,6 +189,20 @@
       "role": "진행 중 실행 계획 인덱스",
       "read_when": ["진행 중 계획 확인", "장시간 작업 상태 파악"],
       "owner_scope": "docs/exec-plans/active"
+    },
+    {
+      "path": "docs/exec-plans/completed/2026-04-30-echo-followup-environment.md",
+      "kind": "exec-plan",
+      "role": "Echo 후속 slice 와 개발 환경 보강 실행 기록",
+      "read_when": ["Echo 후속 slice 구현 결과 확인", "attachment 구현 결과 확인", "archive 구현 결과 확인", "검색 구현 결과 확인", "개발 환경 보강 결과 확인"],
+      "owner_scope": "docs/exec-plans/completed"
+    },
+    {
+      "path": "docs/exec-plans/completed/2026-05-01-echo-minimal-feed-ui.md",
+      "kind": "exec-plan",
+      "role": "Echo 미니멀 피드 UI 구현 기록",
+      "read_when": ["Echo 피드 UI 구현 결과 확인", "Echo 화면 여백 축소 결과 확인", "Echo 미니멀 UI 구현 참고"],
+      "owner_scope": "docs/exec-plans/completed"
     },
     {
       "path": "docs/exec-plans/completed/2026-04-05-agent-knowledge-system-merge.md",
@@ -195,6 +230,13 @@
       "kind": "exec-plan",
       "role": "태그형 Codex PR 리뷰 구현 기록",
       "read_when": ["과거 실행 기억 확인", "PR 리뷰 자동화 구현 참고"],
+      "owner_scope": "docs/exec-plans/completed"
+    },
+    {
+      "path": "docs/exec-plans/completed/2026-04-28-echo-domain-slices.md",
+      "kind": "exec-plan",
+      "role": "Echo 도메인 Slice 1-5 개발 실행 기록",
+      "read_when": ["Echo 도메인 과거 구현 확인", "Echo slice 1-5 결과 확인"],
       "owner_scope": "docs/exec-plans/completed"
     },
     {
@@ -237,6 +279,34 @@
       "kind": "reference",
       "role": "프런트 UI UX 기본 동작 원칙",
       "read_when": ["프런트 화면 목적 판단", "액션 위계 기준 확인", "점진적 공개 기준 확인"],
+      "owner_scope": "docs/product-specs"
+    },
+    {
+      "path": "docs/product-specs/2026-04-27-writing-domain-requirements-checklist.md",
+      "kind": "reference",
+      "role": "글 도메인 요구사항 수립 체크리스트",
+      "read_when": ["글 도메인 요구사항 수립", "글 작성 수정 삭제 기능 정의", "글 도메인 수용 기준 작성"],
+      "owner_scope": "docs/product-specs"
+    },
+    {
+      "path": "docs/product-specs/2026-04-28-echo-domain-requirements.md",
+      "kind": "reference",
+      "role": "Echo 도메인 요구사항과 계약 기준",
+      "read_when": ["Echo 도메인 개발", "Echo 요구사항 확인", "Echo API 계약 작성", "Echo 수용 기준 작성", "글 도메인 구현"],
+      "owner_scope": "docs/product-specs"
+    },
+    {
+      "path": "docs/product-specs/2026-04-30-echo-followup-slices.md",
+      "kind": "reference",
+      "role": "Echo 후속 slice 요구사항",
+      "read_when": ["Echo attachment 요구사항", "Echo archive 요구사항", "Echo 검색 요구사항", "후속 slice 수용 기준 작성"],
+      "owner_scope": "docs/product-specs"
+    },
+    {
+      "path": "docs/product-specs/2026-05-01-echo-minimal-feed-ui.md",
+      "kind": "reference",
+      "role": "Echo 피드 화면 미니멀 UI 요구사항",
+      "read_when": ["Echo 피드 UI 기준 확인", "Echo 화면 여백 축소", "Echo 미니멀 UI 수용 기준 작성", "프런트 피드 재설계"],
       "owner_scope": "docs/product-specs"
     },
     {
