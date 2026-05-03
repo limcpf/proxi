@@ -191,11 +191,11 @@
       "owner_scope": "docs/exec-plans/active"
     },
     {
-      "path": "docs/exec-plans/active/2026-04-30-echo-followup-environment.md",
+      "path": "docs/exec-plans/completed/2026-04-30-echo-followup-environment.md",
       "kind": "exec-plan",
-      "role": "Echo 후속 slice 와 개발 환경 보강 실행 계획",
-      "read_when": ["Echo 후속 slice 진행", "attachment 구현", "archive 구현", "검색 구현", "개발 환경 보강"],
-      "owner_scope": "docs/exec-plans/active"
+      "role": "Echo 후속 slice 와 개발 환경 보강 실행 기록",
+      "read_when": ["Echo 후속 slice 구현 결과 확인", "attachment 구현 결과 확인", "archive 구현 결과 확인", "검색 구현 결과 확인", "개발 환경 보강 결과 확인"],
+      "owner_scope": "docs/exec-plans/completed"
     },
     {
       "path": "docs/exec-plans/completed/2026-05-01-echo-minimal-feed-ui.md",

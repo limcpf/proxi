@@ -2,7 +2,7 @@
 
 ## 목록
 
-- [`/Users/lim/dev/proxi/docs/exec-plans/active/2026-04-30-echo-followup-environment.md`](./2026-04-30-echo-followup-environment.md): Echo 후속 slice 와 개발 환경 보강 실행 계획
+현재 진행 중인 실행 계획은 없다.
 
 ## 작성 규칙
 
