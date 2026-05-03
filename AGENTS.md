@@ -33,8 +33,9 @@
 
 ## Review guidelines
 - Codex 리뷰는 GitHub 와 연결된 OAuth 계정의 기본 댓글 경로를 사용한다.
-- `Verify` workflow 가 PR 에서 성공하면 `COMMENTER_PAT` secret 으로 기본 리뷰 요청 코멘트 1개를 자동으로 남긴다.
-- `COMMENTER_PAT` 는 Codex 와 연결된 같은 GitHub 계정의 토큰이어야 한다.
+- 현재 기본 자동 리뷰 요청은 비활성화한다. `.github/workflows/verify.yml` 의 `request_codex_review` job 은 복구용으로 보존하되 `if: ${{ false }}` 로 실행하지 않는다.
+- 자동 리뷰 요청을 복구할 때는 `Verify` workflow 가 PR 에서 성공한 뒤 `COMMENTER_PAT` secret 으로 기본 리뷰 요청 코멘트 1개를 남기게 한다.
+- 복구 시 `COMMENTER_PAT` 는 Codex 와 연결된 같은 GitHub 계정의 토큰이어야 한다.
 - 기본 자동 코멘트는 `architecture`, `security`, `docs`, `feature`, `qa` 5개 관점을 한 댓글 안의 고정 섹션으로 요청한다.
 - 기본 자동 코멘트의 상세 프롬프트는 `docs/design-docs/2026-04-08-tagged-codex-pr-review.md` 기준을 따른다.
 - 추가 요청은 PR 코멘트 `@codex <관점과 지침>` 형태로 남긴다.

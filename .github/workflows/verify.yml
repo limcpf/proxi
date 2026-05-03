@@ -35,7 +35,9 @@ jobs:
         run: corepack pnpm run verify
 
   request_codex_review:
-    if: github.event_name == 'pull_request'
+    # Temporarily disabled. Restore with:
+    # if: github.event_name == 'pull_request'
+    if: ${{ false }}
     needs: verify
     runs-on: ubuntu-latest
     permissions:
