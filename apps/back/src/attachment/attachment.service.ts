@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from "node:crypto";
-import { createReadStream } from "node:fs";
-import { mkdir, unlink, writeFile } from "node:fs/promises";
+import { constants, createReadStream } from "node:fs";
+import { access, mkdir, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import {
   BadRequestException,
@@ -12,6 +12,7 @@ import {
 import {
   type ActorId,
   type allowedAttachmentMimeTypes,
+  attachmentMaxSizeBytes,
   type EchoAttachment,
   echoAttachmentSchema,
   type UploadAttachmentRequest,
@@ -21,6 +22,7 @@ import { PrismaService } from "../prisma/prisma.service.js";
 import { createAttachmentDownloadUrl } from "./attachment-url.js";
 
 const defaultUploadRoot = ".local/uploads";
+const maxBase64ContentLength = Math.ceil(attachmentMaxSizeBytes / 3) * 4;
 type AttachmentMimeType = (typeof allowedAttachmentMimeTypes)[number];
 const extensionByMimeType: Record<AttachmentMimeType, string> = {
   "image/png": ".png",
@@ -80,17 +82,21 @@ export class AttachmentService {
     const attachment = await this.findDownloadAttachment(attachmentId);
 
     this.assertCanOpenDownload(attachment, callerActorId);
+    const absolutePath = this.toAbsolutePath(attachment.relativePath);
+    await this.assertDownloadFileAccessible(absolutePath);
 
     return {
       fileName: attachment.originalFileName,
       mimeType: attachment.mimeType,
       sizeBytes: attachment.sizeBytes,
-      stream: createReadStream(this.toAbsolutePath(attachment.relativePath)),
+      stream: createReadStream(absolutePath),
     };
   }
 
   private prepareUpload(input: unknown): PreparedUpload {
     const request = this.parseUploadRequest(input);
+
+    this.assertBase64ContentWithinLimit(request.contentBase64);
     const content = Buffer.from(request.contentBase64, "base64");
 
     this.assertUploadSizeMatches(content, request.sizeBytes);
@@ -114,6 +120,26 @@ export class AttachmentService {
       throw new BadRequestException({
         code: "attachment_size_mismatch",
         message: "파일 크기가 요청 정보와 맞지 않아요.",
+      });
+    }
+  }
+
+  private assertBase64ContentWithinLimit(contentBase64: string) {
+    if (contentBase64.length > maxBase64ContentLength) {
+      throw new BadRequestException({
+        code: "attachment_payload_too_large",
+        message: "10MB 이하 파일만 업로드할 수 있어요.",
+      });
+    }
+  }
+
+  private async assertDownloadFileAccessible(absolutePath: string) {
+    try {
+      await access(absolutePath, constants.R_OK);
+    } catch {
+      throw new NotFoundException({
+        code: "attachment_not_found",
+        message: "찾는 파일이 없어요.",
       });
     }
   }

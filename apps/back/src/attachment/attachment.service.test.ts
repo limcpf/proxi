@@ -1,8 +1,12 @@
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { ForbiddenException } from "@nestjs/common";
-import { actorIdSchema } from "@proxi/shared";
+import {
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+} from "@nestjs/common";
+import { actorIdSchema, attachmentMaxSizeBytes } from "@proxi/shared";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ownerActor } from "../common/auth/current-actor.js";
 import type { PrismaService } from "../prisma/prisma.service.js";
@@ -58,6 +62,19 @@ describe("AttachmentService", () => {
     download.stream.destroy();
   });
 
+  it("DB 레코드가 있어도 파일이 없으면 다운로드를 NotFound 로 거부한다", async () => {
+    const service = createService({
+      echoId: "echo_owner",
+      echo: {
+        authorActorId: "actor_owner",
+      },
+    });
+
+    await expect(
+      service.openDownload("attachment_owner", ownerActor.id),
+    ).rejects.toThrow(NotFoundException);
+  });
+
   it("owner 가 아닌 Echo 에 연결된 attachment 다운로드를 거부한다", async () => {
     const service = createService({
       echoId: "echo_agent",
@@ -72,6 +89,30 @@ describe("AttachmentService", () => {
         actorIdSchema.parse("actor_owner"),
       ),
     ).rejects.toThrow(ForbiddenException);
+  });
+
+  it("base64 payload 가 최대 파일 크기보다 크면 디코딩 전에 거부한다", async () => {
+    const service = createService({
+      echoId: null,
+      echo: null,
+    });
+    const bufferFrom = vi.spyOn(Buffer, "from");
+
+    try {
+      await expect(
+        service.upload({
+          fileName: "memo.txt",
+          mimeType: "text/plain",
+          sizeBytes: 1,
+          contentBase64: "A".repeat(
+            Math.ceil(attachmentMaxSizeBytes / 3) * 4 + 4,
+          ),
+        }),
+      ).rejects.toThrow(BadRequestException);
+      expect(bufferFrom).not.toHaveBeenCalled();
+    } finally {
+      bufferFrom.mockRestore();
+    }
   });
 });
 
