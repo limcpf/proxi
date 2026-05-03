@@ -133,16 +133,18 @@ export function isFullVerifyCommand(command) {
 }
 
 export function extractToolCommand(input) {
-  const toolInput = input?.tool_input;
+  const candidates = [
+    input?.tool_input,
+    input?.toolInput,
+    input?.tool?.input,
+    input?.input,
+    input,
+  ];
 
-  if (toolInput === null || toolInput === undefined || typeof toolInput !== "object") {
-    return "";
-  }
-
-  for (const key of ["command", "cmd"]) {
-    const value = toolInput[key];
-    if (typeof value === "string") {
-      return value;
+  for (const candidate of candidates) {
+    const command = findToolCommand(unwrapJsonLikeValue(candidate));
+    if (command !== null) {
+      return command;
     }
   }
 
@@ -238,9 +240,8 @@ export function shellQuote(value) {
   return `'${String(value).replaceAll("'", `'\"'\"'`)}'`;
 }
 
-export function extractCommandSucceeded(toolResponse) {
-  const payload = unwrapToolResponse(toolResponse);
-  const exitCode = findExitCode(payload);
+export function extractCommandSucceeded(...toolResponses) {
+  const exitCode = extractCommandExitCode(...toolResponses);
   if (exitCode === null) {
     return false;
   }
@@ -248,8 +249,22 @@ export function extractCommandSucceeded(toolResponse) {
   return exitCode === 0;
 }
 
+export function extractCommandExitCode(...toolResponses) {
+  const payload = toolResponses.length === 1 ? toolResponses[0] : toolResponses;
+  return findExitCode(unwrapToolResponse(payload));
+}
+
+export function extractCommandStillRunning(...toolResponses) {
+  const payload = toolResponses.length === 1 ? toolResponses[0] : toolResponses;
+  return findRunningMarker(unwrapToolResponse(payload));
+}
+
 function unwrapToolResponse(toolResponse) {
-  let current = toolResponse;
+  return unwrapJsonLikeValue(toolResponse);
+}
+
+function unwrapJsonLikeValue(value) {
+  let current = value;
 
   while (typeof current === "string") {
     const trimmed = current.trim();
@@ -270,6 +285,67 @@ function unwrapToolResponse(toolResponse) {
   return current;
 }
 
+function findToolCommand(payload) {
+  if (payload === null || payload === undefined) {
+    return null;
+  }
+
+  if (typeof payload === "string") {
+    return null;
+  }
+
+  if (Array.isArray(payload)) {
+    for (const item of payload) {
+      const nested = findToolCommand(unwrapJsonLikeValue(item));
+      if (nested !== null) {
+        return nested;
+      }
+    }
+
+    return null;
+  }
+
+  if (typeof payload !== "object") {
+    return null;
+  }
+
+  for (const key of ["command", "cmd"]) {
+    const value = payload[key];
+    if (typeof value === "string") {
+      return value;
+    }
+  }
+
+  for (const value of Object.values(payload)) {
+    const nested = findToolCommand(unwrapJsonLikeValue(value));
+    if (nested !== null) {
+      return nested;
+    }
+  }
+
+  return null;
+}
+
+function findRunningMarker(payload) {
+  if (payload === null || payload === undefined) {
+    return false;
+  }
+
+  if (typeof payload === "string") {
+    return /\bProcess running with session ID\b/.test(payload);
+  }
+
+  if (Array.isArray(payload)) {
+    return payload.some((item) => findRunningMarker(item));
+  }
+
+  if (typeof payload !== "object") {
+    return false;
+  }
+
+  return Object.values(payload).some((value) => findRunningMarker(value));
+}
+
 function findExitCode(payload) {
   if (typeof payload === "number") {
     return payload;
@@ -288,6 +364,11 @@ function findExitCode(payload) {
     }
 
     return null;
+  }
+
+  if (typeof payload === "string") {
+    const match = payload.match(/\bProcess exited with code\s+(-?\d+)\b/);
+    return match ? Number(match[1]) : null;
   }
 
   if (typeof payload !== "object") {
