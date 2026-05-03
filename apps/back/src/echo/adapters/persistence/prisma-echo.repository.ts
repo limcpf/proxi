@@ -31,12 +31,24 @@ type PrismaEchoRow = {
   deletedAt: Date | null;
   deletedByActorId: string | null;
   attachments: PrismaAttachment[];
+  _count: {
+    replies: number;
+  };
 };
 
 const echoInclude = {
   attachments: {
     orderBy: {
       createdAt: "asc",
+    },
+  },
+  _count: {
+    select: {
+      replies: {
+        where: {
+          status: "published",
+        },
+      },
     },
   },
 } satisfies Prisma.EchoInclude;
@@ -112,7 +124,7 @@ export class PrismaEchoRepository implements EchoRepository {
       });
     });
 
-    return this.withReplyCount(created);
+    return this.toEntity(created);
   }
 
   async findById(echoId: string): Promise<EchoWithReplyCount | undefined> {
@@ -123,7 +135,7 @@ export class PrismaEchoRepository implements EchoRepository {
       include: echoInclude,
     });
 
-    return echo === null ? undefined : this.withReplyCount(echo);
+    return echo === null ? undefined : this.toEntity(echo);
   }
 
   async listRootEchoes(
@@ -164,7 +176,7 @@ export class PrismaEchoRepository implements EchoRepository {
       include: echoInclude,
     });
 
-    return Promise.all(rows.map((row) => this.withReplyCount(row)));
+    return rows.map((row) => this.toEntity(row));
   }
 
   async listReplies(rootEchoId: string): Promise<EchoWithReplyCount[]> {
@@ -184,7 +196,7 @@ export class PrismaEchoRepository implements EchoRepository {
       include: echoInclude,
     });
 
-    return Promise.all(rows.map((row) => this.withReplyCount(row)));
+    return rows.map((row) => this.toEntity(row));
   }
 
   async updateBody(
@@ -203,7 +215,7 @@ export class PrismaEchoRepository implements EchoRepository {
       include: echoInclude,
     });
 
-    return this.withReplyCount(updated);
+    return this.toEntity(updated);
   }
 
   async archive(
@@ -224,7 +236,7 @@ export class PrismaEchoRepository implements EchoRepository {
       include: echoInclude,
     });
 
-    return this.withReplyCount(archived);
+    return this.toEntity(archived);
   }
 
   async restore(echoId: string, restoredAt: Date): Promise<EchoWithReplyCount> {
@@ -241,19 +253,10 @@ export class PrismaEchoRepository implements EchoRepository {
       include: echoInclude,
     });
 
-    return this.withReplyCount(restored);
+    return this.toEntity(restored);
   }
 
-  private async withReplyCount(
-    row: PrismaEchoRow,
-  ): Promise<EchoWithReplyCount> {
-    const replyCount = await this.prisma.echo.count({
-      where: {
-        parentEchoId: row.id,
-        status: "published",
-      },
-    });
-
+  private toEntity(row: PrismaEchoRow): EchoWithReplyCount {
     return {
       id: row.id,
       body: row.body,
@@ -268,7 +271,7 @@ export class PrismaEchoRepository implements EchoRepository {
       updatedAt: row.updatedAt,
       deletedAt: row.deletedAt ?? undefined,
       deletedByActorId: row.deletedByActorId ?? undefined,
-      replyCount,
+      replyCount: row._count.replies,
       attachments: row.attachments.map((attachment) => ({
         id: attachment.id,
         originalFileName: attachment.originalFileName,
