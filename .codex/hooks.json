@@ -23,14 +23,24 @@
         ]
       }
     ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/.codex/hooks/pre-tool-use-main-guard.mjs\""
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
-            "command": "node \"$(git rev-parse --show-toplevel)/.codex/hooks/post-tool-use-docs.mjs\"",
-            "statusMessage": "문서 변경 후속 검사 중"
+            "command": "node \"$(git rev-parse --show-toplevel)/.codex/hooks/post-tool-use-docs.mjs\""
           }
         ]
       }

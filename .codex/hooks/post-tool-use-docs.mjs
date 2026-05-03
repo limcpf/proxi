@@ -30,8 +30,7 @@ const toolResponseCandidates = [
 const verifyExitCode = extractCommandExitCode(...toolResponseCandidates);
 const verifyCommandRan = isFullVerifyCommand(command);
 const verifyStillRunning = extractCommandStillRunning(...toolResponseCandidates);
-const verifySucceeded =
-  verifyCommandRan && !verifyStillRunning && (verifyExitCode === 0 || verifyExitCode === null);
+const verifySucceeded = verifyCommandRan && !verifyStillRunning && verifyExitCode === 0;
 
 if (verifySucceeded) {
   state.verifiedFingerprint = currentFingerprint;
