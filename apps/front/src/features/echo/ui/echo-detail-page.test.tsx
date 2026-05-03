@@ -6,19 +6,25 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   archiveEcho,
   createReplyWithFiles,
+  EchoApiError,
   getEcho,
   restoreEcho,
   updateEcho,
 } from "../api/echo.api";
 import { EchoDetailPage } from "./echo-detail-page";
 
-vi.mock("../api/echo.api", () => ({
-  archiveEcho: vi.fn(),
-  createReplyWithFiles: vi.fn(),
-  getEcho: vi.fn(),
-  restoreEcho: vi.fn(),
-  updateEcho: vi.fn(),
-}));
+vi.mock("../api/echo.api", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../api/echo.api")>();
+
+  return {
+    ...actual,
+    archiveEcho: vi.fn(),
+    createReplyWithFiles: vi.fn(),
+    getEcho: vi.fn(),
+    restoreEcho: vi.fn(),
+    updateEcho: vi.fn(),
+  };
+});
 
 const now = "2026-04-28T00:00:00.000Z";
 
@@ -44,6 +50,41 @@ describe("EchoDetailPage", () => {
     expect(screen.getByText("메아리를 불러오는 중이에요.")).toBeInTheDocument();
     expect(await screen.findByText("root")).toBeInTheDocument();
     expect(screen.getByText("reply")).toBeInTheDocument();
+  });
+
+  it("상세 404 오류만 찾을 수 없음 상태로 보여준다", async () => {
+    vi.mocked(getEcho).mockRejectedValue(
+      new EchoApiError("echo_not_found", "찾는 Echo 가 없어요."),
+    );
+
+    renderPage();
+
+    expect(
+      await screen.findByText("찾는 Echo 가 없어요. 피드로 돌아갈까요?"),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Echo 를 불러오지 못했어요.")).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: "다시 시도" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("상세 404 외 오류는 재시도 가능한 오류 상태로 보여준다", async () => {
+    vi.mocked(getEcho).mockRejectedValue(
+      new EchoApiError("internal_server_error", "메아리가 길을 잃었어요."),
+    );
+
+    renderPage();
+
+    expect(
+      await screen.findByText("Echo 를 불러오지 못했어요."),
+    ).toBeInTheDocument();
+    expect(screen.getByText("잠시 뒤 다시 시도해 주세요.")).toBeInTheDocument();
+    expect(
+      screen.queryByText("찾는 Echo 가 없어요. 피드로 돌아갈까요?"),
+    ).toBeNull();
+    expect(
+      screen.getByRole("button", { name: "다시 시도" }),
+    ).toBeInTheDocument();
   });
 
   it("수정 성공 후 상세를 다시 불러온다", async () => {

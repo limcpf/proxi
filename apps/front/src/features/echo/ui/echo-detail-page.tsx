@@ -5,6 +5,7 @@ import { Button } from "../../../components/ui/button";
 import {
   archiveEcho,
   createReplyWithFiles,
+  EchoApiError,
   getEcho,
   restoreEcho,
   updateEcho,
@@ -71,15 +72,37 @@ export function EchoDetailPage({ echoId }: EchoDetailPageProps) {
   }
 
   if (detailQuery.isError) {
+    const isNotFound =
+      detailQuery.error instanceof EchoApiError &&
+      detailQuery.error.code === "echo_not_found";
+
     return (
       <main className="page-shell echo-page detail-page">
         <section className="surface-panel">
           <p className="section-heading">
-            찾는 Echo 가 없어요. 피드로 돌아갈까요?
+            {isNotFound
+              ? "찾는 Echo 가 없어요. 피드로 돌아갈까요?"
+              : "Echo 를 불러오지 못했어요."}
           </p>
-          <Button asChild variant="secondary">
-            <a href="/echoes">피드로 돌아가기</a>
-          </Button>
+          {isNotFound ? null : (
+            <p className="status-note">잠시 뒤 다시 시도해 주세요.</p>
+          )}
+          <div className="action-strip">
+            {isNotFound ? null : (
+              <Button
+                onClick={() => {
+                  void detailQuery.refetch();
+                }}
+                type="button"
+                variant="primary"
+              >
+                다시 시도
+              </Button>
+            )}
+            <Button asChild variant="secondary">
+              <a href="/echoes">피드로 돌아가기</a>
+            </Button>
+          </div>
         </section>
       </main>
     );
