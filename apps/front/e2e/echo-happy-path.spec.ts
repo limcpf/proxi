@@ -11,7 +11,7 @@ test("Echo 작성, 목록 확인, 상세 진입, 댓글 작성", async ({ page }
 
   const card = page.locator("article", { hasText: body }).first();
   await expect(card).toBeVisible();
-  await card.getByRole("link", { name: "상세 보기" }).click();
+  await card.getByRole("link", { name: "상세" }).click();
 
   await expect(page.getByText(body)).toBeVisible();
   await page.getByLabel("댓글 본문").fill(reply);
